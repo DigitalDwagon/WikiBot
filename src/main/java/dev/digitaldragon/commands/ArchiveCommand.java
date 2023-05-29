@@ -1,13 +1,9 @@
 package dev.digitaldragon.commands;
 
-import dev.digitaldragon.DokuWikiDumperBot;
 import dev.digitaldragon.Main;
 import dev.digitaldragon.archive.DokuWikiArchive;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;

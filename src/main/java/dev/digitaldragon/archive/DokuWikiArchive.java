@@ -1,15 +1,12 @@
 package dev.digitaldragon.archive;
 
-import dev.digitaldragon.DokuWikiDumperBot;
 import dev.digitaldragon.Main;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class DokuWikiArchive {
     public static final String DUMPS_DIRECTORY = "dumps/";
