@@ -2,25 +2,25 @@ package dev.digitaldragon.commands;
 
 import dev.digitaldragon.Main;
 import dev.digitaldragon.archive.DokuWikiArchive;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Objects;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class ArchiveCommand extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        System.out.println(event.getName());
+        System.out.println(event.getSubcommandName());
         if (!event.getName().equals("dokuwikiarchive")) {
             return;
         }
-
+        String options = parseOptions(event);
         //validate server is okay
         Guild testServer = Main.getInstance().getGuildById("349920496550281226");
         if (testServer == null) {
@@ -33,19 +33,77 @@ public class ArchiveCommand extends ListenerAdapter {
             return;
         }
 
+        // Single command execution
+        if (Objects.equals(event.getSubcommandName(), "single")) {
+            String url = Objects.requireNonNull(event.getOption("url")).getAsString(); // Assuming the option name is "url"
+            String note = Objects.requireNonNull(event.getOption("explain")).getAsString(); // Assuming the option name is "explain"
 
-        String url = Objects.requireNonNull(event.getOption("url")).getAsString(); // Assuming the option name is "url"
-        String note = Objects.requireNonNull(event.getOption("explain")).getAsString(); // Assuming the option name is "explain"
-        String options = parseOptions(event);
+            //ensure URL is good
+            try {
+                URL uri = new URL(url);
+            } catch (MalformedURLException e) {
+                event.reply("Invalid URL.").setEphemeral(true).queue();
+                return;
+            }
 
-        //ensure URL is good
-        try {
-            URL uri = new URL(url);
-        } catch (MalformedURLException e) {
-            event.reply("Invalid URL.").setEphemeral(true).queue();
-            return;
+            event.reply("Launching job for " + url).queue();
+            startJob(channel, url, note, event.getUser(), options);
         }
 
+        if (Objects.equals(event.getSubcommandName(), "bulk")) {
+            Message.Attachment bulk = Objects.requireNonNull(event.getOption("file")).getAsAttachment();
+            if (!Objects.equals(bulk.getContentType(), "text/plain; charset=utf-8")) {
+                event.reply("Your uploaded file is invalid.").setEphemeral(true).queue();
+                return;
+            }
+
+
+            try {
+                URL fileUrl = new URL(bulk.getUrl());
+                HttpURLConnection conn = (HttpURLConnection) fileUrl.openConnection();
+                conn.setRequestMethod("GET");
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String line;
+
+
+                    Map<String, String> tasks = new HashMap<>();
+                    while ((line = reader.readLine()) != null) {
+                        if (line.isEmpty())
+                            continue;
+
+                        String[] parts = line.split(" ", 2);
+                        String url = parts[0];
+                        try {
+                            URL verifyValid = new URL(url);
+                        } catch (MalformedURLException e) {
+                            event.reply("Invalid URL: " + url).setEphemeral(true).queue();
+                            return;
+                        }
+                        String note = parts.length > 1 ? parts[1] : "No note provided."; // check if second part exists
+                        tasks.put(url, note);
+                    }
+
+                    for (Map.Entry<String, String> entry : tasks.entrySet()) {
+                        String url = entry.getKey();
+                        String note = entry.getValue();
+
+                        startJob(channel, url, note, event.getUser(), options);
+                    }
+                    event.reply(String.format("Spawned %s jobs for %s", tasks.size(), bulk.getFileName())).queue();
+
+                } else {
+                    event.reply("Sorry, the server returned a bad response code: " + responseCode).queue();
+                }
+            } catch (IOException e) {
+                event.reply("Sorry, there was an issue downloading your file.").queue();
+            }
+        }
+    }
+
+    public void startJob(TextChannel channel, String url, String note, User user, String options) {
         String threadName;
         int maxLength = 100;
         if (url.length() <= maxLength) {
@@ -54,11 +112,10 @@ public class ArchiveCommand extends ListenerAdapter {
             threadName = url.substring(0, maxLength - 3) + "...";
         }
 
-        channel.createThreadChannel(threadName)
+        channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
-                    DokuWikiArchive.ArchiveWiki(url, note, event.getUser(), thread, options);
-                    event.reply(thread.getAsMention()).setEphemeral(true).queue();
-                    thread.sendMessage(String.format("Running archivation job on <%s> (for %s). `%s` ```%s```", url, event.getUser().getAsMention(), options, note)).queue(message -> message.pin().queue());
+                    DokuWikiArchive.ArchiveWiki(url, note, user, thread, options);
+                    thread.sendMessage(String.format("Running archivation job on <%s> (for %s). `%s` ```%s```", url, user.getAsTag(), options, note)).queue(message -> message.pin().queue());
                 });
     }
 

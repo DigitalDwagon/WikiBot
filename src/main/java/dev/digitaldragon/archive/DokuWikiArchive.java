@@ -1,6 +1,7 @@
 package dev.digitaldragon.archive;
 
 import dev.digitaldragon.Main;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -71,14 +72,22 @@ public class DokuWikiArchive {
                     sendLogs(channel, logs);
                 }
 
-                channel.sendMessage("Process ended. " + user.getAsMention()).queue();
+                channel.sendMessage("Process ended.").queue();
                 channel.sendMessage("Note: ```" + note + "```").queue();
 
 
                 int exitCode = process.waitFor();
-                if (exitCode != 0) {
-                    channel.sendMessage(user.getAsMention() + " Command failed with exit code " + exitCode).queue();
+                if (exitCode == 0) {
+                    TextChannel successChannel = Main.getInstance().getTextChannelById("1127417094930169918");
+                    if (successChannel != null)
+                        successChannel.sendMessage(String.format("<%s>: %s (for %s)", url, channel.getAsMention(), user.getAsMention())).queue();
+                } else {
+                    TextChannel failChannel = Main.getInstance().getTextChannelById("1127440691602141184");
+                    if (failChannel != null)
+                        failChannel.sendMessage(String.format("<%s> (code `%s`): %s (for %s)", url, exitCode, channel.getAsMention(), user.getAsMention())).queue();
+                    channel.sendMessage("Command failed with exit code " + exitCode).queue();
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 channel.sendMessage(e.getMessage()).queue();
