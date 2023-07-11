@@ -43,6 +43,8 @@ build/
 .env
 dumps/
 dumps/*
+jobs/
+jobs/*
 done.txt
 failed.txt
 todo.txt
