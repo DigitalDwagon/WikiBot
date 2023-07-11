@@ -1,9 +1,11 @@
 package dev.digitaldragon.archive;
 
-import dev.digitaldragon.Main;
+import dev.digitaldragon.ArchiveBot;
+import dev.digitaldragon.util.UploadObject;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -14,20 +16,18 @@ import java.util.concurrent.Executors;
 
 public class DokuWikiArchive {
     public static final String DUMPS_DIRECTORY = "dumps/";
-    public static void ArchiveWiki(String url, String note, User user, ThreadChannel channel, String options) {
+    public static void ArchiveWiki(String url, String note, User user, ThreadChannel channel, String options, String jobId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Main.getExecutorService().submit(() -> {
+        ArchiveBot.getExecutorService().submit(() -> {
             try {
                 File dumpsDir = new File(DUMPS_DIRECTORY);
+                createLogsFile(jobId);
 
-                String command = "dokuwikidumper " + options + url;
+                String command = "dokuWikiDumper " + options + url;
                 System.out.println(command);
 
-                ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
-                processBuilder.directory(dumpsDir);
-                processBuilder.redirectErrorStream(true);
-
-                Process process = processBuilder.start();
+                String os = System.getProperty("os.name").toLowerCase();
+                Process process = getExecutingProcess(os, command, dumpsDir);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
                 List<String> logs = new ArrayList<>();
@@ -46,11 +46,11 @@ public class DokuWikiArchive {
                         System.out.println(logLine + " | for: " + url);
                         logBuilder = new StringBuilder(); // Reset the StringBuilder for the next line
 
-                        // Log to discord every 25 lines or 60 seconds
-                        if (logs.size() % 25 == 0 || System.currentTimeMillis() - flushTime >= 60000) {
+                        // Log to discord every 35 lines or 60 seconds
+                        if (logs.size() % 35 == 0 || System.currentTimeMillis() - flushTime >= 60000) {
                             //copy of logs
                             final List<String> logsToSend = new ArrayList<>(logs);
-                            executorService.submit(() -> sendLogs(channel, logsToSend));
+                            executorService.submit(() -> sendLogs(channel, logsToSend, String.format("jobs/%s/log.txt", jobId)));
                             //clear logs
                             logs.clear();
                             flushTime = System.currentTimeMillis();
@@ -69,22 +69,26 @@ public class DokuWikiArchive {
                 System.out.println("Process ended. For: " + url);
 
                 if (!logs.isEmpty()) {
-                    sendLogs(channel, logs);
+                    sendLogs(channel, logs, String.format("jobs/%s/log.txt", jobId));
                 }
+                UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "dokuwikiarchiver/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text", "inline");
 
+                String logsUrl = String.format("https://cdn.digitaldragon.dev/dokuwikiarchiver/jobs/%s/log.txt", jobId);
                 channel.sendMessage("Process ended.").queue();
                 channel.sendMessage("Note: ```" + note + "```").queue();
+                channel.sendMessage("Logs are available at " + logsUrl).queue();
 
 
                 int exitCode = process.waitFor();
                 if (exitCode == 0) {
-                    TextChannel successChannel = Main.getInstance().getTextChannelById("1127417094930169918");
+                    TextChannel successChannel = ArchiveBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
-                        successChannel.sendMessage(String.format("<%s>: %s (for %s)", url, channel.getAsMention(), user.getAsMention())).queue();
+                        successChannel.sendMessage(String.format("<%s> for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", url, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, note)).queue();
+
                 } else {
-                    TextChannel failChannel = Main.getInstance().getTextChannelById("1127440691602141184");
+                    TextChannel failChannel = ArchiveBot.getInstance().getTextChannelById("1127440691602141184");
                     if (failChannel != null)
-                        failChannel.sendMessage(String.format("<%s> (code `%s`): %s (for %s)", url, exitCode, channel.getAsMention(), user.getAsMention())).queue();
+                        failChannel.sendMessage(String.format("<%s> for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nExit Code: `%s`\nNote: ```%s```", url, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, exitCode, note)).queue();
                     channel.sendMessage("Command failed with exit code " + exitCode).queue();
                 }
 
@@ -97,32 +101,22 @@ public class DokuWikiArchive {
         });
     }
 
-    private void readStreamAndHandleLogs(InputStream stream, List<String> logs, String url, long flushTime, ThreadChannel channel) {
-        try (BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = streamReader.readLine()) != null) {
-                logs.add(line);
-                System.out.println(line + " | for: " + url);
+    @NotNull
+    private static Process getExecutingProcess(String os, String command, File dumpsDir) throws IOException {
+        ProcessBuilder processBuilder;
 
-                // Call showProgressBars every 25 lines or 60 seconds
-                if (logs.size() % 25 == 0 || System.currentTimeMillis() - flushTime >= 60000) {
-                    sendLogs(channel, logs);
-                    logs.clear();
-                    flushTime = System.currentTimeMillis();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (os.contains("win")) { // For Windows
+            processBuilder = new ProcessBuilder("powershell.exe", "/c", command);
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) { //For Unix-based
+            processBuilder = new ProcessBuilder("/bin/bash", "-c", command);
+        } else {
+            throw new UnsupportedOperationException("Unsupported operating system: " + os);
         }
-    }
+        processBuilder.directory(dumpsDir);
+        processBuilder.redirectErrorStream(true);
 
-    private static synchronized void writeToFile(String filename, String content) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
-            writer.write(content);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Process process = processBuilder.start();
+        return process;
     }
 
     private static String extractArchiveLink(String line) {
@@ -137,20 +131,56 @@ public class DokuWikiArchive {
         return null;
     }
 
-    public static void sendLogs(ThreadChannel channel, List<String> logs) {
+    public static void sendLogs(ThreadChannel channel, List<String> logs, String filename) {
         StringBuilder messageBuilder = new StringBuilder();
 
-        messageBuilder.append("```");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+            messageBuilder.append("```");
 
-        for (String messageText : logs) {
-            messageBuilder.append(messageText).append("\n");
+            for (String messageText : logs) {
+                messageBuilder.append(messageText).append("\n");
+                writer.write(messageText);
+                writer.newLine();
+            }
+
+            messageBuilder.append("```");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        messageBuilder.append("```");
 
         String messageContent = messageBuilder.toString().trim();
         if (!messageContent.isEmpty()) {
             channel.sendMessage(messageContent).queue();
+        }
+
+    }
+
+    private static void createLogsFile(String jobId) {
+        String logFilePath = String.format("jobs/%s/log.txt", jobId);
+        File logFile = new File(logFilePath);
+
+        // Ensure the parent (logs/jobid) directory exists
+        File parentDir = logFile.getParentFile();
+        if (!parentDir.exists()) {
+            boolean dirCreated = parentDir.mkdirs();
+            if (!dirCreated) {
+                System.out.println("Failed to create directory: " + parentDir);
+                // Handle error - e.g., throw an exception, exit, etc.
+            }
+        }
+
+        // Ensure the logs/jobid/log.txt file exists
+        if (!logFile.exists()) {
+            boolean fileCreated = false;
+            try {
+                fileCreated = logFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!fileCreated) {
+                System.out.println("Failed to create file: " + logFile);
+                // Handle error - e.g., throw an exception, exit, etc.
+            }
         }
     }
 }

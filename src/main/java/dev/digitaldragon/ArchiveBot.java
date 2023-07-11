@@ -1,5 +1,8 @@
 package dev.digitaldragon;
 
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import dev.digitaldragon.commands.ArchiveCommand;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
@@ -7,10 +10,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -22,12 +23,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Main {
+public class ArchiveBot {
     @Getter
     public static JDA instance;
     @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(5);
-
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
 
 
@@ -40,6 +40,10 @@ public class Main {
 
 
         instance.awaitReady();
+
+        Storage storage = StorageOptions.getDefaultInstance().getService();
+        Bucket bucket = storage.get("cdn.digitaldragon.dev");
+        System.out.println(bucket.getName());
 
         Guild testServer = instance.getGuildById("349920496550281226");
         if (testServer != null) {

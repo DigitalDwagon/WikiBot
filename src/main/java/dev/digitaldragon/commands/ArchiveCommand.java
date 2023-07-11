@@ -1,6 +1,6 @@
 package dev.digitaldragon.commands;
 
-import dev.digitaldragon.Main;
+import dev.digitaldragon.ArchiveBot;
 import dev.digitaldragon.archive.DokuWikiArchive;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 public class ArchiveCommand extends ListenerAdapter {
     @Override
@@ -22,7 +21,7 @@ public class ArchiveCommand extends ListenerAdapter {
         }
         String options = parseOptions(event);
         //validate server is okay
-        Guild testServer = Main.getInstance().getGuildById("349920496550281226");
+        Guild testServer = event.getJDA().getGuildById("349920496550281226");
         if (testServer == null) {
             event.reply("Something went wrong.").queue();
             return;
@@ -46,7 +45,7 @@ public class ArchiveCommand extends ListenerAdapter {
                 return;
             }
 
-            event.reply("Launching job for " + url).queue();
+            event.reply("Launching job for <" + url + ">").queue();
             startJob(channel, url, note, event.getUser(), options);
         }
 
@@ -114,8 +113,9 @@ public class ArchiveCommand extends ListenerAdapter {
 
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
-                    DokuWikiArchive.ArchiveWiki(url, note, user, thread, options);
-                    thread.sendMessage(String.format("Running archivation job on <%s> (for %s). `%s` ```%s```", url, user.getAsTag(), options, note)).queue(message -> message.pin().queue());
+                    String jobId = UUID.randomUUID().toString();
+                    DokuWikiArchive.ArchiveWiki(url, note, user, thread, options, jobId);
+                    thread.sendMessage(String.format("Running archivation job on <%s> (for %s). `%s` ```%s``` \n Job ID: %s", url, user.getAsTag(), options, note, jobId)).queue(message -> message.pin().queue());
                 });
     }
 
