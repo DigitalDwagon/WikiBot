@@ -121,76 +121,46 @@ public class ArchiveCommand extends ListenerAdapter {
 
     public String parseOptions(SlashCommandInteractionEvent event) {
         StringBuilder options = new StringBuilder();
-        if (event.getOption("ignore_disposition") != null)
-            if (event.getOption("ignore_disposition").getAsBoolean())
-                options.append("--ignore-disposition-header-missing ");
+        processIntRangeOption(event, "delay", 1, 10, "--delay", options);
+        processIntRangeOption(event, "retry", 1, 50, "--retry", options);
+        processIntRangeOption(event, "hard_retry", 1, 50, "--hard-retry", options);
+        processIntRangeOption(event, "threads", 1, 50, "--threads", options);
 
-        if (event.getOption("delay") != null)
-            if (event.getOption("delay").getAsInt() <= 10)
-                options.append("--delay ").append(event.getOption("delay").getAsInt()).append(" ");
+        processBooleanOption(event, "upload", "--upload", options, true);
+        processBooleanOption(event, "auto", "--auto", options, true);
 
-        if (event.getOption("retry") != null)
-            if (event.getOption("retry").getAsInt() <= 50 && event.getOption("retry").getAsInt() >= 1)
-                options.append("--retry ").append(event.getOption("retry").getAsInt()).append(" ");
-
-        if (event.getOption("hard_retry") != null)
-            if (event.getOption("hard_retry").getAsInt() <= 50 && event.getOption("hard_retry").getAsInt() >= 1)
-                options.append("--hard-retry ").append(event.getOption("hard_retry").getAsInt()).append(" ");
-
-        if (event.getOption("current_only") != null)
-            if (event.getOption("current_only").getAsBoolean())
-                options.append("--current-only ");
-
-        if (event.getOption("threads") != null)
-            if (event.getOption("threads").getAsInt() <= 50 && event.getOption("threads").getAsInt() >= 1)
-                options.append("--threads ").append(event.getOption("threads").getAsInt()).append(" ");
-
-        if (event.getOption("auto") != null) {
-            if (event.getOption("auto").getAsBoolean())
-                options.append("--auto ");
-        } else {
-            options.append("--auto ");
-        }
-
-        if (event.getOption("no_resume") != null)
-            if (event.getOption("no_resume").getAsBoolean())
-                options.append("--no-resume ");
-
-        if (event.getOption("insecure") != null)
-            if (event.getOption("insecure").getAsBoolean())
-                options.append("--insecure ");
-
-        if (event.getOption("ignore_errors") != null)
-            if (event.getOption("ignore_errors").getAsBoolean())
-                options.append("--ignore-errors ");
-
-        if (event.getOption("ignore_disabled_edit") != null)
-            if (event.getOption("ignore_disabled_edit").getAsBoolean())
-                options.append("--ignore-action-disabled-edit ");
-
-        if (event.getOption("upload") != null) {
-            if (event.getOption("upload").getAsBoolean())
-                options.append("--upload ");
-        } else {
-            options.append("--upload ");
-        }
-
-        if (event.getOption("content") != null)
-            if (event.getOption("content").getAsBoolean())
-                options.append("--content ");
-
-        if (event.getOption("media") != null)
-            if (event.getOption("media").getAsBoolean())
-                options.append("--media ");
-
-        if (event.getOption("html") != null)
-            if (event.getOption("html").getAsBoolean())
-                options.append("--html ");
-
-        if (event.getOption("pdf") != null)
-            if (event.getOption("pdf").getAsBoolean())
-                options.append("--pdf ");
-
+        processBooleanOption(event, "ignore_disposition", "--ignore-disposition-header-missing", options);
+        processBooleanOption(event, "current_only", "--current-only", options);
+        processBooleanOption(event, "no_resume", "--no-resume", options);
+        processBooleanOption(event, "insecure", "--insecure", options);
+        processBooleanOption(event, "ignore_errors", "--ignore-errors", options);
+        processBooleanOption(event, "ignore_disabled_edit", "--ignore-action-disabled-edit", options);
+        processBooleanOption(event, "content", "--content", options);
+        processBooleanOption(event, "media", "--media", options);
+        processBooleanOption(event, "html", "--html", options);
+        processBooleanOption(event, "pdf", "--pdf", options);
         return options.toString();
+    }
+
+    private void processIntRangeOption(SlashCommandInteractionEvent event, String option, int min, int max, String command, StringBuilder options) {
+        if (event.getOption(option) == null)
+            return;
+
+        Integer optionValue =  event.getOption(option).getAsInt();
+        if (optionValue >= min && optionValue <= max) {
+            options.append(command).append(" ").append(optionValue).append(" ");
+        }
+    }
+
+    private void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
+        processBooleanOption(event, option, command, options, false);
+    }
+
+
+    private void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options, boolean defaultValue) {
+        boolean optionValue = event.getOption(option) != null ? event.getOption(option).getAsBoolean() : defaultValue;
+        if (optionValue) {
+            options.append(command).append(" ");
+        }
     }
 }
