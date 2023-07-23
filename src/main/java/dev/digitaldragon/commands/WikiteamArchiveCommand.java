@@ -48,16 +48,20 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
 
         // Single command execution
         if (Objects.equals(event.getSubcommandName(), "single")) {
-            String url = Objects.requireNonNull(event.getOption("url")).getAsString();
+            String url = "";
+            if (event.getOption("url") != null)
+                url = Objects.requireNonNull(event.getOption("url")).getAsString();
+
             String note = Objects.requireNonNull(event.getOption("explain")).getAsString();
 
             //ensure URL is good
-            try {
-                URL uri = new URL(url);
-            } catch (MalformedURLException e) {
-                event.reply("Invalid URL.").setEphemeral(true).queue();
-                return;
-            }
+            if (!url.isEmpty())
+                try {
+                    URL uri = new URL(url);
+                } catch (MalformedURLException e) {
+                    event.reply("Invalid URL.").setEphemeral(true).queue();
+                    return;
+                }
 
             event.reply("Launching job for <" + url + ">").queue();
             startJob(channel, url, note, event.getUser(), options);
@@ -78,6 +82,9 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
             threadName = url.substring(0, maxLength - 3) + "...";
         }
 
+        if (threadName.isEmpty())
+            threadName = "Unnamed Job";
+
         CommandTask makeFileTask = new CommandTask("echo " + url + " > wiki.txt", 1, "CreateFile"); //todo this is a hacky way to do this
         makeFileTask.setAlwaysSuccessful(true);
 
@@ -89,7 +96,7 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
         CommandTask integrityCheckTask = new CommandTask("grep -E '<title(.*?)>' *.xml -c;grep -E '<page(.*?)>' *.xml -c;grep \"</page>\" *.xml -c;grep -E '<revision(.*?)>' *.xml -c;grep \"</revision>\" *.xml -c", 3, "IntegrityCheck");
         integrityCheckTask.setAlwaysSuccessful(true); //todo this just prints the information out, it doesn't halt uploading if there's no integrity.
 
-        CommandTask uploadTask = new CommandTask("uploader -kf ~/.doku_uploader_ia_keys wiki.txt", 4, "UploadMediaWiki");
+        CommandTask uploadTask = new CommandTask("uploader -kf='C:\\Users\\Digital\\.doku_uploader_ia_keys' wiki.txt", 4, "UploadMediaWiki");
         uploadTask.setSuccessCode(0);
         uploadTask.setAlwaysSuccessful(false);
 
@@ -97,7 +104,7 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
                     thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s``` \n Job ID: %s", url, user.getAsTag(), options, note, jobId)).queue(message -> message.pin().queue());
-                    RunJob.startArchive(url, note, user, thread, jobId, makeFileTask, downloadTask, integrityCheckTask, uploadTask);
+                    RunJob.startArchive(url, note, user, thread, jobId, downloadTask, integrityCheckTask, uploadTask);
                 });
     }
 
@@ -127,6 +134,8 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
         processBooleanOption(event, "xml_revisions", "--xmlrevisions", options);
         processBooleanOption(event, "current_only", "--curonly", options);
 
+        processUrlOption(event, "api", "--api", options);
+        processUrlOption(event, "index", "--index", options);
         return options.toString();
     }
 
@@ -151,5 +160,22 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
         if (optionValue) {
             options.append(command).append(" ");
         }
+    }
+
+    private void processUrlOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
+        if (event.getOption(option) == null)
+            return;
+        String optionValue =  event.getOption(option).getAsString();
+        if (optionValue == null)
+            return;
+
+        try {
+            URL uri = new URL(optionValue);
+        } catch (MalformedURLException e) {
+            event.reply("Invalid URL in " + option).setEphemeral(true).queue();
+            return;
+        }
+
+        options.append(command).append(" ").append(optionValue).append(" ");
     }
 }

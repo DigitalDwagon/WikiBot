@@ -94,8 +94,9 @@ public class ArchiveBot {
                     .addOption(OptionType.ATTACHMENT, "file", ".txt file of wikis to archive, separated by newline. Text after URL is treated as note.", true);
 
             SubcommandData mediaSingle = new SubcommandData("single", "Archive a single MediaWiki")
-                    .addOption(OptionType.STRING, "url", "api.php url for the wiki you want to archive", true)
-                    .addOption(OptionType.STRING, "explain", "Reason why the wiki is being dumped. For ops and your ease keeping track", true);
+                    .addOption(OptionType.STRING, "explain", "Reason why the wiki is being dumped. For ops and your ease keeping track", true)
+                    .addOption(OptionType.STRING, "url", "url for the wiki you want to archive", false);
+
 
 
             List<SubcommandData> mediaCommands = new ArrayList<SubcommandData>();
@@ -103,7 +104,9 @@ public class ArchiveBot {
             mediaCommands.add(mediaBulk);
 
             for (SubcommandData data : mediaCommands) {            //We currently disallow --help --version --cookies --path --resume --force --user --pass --http-user --http-pass --xmlrevisions_page --namespaces --exnamespaces --stdout-log-file
-                data.addOption(OptionType.BOOLEAN, "insecure", "Disable SSL certificate validation.", false)
+                data.addOption(OptionType.STRING, "index", "Index url for the wiki you want to archive", false)
+                        .addOption(OptionType.STRING, "api", "API url for the wiki you want to archive", false)
+                        .addOption(OptionType.BOOLEAN, "insecure", "Disable SSL certificate validation.", false)
                         .addOption(OptionType.BOOLEAN, "xml", "Dump XML? (default: on)", false)
                         .addOption(OptionType.BOOLEAN, "images", "Dump images? (default: on)", false)
                         .addOption(OptionType.BOOLEAN, "bypass_compression", "Bypass CDN image compression (eg Cloudflare Polish)", false)
