@@ -1,7 +1,8 @@
 package dev.digitaldragon.commands;
 
-import dev.digitaldragon.ArchiveBot;
-import dev.digitaldragon.archive.DokuWikiArchive;
+import dev.digitaldragon.archive.RunJob;
+import dev.digitaldragon.util.CommandTask;
+import dev.digitaldragon.util.EnvConfig;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -11,14 +12,18 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class ArchiveCommand extends ListenerAdapter {
+public class DokuArchiveCommand extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        System.out.println(event.getName());
-        System.out.println(event.getSubcommandName());
         if (!event.getName().equals("dokuwikiarchive")) {
             return;
         }
+        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("disable_doku_archive"))) {
+            event.reply("This command is disabled. This can happen for a number of reasons:\n- You're accidentally using the testing bot, when you should be using the main one\n- There is an ongoing technical issue, and archiving had to be temporarily halted")
+                    .setEphemeral(true).queue();
+            return;
+        }
+
         String options = parseOptions(event);
         //validate server is okay
         Guild testServer = event.getJDA().getGuildById("349920496550281226");
@@ -32,10 +37,12 @@ public class ArchiveCommand extends ListenerAdapter {
             return;
         }
 
+
+
         // Single command execution
         if (Objects.equals(event.getSubcommandName(), "single")) {
-            String url = Objects.requireNonNull(event.getOption("url")).getAsString(); // Assuming the option name is "url"
-            String note = Objects.requireNonNull(event.getOption("explain")).getAsString(); // Assuming the option name is "explain"
+            String url = Objects.requireNonNull(event.getOption("url")).getAsString();
+            String note = Objects.requireNonNull(event.getOption("explain")).getAsString();
 
             //ensure URL is good
             try {
@@ -49,6 +56,7 @@ public class ArchiveCommand extends ListenerAdapter {
             startJob(channel, url, note, event.getUser(), options);
         }
 
+        //bulk command execution
         if (Objects.equals(event.getSubcommandName(), "bulk")) {
             Message.Attachment bulk = Objects.requireNonNull(event.getOption("file")).getAsAttachment();
             if (!Objects.equals(bulk.getContentType(), "text/plain; charset=utf-8")) {
@@ -111,11 +119,15 @@ public class ArchiveCommand extends ListenerAdapter {
             threadName = url.substring(0, maxLength - 3) + "...";
         }
 
+        CommandTask task = new CommandTask("dokuwikidumper " + options + url, 1, "DokuWikiDumper");
+        task.setSuccessCode(0);
+        task.setAlwaysSuccessful(false);
+
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
-                    DokuWikiArchive.ArchiveWiki(url, note, user, thread, options, jobId);
-                    thread.sendMessage(String.format("Running archivation job on <%s> (for %s). `%s` ```%s``` \n Job ID: %s", url, user.getAsTag(), options, note, jobId)).queue(message -> message.pin().queue());
+                    RunJob.startArchive(url, note, user, thread, jobId, task);
+                    thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, user.getAsTag(), options, note, jobId)).queue(message -> message.pin().queue());
                 });
     }
 
@@ -163,4 +175,6 @@ public class ArchiveCommand extends ListenerAdapter {
             options.append(command).append(" ");
         }
     }
+
+
 }

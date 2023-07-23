@@ -1,6 +1,8 @@
 package dev.digitaldragon.archive;
 
+import com.google.api.gax.rpc.InvalidArgumentException;
 import dev.digitaldragon.ArchiveBot;
+import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.UploadObject;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
@@ -10,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,48 +22,85 @@ import java.util.concurrent.Executors;
  * The DokuWikiArchive class provides methods to archive a DokuWiki wiki using DokuWikiDumper, logging to Discord and uploading the results to archive.org.
  */
 
-public class DokuWikiArchive {
+public class RunJob {
     /**
-     * Archives a DokuWiki wiki, sending the logs to a channel and saving them to a log file.
+     * Runs an archiving job, sending the logs to a channel and saving them to a log file.
      *
-     * @param url         the URL of the DokuWiki page to archive
+     * @param jobName     name used to refer to the job being run
      * @param note        a note to include in the archive process
      * @param user        the user initiating the archive process
      * @param channel     the thread channel to send the logs and notifications to
-     * @param options     additional options for the archive command
      * @param jobId       the ID of the job associated with the archive process
+     * @param tasks       tasks to perform during the archive process
      */
-    public static void ArchiveWiki(String url, String note, User user, ThreadChannel channel, String options, String jobId) {
+    public static void startArchive(String jobName, String note, User user, ThreadChannel channel, String jobId, CommandTask... tasks) {
+        if (tasks.length < 1)
+            throw new IllegalArgumentException();
+
         ArchiveBot.getExecutorService().submit(() -> {
             try {
                 File workingDir = createWorkingDirectory(jobId);
-                String command = "dokuWikiDumper " + options + url;
-                System.out.println(command);
+
+                PriorityQueue<CommandTask> queue = new PriorityQueue<>(Arrays.asList(tasks));
+
+                boolean success = true;
+                String failingTask = null;
+                int failCode = 0;
+                while (!queue.isEmpty()) {
+                    CommandTask task = queue.poll();
+                    String command = task.getCommand();
+                    String taskName = task.getName();
+
+                    System.out.println(command);
 
 
-                Process process = getExecutingProcess(command, workingDir);
-                handleLogs(process, channel, jobId);
-                System.out.println("Process ended. For: " + url);
+                    sendLogs(channel,
+                            List.of("",
+                                    "----- Bot: Starting Task: " + taskName + "-----",
+                                    "----- Bot: Command: " + command + " -----",
+                                    "")
+                            , String.format("jobs/%s/log.txt", jobId));
+
+                    Process process = getExecutingProcess(command, workingDir);
+                    handleLogs(process, channel, jobId);
+                    System.out.println("Process ended. For: " + taskName);
+
+                    int exitCode = process.waitFor();
+
+                    sendLogs(channel,
+                            List.of("",
+                                    "----- Bot: Finished Task: " + taskName + "-----",
+                                    "----- Bot: Task exit code: " + exitCode,
+                                    "")
+                            , String.format("jobs/%s/log.txt", jobId));
+
+                    if (!task.taskSuccess(exitCode)) {
+                        success = false;
+                        if (failingTask == null) {
+                            failingTask = taskName;
+                            failCode = exitCode;
+                        }
+                        break;
+                    }
+                }
 
                 UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "dokuwikiarchiver/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text", "inline");
 
                 String logsUrl = String.format("https://cdn.digitaldragon.dev/dokuwikiarchiver/jobs/%s/log.txt", jobId);
-                channel.sendMessage("Process ended.").queue();
+                channel.sendMessage("Job ended.").queue();
                 channel.sendMessage("Note: ```" + note + "```").queue();
                 channel.sendMessage("Logs are available at " + logsUrl).queue();
 
-
-                int exitCode = process.waitFor();
-                if (exitCode == 0) {
+                if (success) {
                     TextChannel successChannel = ArchiveBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
-                        successChannel.sendMessage(String.format("<%s> for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", url, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, note)).queue();
+                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", jobName, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, note)).queue();
 
                 } else {
                     TextChannel failChannel = ArchiveBot.getInstance().getTextChannelById("1127440691602141184");
                     if (failChannel != null)
-                        failChannel.sendMessage(String.format("<%s> for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nExit Code: `%s`\nNote: ```%s```", url, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, exitCode, note)).queue();
-                    channel.sendMessage("Command failed with exit code " + exitCode).queue();
+                        failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
+                    channel.sendMessage("Task indicated as failed.").queue();
                 }
 
             } catch (Exception e) {
@@ -180,7 +221,16 @@ public class DokuWikiArchive {
 
         String messageContent = messageBuilder.toString().trim();
         if (!messageContent.isEmpty()) {
-            channel.sendMessage(messageContent).queue();
+            try {
+                channel.sendMessage(messageContent).queue();
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    channel.sendMessage(e.getMessage()).queue();
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+            }
         }
 
     }
