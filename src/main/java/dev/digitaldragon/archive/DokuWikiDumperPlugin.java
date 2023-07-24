@@ -1,6 +1,5 @@
-package dev.digitaldragon.commands;
+package dev.digitaldragon.archive;
 
-import dev.digitaldragon.archive.RunJob;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.EnvConfig;
 import net.dv8tion.jda.api.entities.*;
@@ -12,8 +11,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class DokuArchiveCommand extends ListenerAdapter {
-    @Override
+public class DokuWikiDumperPlugin extends ListenerAdapter {
+    /*@Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if (!event.getName().equals("dokuwikiarchive")) {
             return;
@@ -108,9 +107,9 @@ public class DokuArchiveCommand extends ListenerAdapter {
                 event.reply("Sorry, there was an issue downloading your file.").queue();
             }
         }
-    }
+    }*/
 
-    public void startJob(TextChannel channel, String url, String note, User user, String options) {
+    public static void startJob(TextChannel channel, String url, String note, String userMention, String userName, String options) {
         String threadName;
         int maxLength = 100;
         if (url.length() <= maxLength) {
@@ -126,12 +125,12 @@ public class DokuArchiveCommand extends ListenerAdapter {
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
-                    RunJob.startArchive(url, note, user, thread, jobId, task);
-                    thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, user.getAsTag(), options, note, jobId)).queue(message -> message.pin().queue());
+                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, task);
+                    thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, userMention, options, note, jobId)).queue(message -> message.pin().queue());
                 });
     }
 
-    public String parseOptions(SlashCommandInteractionEvent event) {
+    public static String parseDiscordOptions(SlashCommandInteractionEvent event) {
         StringBuilder options = new StringBuilder();
         processIntRangeOption(event, "delay", 1, 10, "--delay", options);
         processIntRangeOption(event, "retry", 1, 50, "--retry", options);
@@ -154,7 +153,7 @@ public class DokuArchiveCommand extends ListenerAdapter {
         return options.toString();
     }
 
-    private void processIntRangeOption(SlashCommandInteractionEvent event, String option, int min, int max, String command, StringBuilder options) {
+    private static void processIntRangeOption(SlashCommandInteractionEvent event, String option, int min, int max, String command, StringBuilder options) {
         if (event.getOption(option) == null)
             return;
 
@@ -164,17 +163,38 @@ public class DokuArchiveCommand extends ListenerAdapter {
         }
     }
 
-    private void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
+    private static void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
         processBooleanOption(event, option, command, options, false);
     }
 
 
-    private void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options, boolean defaultValue) {
+    private static void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options, boolean defaultValue) {
         boolean optionValue = event.getOption(option) != null ? event.getOption(option).getAsBoolean() : defaultValue;
         if (optionValue) {
             options.append(command).append(" ");
         }
     }
 
+    public static String parseCommandLineOptions(String opts) {
+        StringBuilder parameters = new StringBuilder();
+
+        processCommandLineOption("--insecure", opts, parameters);
+        processCommandLineOption("--images", opts, parameters);
+        processCommandLineOption("--xml", opts, parameters);
+        processCommandLineOption("--bypass-cdn-image-compression", opts, parameters);
+        processCommandLineOption("--xmlrevisions", opts, parameters);
+        processCommandLineOption("--curonly", opts, parameters);
+        processCommandLineOption("--insecure", opts, parameters);
+        processCommandLineOption("--insecure", opts, parameters);
+
+
+        return parameters.toString();
+    }
+
+    private static void processCommandLineOption(String option, String options, StringBuilder parameters) {
+        if (options.contains(option)) {
+            parameters.append(option).append(" ");
+        }
+    }
 
 }

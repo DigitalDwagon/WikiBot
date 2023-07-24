@@ -3,21 +3,27 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.digitaldragon.commands.DokuArchiveCommand;
+import dev.digitaldragon.archive.DokuWikiDumperPlugin;
+import dev.digitaldragon.commands.DiscordCommandListener;
+import dev.digitaldragon.commands.IrcCommandListener;
 import dev.digitaldragon.commands.TestingCommand;
-import dev.digitaldragon.commands.WikiteamArchiveCommand;
+import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.kitteh.irc.client.library.Client;
+import org.kitteh.irc.client.library.feature.auth.GameSurge;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,16 +34,30 @@ public class ArchiveBot {
     @Getter
     public static JDA instance;
     @Getter
+    public static Client ircClient;
+    @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(5);
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
 
 
-    public static void main (String[] args) throws LoginException, InterruptedException {
+    public static void main (String[] args) throws LoginException, InterruptedException, IOException {
         instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .addEventListeners(new DokuArchiveCommand(), new TestingCommand(), new WikiteamArchiveCommand())
+                //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
+                .addEventListeners(new DiscordCommandListener())
                 .build();
+
+        ircClient = Client.builder()
+                .nick("AutomaticDragon")
+                .realName("Automatic")
+                .user("Automatic")
+                .server().host("irc.hackint.org").port(6697).secure(true).then()
+                .buildAndConnect();
+
+        ircClient.getEventManager().registerEventListener(new IrcCommandListener());
+        ircClient.getAuthManager().addProtocol(new GameSurge(ircClient, "AutomaticDragon", EnvConfig.getConfigs().get("ircpass").trim()));
+        ircClient.addChannel("#wikibottest");
 
 
         instance.awaitReady();
@@ -122,7 +142,15 @@ public class ArchiveBot {
                     .addSubcommands(mediaSingle, mediaBulk)
                     .queue();
         }
+    }
 
+    public static TextChannel getLogsChannel() {
+        Guild testServer = ArchiveBot.getInstance().getGuildById("349920496550281226");
+        if (testServer == null) {
+            return null;
+        }
+        TextChannel channel = (TextChannel) testServer.getGuildChannelById("1112606638017368124");
+        return channel;
     }
 
 }

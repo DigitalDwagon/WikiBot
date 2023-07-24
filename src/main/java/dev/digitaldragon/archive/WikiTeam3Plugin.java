@@ -1,4 +1,4 @@
-package dev.digitaldragon.commands;
+package dev.digitaldragon.archive;
 
 import dev.digitaldragon.archive.RunJob;
 import dev.digitaldragon.util.CommandTask;
@@ -16,8 +16,8 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.UUID;
 
-public class WikiteamArchiveCommand extends ListenerAdapter {
-    @Override
+public class WikiTeam3Plugin extends ListenerAdapter {
+    /*@Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if (!event.getName().equals("mediawikiarchive")) {
             return;
@@ -28,7 +28,7 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
             return;
         }
 
-        String options = parseOptions(event);
+        String options = parseDiscordOptions(event);
         //validate server is okay
         boolean isTest = Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"));
         if (isTest) {
@@ -71,9 +71,9 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
         if (Objects.equals(event.getSubcommandName(), "bulk")) {
             event.reply("Sorry, this functionality isn't implemented yet").setEphemeral(true).queue();
         }
-    }
+    }*/
 
-    public void startJob(TextChannel channel, String url, String note, User user, String options) {
+    public static void startJob(TextChannel channel, String url, String note, String userMention, String userName, String options) {
         String threadName;
         int maxLength = 100;
         if (url.length() <= maxLength) {
@@ -103,12 +103,12 @@ public class WikiteamArchiveCommand extends ListenerAdapter {
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
-                    thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s``` \n Job ID: %s", url, user.getAsTag(), options, note, jobId)).queue(message -> message.pin().queue());
-                    RunJob.startArchive(url, note, user, thread, jobId, downloadTask, integrityCheckTask, uploadTask);
+                    thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s``` \n Job ID: %s", url, userName, options, note, jobId)).queue(message -> message.pin().queue());
+                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, downloadTask, integrityCheckTask, uploadTask);
                 });
     }
 
-    public String parseOptions(SlashCommandInteractionEvent event) {
+    public String parseDiscordOptions(SlashCommandInteractionEvent event) {
         StringBuilder options = new StringBuilder();
         /*processIntRangeOption(event, "delay", 0, 200, "--generator-arg='--delay", options); // trailing ' is appended by int range option
         processIntRangeOption(event, "retry", 0, 50, "--generator-arg='--retries", options);

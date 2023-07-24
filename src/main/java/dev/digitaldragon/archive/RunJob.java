@@ -33,7 +33,7 @@ public class RunJob {
      * @param jobId       the ID of the job associated with the archive process
      * @param tasks       tasks to perform during the archive process
      */
-    public static void startArchive(String jobName, String note, User user, ThreadChannel channel, String jobId, CommandTask... tasks) {
+    public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, CommandTask... tasks) {
         if (tasks.length < 1)
             throw new IllegalArgumentException();
 
@@ -96,12 +96,12 @@ public class RunJob {
                 if (success) {
                     TextChannel successChannel = ArchiveBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
-                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", jobName, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, note)).queue();
+                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, note)).queue();
 
                 } else {
                     TextChannel failChannel = ArchiveBot.getInstance().getTextChannelById("1127440691602141184");
                     if (failChannel != null)
-                        failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, user.getAsMention(), channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
+                        failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
                     channel.sendMessage("Task indicated as failed.").queue();
                 }
 
