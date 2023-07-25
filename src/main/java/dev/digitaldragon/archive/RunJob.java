@@ -1,13 +1,16 @@
 package dev.digitaldragon.archive;
 
-import com.google.api.gax.rpc.InvalidArgumentException;
-import dev.digitaldragon.ArchiveBot;
+import com.google.gson.JsonObject;
+import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
+import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.UploadObject;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import net.dv8tion.jda.api.entities.User;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -28,16 +31,18 @@ public class RunJob {
      *
      * @param jobName     name used to refer to the job being run
      * @param note        a note to include in the archive process
-     * @param user        the user initiating the archive process
+     * @param userMention the user initiating the archive process
+     * @param userName    the name of the user initiating the archive process
      * @param channel     the thread channel to send the logs and notifications to
      * @param jobId       the ID of the job associated with the archive process
      * @param tasks       tasks to perform during the archive process
+     * @throws IllegalArgumentException if no tasks are provided
      */
-    public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, CommandTask... tasks) {
+    public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, AfterTask afterTask, CommandTask... tasks) {
         if (tasks.length < 1)
             throw new IllegalArgumentException();
 
-        ArchiveBot.getExecutorService().submit(() -> {
+        WikiBot.getExecutorService().submit(() -> {
             try {
                 File workingDir = createWorkingDirectory(jobId);
 
@@ -86,6 +91,76 @@ public class RunJob {
                     }
                 }
 
+                if (afterTask == AfterTask.MEDIAWIKI) {
+                    for (File file : workingDir.listFiles()) {
+                        if (file.isDirectory()) {
+                            // upload wikidump.7z and history.7z to archive.org
+                            JSONObject metadata;
+                            try {
+                                InputStream input = new FileInputStream(file.getPath() + "/siteinfo.json");
+                                String jsonText = IOUtils.toString(input, StandardCharsets.UTF_8);
+                                System.out.println(jsonText);
+                                JSONObject siteInfo = new JSONObject(jsonText);
+                                JSONObject query = siteInfo.getJSONObject("query");
+                                System.out.println(query);
+                                metadata = query.getJSONObject("general");
+                                System.out.println(metadata);
+                            } catch (Exception e) {
+                                sendLogs(channel, List.of("Bot: Failed to read siteinfo.json"), String.format("jobs/%s/log.txt", jobId));
+                                failingTask = "IAUpload";
+                                failCode = 9;
+                                metadata = new JSONObject();
+                            }
+                            System.out.println("Metadata: " + metadata);
+                            String identifier = "wiki-" + file.getName();
+                            String siteName = metadata.getString("sitename");
+                            String title = "Wiki: " + siteName;
+                            String originalUrl = metadata.getString("base");
+                            String description = String.format("<a href=\\\"%s\\\" rel=\\\"nofollow\\\">%s</a> dumped with <a href=\\\"https://github.com/mediawiki-client-tools/mediawiki-scraper\\\"rel=\\\"nofollow\\\">WikiTeam3 aka MediaWiki-Scraper</a> via WikiBot",
+                                    originalUrl, siteName);
+                            String subject = "wiki;WikiTeam;WikiBot;MediaWiki";
+
+                            StringBuilder iaCommand = new StringBuilder("ia upload ");
+                            iaCommand.append(identifier).append(" ");
+                            iaCommand.append(file.getAbsolutePath()).append("/").append("wikidump.7z").append(" ");
+                            iaCommand.append(file.getAbsolutePath()).append("/").append("history.7z").append(" ");
+                            iaCommand.append("--metadata=\"title:").append(title).append("\" ");
+                            iaCommand.append("--metadata=\"description:").append(description).append("\" ");
+                            iaCommand.append("--metadata=\"originalurl:").append(originalUrl).append("\" ");
+                            iaCommand.append("--metadata=\"subject:").append(subject).append("\" ");
+                            iaCommand.append("--metadata=\"mediatype:web\"");
+
+                            String commandString = iaCommand.toString();
+                            System.out.println(commandString);
+
+
+                            sendLogs(channel,
+                                    List.of("----- Bot: Starting Task: IAUpload Pseudo Task -----")
+                                    , String.format("jobs/%s/log.txt", jobId));
+
+                            ProcessBuilder processBuilder = getExecutingProcess(commandString, workingDir);
+                            Process process = handleLogs(processBuilder, channel, jobId);
+                            System.out.println("Process ended. For: IAUpload Pseudo Task");
+                            int exitCode = 999;
+
+                            if (process != null)
+                                exitCode = process.waitFor();
+
+                            if (exitCode != 0) {
+                                success = false;
+                                failCode = exitCode;
+                                failingTask = "IAUpload Pseudo Task";
+                            }
+
+                            sendLogs(channel,
+                                    List.of("----- Bot: Finishing Task: IAUpload Pseudo Task -----")
+                                    , String.format("jobs/%s/log.txt", jobId));
+
+
+                        }
+                    }
+                }
+
                 UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "dokuwikiarchiver/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text", "inline");
 
                 String logsUrl = String.format("https://cdn.digitaldragon.dev/dokuwikiarchiver/jobs/%s/log.txt", jobId);
@@ -94,15 +169,20 @@ public class RunJob {
                 channel.sendMessage("Logs are available at " + logsUrl).queue();
 
                 if (success) {
-                    TextChannel successChannel = ArchiveBot.getInstance().getTextChannelById("1127417094930169918");
+                    TextChannel successChannel = WikiBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
                         successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, note)).queue();
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Success! Job " + jobId + " completed successfully.");
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Logs: " + logsUrl);
 
                 } else {
-                    TextChannel failChannel = ArchiveBot.getInstance().getTextChannelById("1127440691602141184");
+                    TextChannel failChannel = WikiBot.getInstance().getTextChannelById("1127440691602141184");
                     if (failChannel != null)
                         failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
                     channel.sendMessage("Task indicated as failed.").queue();
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Job " + jobId + " failed on task " + failingTask + " with exit code " + failCode + ".");
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Logs: " + logsUrl);
+
                 }
 
             } catch (Exception e) {
