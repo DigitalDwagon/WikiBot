@@ -67,7 +67,7 @@ public class TestingCommand extends ListenerAdapter {
                     .queue(thread -> {
                         System.out.println("reached");
                         String jobId = UUID.randomUUID().toString();
-                        RunJob.startArchive("Testing task", note, user.getAsMention(), user.getName(), thread, jobId, firstListTask, secondListTask, makeFileTask);
+                        RunJob.startArchive("Testing task", note, user.getAsMention(), user.getName(), thread, jobId, null, firstListTask, secondListTask, makeFileTask);
                         thread.sendMessage(String.format("Running test archivation job (for %s). ```%s``` \n Job ID: %s", user.getAsTag(), note, jobId)).queue(message -> message.pin().queue());
                     });
         } catch (Exception e) {

@@ -3,11 +3,8 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.commands.DiscordCommandListener;
 import dev.digitaldragon.commands.IrcCommandListener;
-import dev.digitaldragon.commands.TestingCommand;
-import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
@@ -30,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ArchiveBot {
+public class WikiBot {
     @Getter
     public static JDA instance;
     @Getter
@@ -49,15 +46,18 @@ public class ArchiveBot {
                 .build();
 
         ircClient = Client.builder()
-                .nick("AutomaticDragon")
-                .realName("Automatic")
-                .user("Automatic")
+                .nick(EnvConfig.getConfigs().get("ircnick").trim())
+                .realName(EnvConfig.getConfigs().get("ircnick").trim())
+                .user(EnvConfig.getConfigs().get("ircnick").trim())
                 .server().host("irc.hackint.org").port(6697).secure(true).then()
                 .buildAndConnect();
 
         ircClient.getEventManager().registerEventListener(new IrcCommandListener());
-        ircClient.getAuthManager().addProtocol(new GameSurge(ircClient, "AutomaticDragon", EnvConfig.getConfigs().get("ircpass").trim()));
-        ircClient.addChannel("#wikibottest");
+
+        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("irclogin"))) {
+            ircClient.getAuthManager().addProtocol(new GameSurge(ircClient, EnvConfig.getConfigs().get("ircnick").trim(), EnvConfig.getConfigs().get("ircpass").trim()));
+        }
+        ircClient.addChannel(EnvConfig.getConfigs().get("ircchannel").trim());
 
 
         instance.awaitReady();
@@ -145,7 +145,7 @@ public class ArchiveBot {
     }
 
     public static TextChannel getLogsChannel() {
-        Guild testServer = ArchiveBot.getInstance().getGuildById("349920496550281226");
+        Guild testServer = WikiBot.getInstance().getGuildById("349920496550281226");
         if (testServer == null) {
             return null;
         }

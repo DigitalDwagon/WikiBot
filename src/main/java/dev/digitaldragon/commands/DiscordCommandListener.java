@@ -1,6 +1,6 @@
 package dev.digitaldragon.commands;
 
-import dev.digitaldragon.ArchiveBot;
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.util.BulkArchiveParser;
@@ -12,14 +12,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class DiscordCommandListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        TextChannel channel = ArchiveBot.getLogsChannel();
+        TextChannel channel = WikiBot.getLogsChannel();
         if (channel == null) {
             event.reply("Something went wrong.").setEphemeral(true).queue();
             return;
@@ -59,7 +58,7 @@ public class DiscordCommandListener extends ListenerAdapter {
                 String url = getUrlOption(event, "url");
                 String explain = Objects.requireNonNull(event.getOption("explain")).getAsString();
                 event.reply("Launching job!").queue();
-                WikiTeam3Plugin.startJob(channel, url, explain, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
+                WikiTeam3Plugin.startJob(channel, url, explain, event.getUser().getAsMention(), event.getUser().getName(), WikiTeam3Plugin.parseDiscordOptions(event));
             }
 
             if (Objects.equals(event.getSubcommandName(), "bulk")) {
@@ -75,7 +74,7 @@ public class DiscordCommandListener extends ListenerAdapter {
                     String url = entry.getKey();
                     String note = entry.getValue();
 
-                    DokuWikiDumperPlugin.startJob(channel, url, note, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
+                    DokuWikiDumperPlugin.startJob(channel, url, note, event.getUser().getAsMention(), event.getUser().getName(), WikiTeam3Plugin.parseDiscordOptions(event));
                 }
                 event.reply("Launched " + tasks.size() + " jobs!").queue();
             }

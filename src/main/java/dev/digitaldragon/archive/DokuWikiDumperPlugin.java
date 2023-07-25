@@ -1,15 +1,16 @@
 package dev.digitaldragon.archive;
 
+import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.EnvConfig;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.net.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DokuWikiDumperPlugin extends ListenerAdapter {
     /*@Override
@@ -118,14 +119,15 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
             threadName = url.substring(0, maxLength - 3) + "...";
         }
 
-        CommandTask task = new CommandTask("dokuwikidumper " + options + url, 1, "DokuWikiDumper");
+        CommandTask task = new CommandTask("dokuWikiDumper " + options + url, 1, "DokuWikiDumper");
         task.setSuccessCode(0);
         task.setAlwaysSuccessful(false);
 
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
-                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, task);
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), String.format("%s: Launched job %s for %s! (DokuWikiDumper)", userName, jobId, url));
+                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, AfterTask.DOKUWIKI, task);
                     thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, userMention, options, note, jobId)).queue(message -> message.pin().queue());
                 });
     }
@@ -175,26 +177,41 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
         }
     }
 
-    public static String parseCommandLineOptions(String opts) {
-        StringBuilder parameters = new StringBuilder();
+    public static String parseCommandLineOptions(String args) {
+        String[] validArgs = {
+                "--retry",
+                "--ignore-disposition-header-missing",
+                "--hard-retry",
+                "--delay",
+                "--threads",
+                "--ignore-errors",
+                "--ignore-action-disabled-edit",
+                "--no-resume",
+                "--insecure",
+                "--content",
+                "--media",
+                "--html",
+                "--pdf",
+                "--auto",
+                "--current-only"
+        };
 
-        processCommandLineOption("--insecure", opts, parameters);
-        processCommandLineOption("--images", opts, parameters);
-        processCommandLineOption("--xml", opts, parameters);
-        processCommandLineOption("--bypass-cdn-image-compression", opts, parameters);
-        processCommandLineOption("--xmlrevisions", opts, parameters);
-        processCommandLineOption("--curonly", opts, parameters);
-        processCommandLineOption("--insecure", opts, parameters);
-        processCommandLineOption("--insecure", opts, parameters);
-
-
-        return parameters.toString();
-    }
-
-    private static void processCommandLineOption(String option, String options, StringBuilder parameters) {
-        if (options.contains(option)) {
-            parameters.append(option).append(" ");
+        StringBuilder result = new StringBuilder();
+        Matcher m = Pattern.compile("--\\w+\\b|\\d+").matcher(args);
+        String lastArg = null;
+        while (m.find()) {
+            String arg = m.group(0);
+            if (arg.startsWith("--") && Arrays.asList(validArgs).contains(arg)) {
+                lastArg = arg;
+                result.append(arg);
+                result.append(' ');
+            } else if (lastArg != null && Character.isDigit(arg.charAt(0))) {
+                result.append(arg);
+                result.append(' ');
+            }
         }
+        result.append("--upload ");
+        return result.toString().trim() + " "; // code always expects a trailing space after options, so we add one in here. todo hack
     }
 
 }

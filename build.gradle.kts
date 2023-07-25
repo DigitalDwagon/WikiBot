@@ -20,13 +20,22 @@ dependencies {
     implementation(platform("com.google.cloud:libraries-bom:23.1.0"))
     implementation("com.google.cloud:google-cloud-storage:2.1.7")
     implementation("net.dv8tion:JDA:5.0.0-alpha.12")
+    // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
+    implementation("org.kitteh.irc:client-lib:8.0.0")
+    // https://mvnrepository.com/artifact/com.martiansoftware/jsap
+    implementation("com.martiansoftware:jsap:2.1")
+    implementation("org.json:json:20230227")
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation("commons-io:commons-io:2.13.0")
+
+
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }
 
 group = "dev.digitaldragon"
 version = "1.0-SNAPSHOT"
-description = "DokuWikiDumperBot"
+description = "WikiBot"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
@@ -56,7 +65,7 @@ tasks {
     }
     shadowJar {
         archiveFileName.set("ArchiveBot-shadow.jar")
-        manifest.attributes["Main-Class"] = "dev.digitaldragon.ArchiveBot"
+        manifest.attributes["Main-Class"] = "dev.digitaldragon.WikiBot"
     }
     javadoc {
         options.encoding = UTF_8.name() // We want UTF-8 for everything

@@ -1,20 +1,20 @@
 package dev.digitaldragon.archive;
 
-import dev.digitaldragon.archive.RunJob;
+import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.EnvConfig;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WikiTeam3Plugin extends ListenerAdapter {
     /*@Override
@@ -96,19 +96,20 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         CommandTask integrityCheckTask = new CommandTask("grep -E '<title(.*?)>' *.xml -c;grep -E '<page(.*?)>' *.xml -c;grep \"</page>\" *.xml -c;grep -E '<revision(.*?)>' *.xml -c;grep \"</revision>\" *.xml -c", 3, "IntegrityCheck");
         integrityCheckTask.setAlwaysSuccessful(true); //todo this just prints the information out, it doesn't halt uploading if there's no integrity.
 
-        CommandTask uploadTask = new CommandTask("uploader -kf='C:\\Users\\Digital\\.doku_uploader_ia_keys' wiki.txt", 4, "UploadMediaWiki");
-        uploadTask.setSuccessCode(0);
-        uploadTask.setAlwaysSuccessful(false);
+        CommandTask compressionTask = new CommandTask("find . -mindepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 4, "CompressMediaWiki");
+
+
 
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + " for " + url + "! (WikiTeam3)");
                     thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s``` \n Job ID: %s", url, userName, options, note, jobId)).queue(message -> message.pin().queue());
-                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, downloadTask, integrityCheckTask, uploadTask);
+                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, AfterTask.MEDIAWIKI, makeFileTask, downloadTask, integrityCheckTask, compressionTask);
                 });
     }
 
-    public String parseDiscordOptions(SlashCommandInteractionEvent event) {
+    public static String parseDiscordOptions(SlashCommandInteractionEvent event) {
         StringBuilder options = new StringBuilder();
         /*processIntRangeOption(event, "delay", 0, 200, "--generator-arg='--delay", options); // trailing ' is appended by int range option
         processIntRangeOption(event, "retry", 0, 50, "--generator-arg='--retries", options);
@@ -139,7 +140,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         return options.toString();
     }
 
-    private void processIntRangeOption(SlashCommandInteractionEvent event, String option, int min, int max, String command, StringBuilder options) {
+    private static void processIntRangeOption(SlashCommandInteractionEvent event, String option, int min, int max, String command, StringBuilder options) {
         if (event.getOption(option) == null)
             return;
 
@@ -150,19 +151,19 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         }
     }
 
-    private void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
+    private static void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
         processBooleanOption(event, option, command, options, false);
     }
 
 
-    private void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options, boolean defaultValue) {
+    private static void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options, boolean defaultValue) {
         boolean optionValue = event.getOption(option) != null ? event.getOption(option).getAsBoolean() : defaultValue;
         if (optionValue) {
             options.append(command).append(" ");
         }
     }
 
-    private void processUrlOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
+    private static void processUrlOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
         if (event.getOption(option) == null)
             return;
         String optionValue =  event.getOption(option).getAsString();
@@ -178,4 +179,38 @@ public class WikiTeam3Plugin extends ListenerAdapter {
 
         options.append(command).append(" ").append(optionValue).append(" ");
     }
+
+
+    public static String parseCommandLineOptions(String args) {
+        String[] validArgs = {
+                "--delay",
+                "--retries",
+                "--api_chunksize",
+                "--xml",
+                "--images",
+                "--bypass-cdn-image-compression",
+                "--xmlapiexport",
+                "--xmlrevisions",
+                "--curonly",
+                "--api",
+                "--index"
+                // --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index
+        };
+
+        StringBuilder result = new StringBuilder();
+        Matcher m = Pattern.compile("--\\w+\\b|\\d+|(http[s]?://[^\\s]*)").matcher(args);
+        String lastArg = null;
+
+        while (m.find()) {
+            String arg = m.group(0);
+            if (arg.startsWith("--")) {
+                lastArg = arg;
+                result.append(arg).append(' ');
+            } else if (lastArg != null) {
+                result.append(arg).append(' ');
+            }
+        }
+        return result.toString().trim() + " "; // code always expects a trailing space after options, so we add one in here. todo hack
+    }
+
 }
