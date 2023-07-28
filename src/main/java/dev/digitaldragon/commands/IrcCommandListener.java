@@ -133,6 +133,6 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-errors --ignore-action-disabled-edit --no-resume --insecure --content --media --html --pdf --auto --current-only");
         channel.sendMessage(nick + ": !mediawikisingle <url> <explanation> <--options> - Archive a MediaWiki with WikiTeam3.");
         channel.sendMessage(nick + ": !mediawikibulk <file url> <--options> - The same as dokubulk, but using WikiTeam3 tools.");
-        channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly");
+        channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index");
     }
 }

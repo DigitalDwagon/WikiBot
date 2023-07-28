@@ -25,7 +25,9 @@ import java.util.concurrent.Executors;
  * The DokuWikiArchive class provides methods to archive a DokuWiki wiki using DokuWikiDumper, logging to Discord and uploading the results to archive.org.
  */
 
+
 public class RunJob {
+    static String archiveUrl = "";
     /**
      * Runs an archiving job, sending the logs to a channel and saving them to a log file.
      *
@@ -61,7 +63,7 @@ public class RunJob {
 
                     sendLogs(channel,
                             List.of("",
-                                    "----- Bot: Starting Task: " + taskName + "-----",
+                                    "----- Bot: Starting Task: " + taskName + " -----",
                                     "----- Bot: Command: " + command + " -----",
                                     "")
                             , String.format("jobs/%s/log.txt", jobId));
@@ -76,8 +78,8 @@ public class RunJob {
 
                     sendLogs(channel,
                             List.of("",
-                                    "----- Bot: Finished Task: " + taskName + "-----",
-                                    "----- Bot: Task exit code: " + exitCode,
+                                    "----- Bot: Finished Task: " + taskName + " -----",
+                                    "----- Bot: Task exit code: " + exitCode + " -----",
                                     "")
                             , String.format("jobs/%s/log.txt", jobId));
 
@@ -99,26 +101,23 @@ public class RunJob {
                             try {
                                 InputStream input = new FileInputStream(file.getPath() + "/siteinfo.json");
                                 String jsonText = IOUtils.toString(input, StandardCharsets.UTF_8);
-                                System.out.println(jsonText);
                                 JSONObject siteInfo = new JSONObject(jsonText);
                                 JSONObject query = siteInfo.getJSONObject("query");
-                                System.out.println(query);
                                 metadata = query.getJSONObject("general");
-                                System.out.println(metadata);
                             } catch (Exception e) {
                                 sendLogs(channel, List.of("Bot: Failed to read siteinfo.json"), String.format("jobs/%s/log.txt", jobId));
                                 failingTask = "IAUpload";
                                 failCode = 9;
                                 metadata = new JSONObject();
                             }
-                            System.out.println("Metadata: " + metadata);
                             String identifier = "wiki-" + file.getName();
+                            archiveUrl = "https://archive.org/details/" + identifier;
                             String siteName = metadata.getString("sitename");
                             String title = "Wiki: " + siteName;
                             String originalUrl = metadata.getString("base");
-                            String description = String.format("<a href=\\\"%s\\\" rel=\\\"nofollow\\\">%s</a> dumped with <a href=\\\"https://github.com/mediawiki-client-tools/mediawiki-scraper\\\"rel=\\\"nofollow\\\">WikiTeam3 aka MediaWiki-Scraper</a> via WikiBot",
+                            String description = String.format("<a href=\\\"%s\\\" rel=\\\"nofollow\\\">%s</a> dumped with <a href=\\\"https://github.com/mediawiki-client-tools/mediawiki-scraper\\\"rel=\\\"nofollow\\\">WikiTeam3</a> via WikiBot.",
                                     originalUrl, siteName);
-                            String subject = "wiki;WikiTeam;WikiBot;MediaWiki";
+                            String subject = "wiki;wikiteam;WikiBot;MediaWiki;wikiteam3;wikidump";
 
                             StringBuilder iaCommand = new StringBuilder("ia upload ");
                             iaCommand.append(identifier).append(" ");
@@ -161,6 +160,8 @@ public class RunJob {
                     }
                 }
 
+                System.out.println(archiveUrl);
+
                 UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "dokuwikiarchiver/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text", "inline");
 
                 String logsUrl = String.format("https://cdn.digitaldragon.dev/dokuwikiarchiver/jobs/%s/log.txt", jobId);
@@ -171,9 +172,10 @@ public class RunJob {
                 if (success) {
                     TextChannel successChannel = WikiBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
-                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, note)).queue();
+                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: $s\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, archiveUrl, note)).queue();
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Success! Job " + jobId + " completed successfully.");
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Logs: " + logsUrl);
+                    if (!archiveUrl.isEmpty())
+                        WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Archive URL: " + archiveUrl);
 
                 } else {
                     TextChannel failChannel = WikiBot.getInstance().getTextChannelById("1127440691602141184");
@@ -181,9 +183,11 @@ public class RunJob {
                         failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
                     channel.sendMessage("Task indicated as failed.").queue();
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Job " + jobId + " failed on task " + failingTask + " with exit code " + failCode + ".");
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Logs: " + logsUrl);
+
 
                 }
+                WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Explanation: " + note);
+                WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Logs: " + logsUrl);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -219,6 +223,20 @@ public class RunJob {
                     logs.add(logLine);
                     System.out.println(logLine);
                     logBuilder = new StringBuilder(); // Reset the StringBuilder for the next line
+
+                    //if the line contains the string "https://archive.org/details/" then it is the archive url, extract it from the line and save it
+                    if (logLine.contains("https://archive.org/details/") && logLine.contains(" ")) {
+                        String[] split = logLine.split(" ");
+                        for (String s : split) {
+                            if (s.contains("https://archive.org/details/")) {
+                                archiveUrl = s;
+                                break;
+                            }
+                        }
+                    } else if (logLine.contains("https://archive.org/details/")) {
+                        archiveUrl = logLine;
+                    }
+
 
                     // Log to discord every 35 lines or 60 seconds
                     if (logs.size() % 35 == 0 || System.currentTimeMillis() - flushTime >= 60000) {

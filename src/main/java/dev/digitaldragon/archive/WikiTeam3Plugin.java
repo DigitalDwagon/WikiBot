@@ -96,7 +96,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         CommandTask integrityCheckTask = new CommandTask("grep -E '<title(.*?)>' *.xml -c;grep -E '<page(.*?)>' *.xml -c;grep \"</page>\" *.xml -c;grep -E '<revision(.*?)>' *.xml -c;grep \"</revision>\" *.xml -c", 3, "IntegrityCheck");
         integrityCheckTask.setAlwaysSuccessful(true); //todo this just prints the information out, it doesn't halt uploading if there's no integrity.
 
-        CommandTask compressionTask = new CommandTask("find . -mindepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 4, "CompressMediaWiki");
+        CommandTask compressionTask = new CommandTask("find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 4, "CompressMediaWiki");
 
 
 
