@@ -6,7 +6,9 @@ import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
+import org.kitteh.irc.client.library.element.Actor;
 import org.kitteh.irc.client.library.element.Channel;
+import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
@@ -23,24 +25,17 @@ public class IrcCommandListener {
             return;
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
-        boolean allowed = false;
-        Optional<SortedSet<ChannelUserMode>> modes = event.getChannel().getUserModes(event.getActor());
-        if (modes.isPresent()) {
-            for (ChannelUserMode mode : modes.get()) {
-                allowed = mode.getNickPrefix() == '@' || mode.getNickPrefix() == '+';
-            }
-        }
 
         TextChannel discordChannel = WikiBot.getLogsChannel();
         if (discordChannel == null) {
             channel.sendMessage(nick + ": Something went wrong.");
         }
 
-
-        if (!allowed) {
+        if (!isVoiced(channel, event.getActor())) {
             event.getChannel().sendMessage(event.getActor().getNick() + ": Requires (@) or (+).");
             return;
         }
+
         String[] parts = event.getMessage().split(" ", 3);
         if (parts.length < 3) {
             channel.sendMessage(nick + ": Not enough arguments!");
@@ -134,5 +129,25 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": !mediawikisingle <url> <explanation> <--options> - Archive a MediaWiki with WikiTeam3.");
         channel.sendMessage(nick + ": !mediawikibulk <file url> <--options> - The same as dokubulk, but using WikiTeam3 tools.");
         channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index");
+    }
+
+    private boolean isVoiced(Channel channel, User user) {
+        Optional<SortedSet<ChannelUserMode>> modes = channel.getUserModes(user);
+        if (modes.isPresent()) {
+            for (ChannelUserMode mode : modes.get()) {
+                return mode.getNickPrefix() == '@' || mode.getNickPrefix() == '+';
+            }
+        }
+        return false;
+    }
+
+    private boolean isOped(Channel channel, User user) {
+        Optional<SortedSet<ChannelUserMode>> modes = channel.getUserModes(user);
+        if (modes.isPresent()) {
+            for (ChannelUserMode mode : modes.get()) {
+                return mode.getNickPrefix() == '@';
+            }
+        }
+        return false;
     }
 }
