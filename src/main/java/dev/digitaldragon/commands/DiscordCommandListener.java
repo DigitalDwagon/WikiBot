@@ -58,7 +58,8 @@ public class DiscordCommandListener extends ListenerAdapter {
                 String url = getUrlOption(event, "url");
                 String explain = Objects.requireNonNull(event.getOption("explain")).getAsString();
                 event.reply("Launching job!").queue();
-                WikiTeam3Plugin.startJob(channel, url, explain, event.getUser().getAsMention(), event.getUser().getName(), WikiTeam3Plugin.parseDiscordOptions(event));
+                String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
+                WikiTeam3Plugin.startJob(channel, explain, event.getUser().getAsMention(), event.getUser().getName(), options);
             }
 
             if (Objects.equals(event.getSubcommandName(), "bulk")) {

@@ -1,6 +1,7 @@
 package dev.digitaldragon.archive;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.EnvConfig;
@@ -73,39 +74,38 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         }
     }*/
 
-    public static void startJob(TextChannel channel, String url, String note, String userMention, String userName, String options) {
+    public static void startJob(TextChannel channel, String note, String userMention, String userName, String options) {
+        String jobId = UUID.randomUUID().toString();
         String threadName;
         int maxLength = 100;
-        if (url.length() <= maxLength) {
-            threadName = url;
+        if (jobId.length() <= maxLength) {
+            threadName = jobId;
         } else {
-            threadName = url.substring(0, maxLength - 3) + "...";
+            threadName = jobId.substring(0, maxLength - 3) + "...";
         }
 
         if (threadName.isEmpty())
             threadName = "Unnamed Job";
 
-        CommandTask makeFileTask = new CommandTask("echo " + url + " > wiki.txt", 1, "CreateFile"); //todo this is a hacky way to do this
-        makeFileTask.setAlwaysSuccessful(true);
-
         //CommandTask downloadTask = new CommandTask("launcher wiki.txt " + options, 2, "DownloadMediaWiki");
-        CommandTask downloadTask = new CommandTask("dumpgenerator " + options + url, 2, "DownloadMediaWiki");
+        CommandTask downloadTask = new CommandTask("dumpgenerator " + options, 1, "DownloadMediaWiki");
         downloadTask.setSuccessCode(0);
         downloadTask.setAlwaysSuccessful(false);
 
-        CommandTask integrityCheckTask = new CommandTask("grep -E '<title(.*?)>' *.xml -c;grep -E '<page(.*?)>' *.xml -c;grep \"</page>\" *.xml -c;grep -E '<revision(.*?)>' *.xml -c;grep \"</revision>\" *.xml -c", 3, "IntegrityCheck");
+        /*CommandTask integrityCheckTask = new CommandTask("grep -E '<title(.*?)>' *.xml -c;grep -E '<page(.*?)>' *.xml -c;grep \"</page>\" *.xml -c;grep -E '<revision(.*?)>' *.xml -c;grep \"</revision>\" *.xml -c", 3, "IntegrityCheck");
         integrityCheckTask.setAlwaysSuccessful(true); //todo this just prints the information out, it doesn't halt uploading if there's no integrity.
+        //todo this does not work as it needs to be run in the dump directory.
+        */
 
-        CommandTask compressionTask = new CommandTask("find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 4, "CompressMediaWiki");
+        CommandTask compressionTask = new CommandTask("find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 2, "CompressMediaWiki");
 
 
 
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
-                    String jobId = UUID.randomUUID().toString();
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + " for " + url + "! (WikiTeam3)");
-                    thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s``` \n Job ID: %s", url, userName, options, note, jobId)).queue(message -> message.pin().queue());
-                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, AfterTask.MEDIAWIKI, makeFileTask, downloadTask, integrityCheckTask, compressionTask);
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + "! (WikiTeam3)");
+                    thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s```", userName, options, note, jobId)).queue(message -> message.pin().queue());
+                    RunJob.startArchive(jobId, note, userMention, userName, thread, jobId, AfterTask.MEDIAWIKI, downloadTask, compressionTask);
                 });
     }
 
@@ -181,7 +181,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
     }
 
 
-    public static String parseCommandLineOptions(String args) {
+    /*public static String parseCommandLineOptions(String args) {
         String[] validArgs = {
                 "--delay",
                 "--retries",
@@ -211,6 +211,73 @@ public class WikiTeam3Plugin extends ListenerAdapter {
             }
         }
         return result.toString().trim() + " "; // code always expects a trailing space after options, so we add one in here. todo hack
+    }*/
+
+    public static CommandLineParser getCommandLineParser() {
+        CommandLineParser parser = new CommandLineParser();
+        parser.addDoubleOption("delay");
+        parser.addIntOption("retries");
+        parser.addIntOption("api_chunksize");
+        parser.addBooleanOption("xml");
+        parser.addBooleanOption("images");
+        parser.addBooleanOption("bypass-cdn-image-compression");
+        parser.addBooleanOption("xmlapiexport");
+        parser.addBooleanOption("xmlrevisions");
+        parser.addBooleanOption("curonly");
+        parser.addBooleanOption("insecure");
+        parser.addUrlOption("api");
+        parser.addUrlOption("index");
+        parser.addUrlOption("url");
+        parser.addStringOption("explain");
+        return parser;
+    }
+
+    public static String parserToOptions(CommandLineParser commandLineParser) {
+        StringBuilder options = new StringBuilder();
+        parseDouble("delay", commandLineParser, options);
+
+        parseInt("retries", commandLineParser, options);
+        parseInt("api_chunksize", commandLineParser, options);
+
+        parseBoolean("xml", commandLineParser, options);
+        parseBoolean("images", commandLineParser, options);
+        parseBoolean("bypass-cdn-image-compression", commandLineParser, options);
+        parseBoolean("xmlapiexport", commandLineParser, options);
+        parseBoolean("xmlrevisions", commandLineParser, options);
+        parseBoolean("curonly", commandLineParser, options);
+        parseBoolean("insecure", commandLineParser, options);
+        parseUrl("api", commandLineParser, options);
+        parseUrl("index", commandLineParser, options);
+
+        if (commandLineParser.getOption("url") != null) {
+            options.append(commandLineParser.getOption("url"));
+            options.append(" ");
+        }
+
+        return options.toString();
+    }
+
+    private static void parseBoolean(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) == Boolean.TRUE) {
+            options.append("--").append(name).append(" ");
+        }
+    }
+
+    private static void parseInt(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) instanceof Integer) {
+            options.append("--").append(name).append(" ").append(commandLineParser.getOption(name)).append(" ");
+        }
+    }
+
+    private static void parseDouble(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) instanceof Double) {
+            options.append("--").append(name).append(" ").append(commandLineParser.getOption(name)).append(" ");
+        }
+    }
+    private static void parseUrl(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) instanceof String) {
+            options.append("--").append(name).append(" ").append(commandLineParser.getOption(name)).append(" ");
+        }
     }
 
 }

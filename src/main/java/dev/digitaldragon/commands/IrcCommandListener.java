@@ -88,16 +88,28 @@ public class IrcCommandListener {
             }
         }
 
-        /*if (event.getMessage().startsWith("!mediawiki")) {
-            String options = WikiTeam3Plugin.parseCommandLineOptions(opts);
+        if (event.getMessage().startsWith("!mediawiki")) {
+            CommandLineParser parser = WikiTeam3Plugin.getCommandLineParser();
+            try {
+                parser.parse(opts.split(" "));
+            } catch (IllegalArgumentException e) {
+                channel.sendMessage(nick + ": " + e.getMessage());
+                return;
+            }
+
+            if (parser.getOption("url") == null && parser.getOption("api") == null && parser.getOption("index") == null) {
+                channel.sendMessage(nick + ": You need to specify --url, --api, or --index! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
+                return;
+            }
             if (event.getMessage().startsWith("!mediawikisingle ")) {
-                if (explain.isEmpty()) {
-                    channel.sendMessage(nick + ": No explanation given!");
+                if (parser.getOption("explain") == null) {
+                    channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
                     return;
                 }
-                WikiTeam3Plugin.startJob(discordChannel, url, explain, nick, nick, options);
+                String explain = parser.getOption("explain").toString();
+                WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
             }
-            if (event.getMessage().startsWith("!mediawikibulk ")) {
+            /*if (event.getMessage().startsWith("!mediawikibulk ")) {
                 Map<String, String> tasks;
                 try {
                     tasks = BulkArchiveParser.parse(url);
@@ -109,11 +121,11 @@ public class IrcCommandListener {
                     String jobUrl = entry.getKey();
                     String note = entry.getValue();
 
-                    WikiTeam3Plugin.startJob(discordChannel, jobUrl, note, nick, nick, WikiTeam3Plugin.parseCommandLineOptions(opts));
+                    //WikiTeam3Plugin.startJob(discordChannel, jobUrl, note, nick, nick, WikiTeam3Plugin.parseCommandLineOptions(opts));
                 }
                 channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
-            }
-        }*/
+            }*/
+        }
     }
 
     @Handler
