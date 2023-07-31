@@ -3,6 +3,7 @@ package dev.digitaldragon.parser;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CommandLineParser {
     //write a class to parse command line arguments
@@ -46,35 +47,35 @@ public class CommandLineParser {
         return this;
     }
 
-    public void parse(String[] args) {
+    public void parse(String[] args) throws IllegalArgumentException {
         int i = 0;
         while (i < args.length) {
             String arg = args[i];
             if (arg.startsWith("--")) {
                 String key = arg.substring(2);
-                if (i + 1 < args.length) {
-                    String nextArg = args[i + 1];
-                    if (!nextArg.startsWith("--")) {
-                        i++; // Move to the next argument as it's a value for the current switch
-                        parseValue(key, nextArg);
-                    } else {
-                        // Treat it as a boolean switch with no value
-                        parseBooleanSwitch(key);
-                    }
-                } else {
+                i++; // Move to the next argument for the potential value
+                StringBuilder valueBuilder = new StringBuilder();
+                while (i < args.length && !args[i].startsWith("--")) {
+                    valueBuilder.append(args[i]).append(" ");
+                    i++;
+                }
+                String value = valueBuilder.toString().trim();
+                if (value.isEmpty()) {
                     // Treat it as a boolean switch with no value
                     parseBooleanSwitch(key);
+                } else {
+                    parseValue(key, value);
                 }
+            } else {
+                i++; // Move to the next argument as it's not a switch
             }
-            i++;
         }
     }
 
-    private void parseValue(String key, String value) {
+    private void parseValue(String key, String value) throws IllegalArgumentException {
         String type = optionTypes.get(key);
         if (type == null) {
-            System.err.println("Unknown switch: " + key);
-            return;
+            throw new IllegalArgumentException("Unknown option: " + key);
         }
 
         switch (type) {
@@ -83,29 +84,37 @@ public class CommandLineParser {
                 try {
                     options.put(key, Integer.parseInt(value));
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid integer value for " + key + ": " + value);
+                    throw new IllegalArgumentException("Invalid integer value for " + key + ": " + value);
                 }
             }
             case "double" -> {
                 try {
                     options.put(key, Double.parseDouble(value));
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid double value for " + key + ": " + value);
+                    throw new IllegalArgumentException("Invalid double value for " + key + ": " + value);
                 }
             }
             case "url" -> {
                 if (isValidURL(value)) {
                     options.put(key, value);
                 } else {
-                    System.err.println("Invalid URL: " + value);
+                    throw new IllegalArgumentException("Invalid URL value for " + key + ": " + value + ". Remember: The URL parser expects a protocol (eg https://), domains don't count!");
                 }
             }
             case "string" -> options.put(key, value);
-            default -> System.err.println("Unknown switch: " + key);
+            default -> throw new IllegalArgumentException("Unknown option: " + key);
         }
     }
 
     private void parseBooleanSwitch(String key) {
+        String type = optionTypes.get(key);
+        if (type == null) {
+            throw new IllegalArgumentException("Unknown switch: " + key);
+        }
+        if (!Objects.equals(type, "boolean")) {
+            throw new IllegalArgumentException("--" + key + " requires a value! (" + type + ")");
+        }
+
         options.put(key, true);
     }
 
