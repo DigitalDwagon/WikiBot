@@ -93,9 +93,15 @@ public class RunJob {
                     }
                 }
 
-                if (afterTask == AfterTask.MEDIAWIKI) {
-                    for (File file : workingDir.listFiles()) {
-                        if (file.isDirectory()) {
+                if (afterTask == AfterTask.MEDIAWIKI && success) { //todo we should be able to remove this when upstream is fixed :D
+                    sendLogs(channel,
+                            List.of("----- Bot: Starting Task: IAUpload Pseudo Task -----")
+                            , String.format("jobs/%s/log.txt", jobId));
+                    try {
+                        for (File file : workingDir.listFiles()) {
+                            if (!file.isDirectory()) {
+                                continue;
+                            }
                             // upload wikidump.7z and history.7z to archive.org
                             JSONObject metadata;
                             try {
@@ -154,10 +160,14 @@ public class RunJob {
                             sendLogs(channel,
                                     List.of("----- Bot: Finishing Task: IAUpload Pseudo Task -----")
                                     , String.format("jobs/%s/log.txt", jobId));
-
-
                         }
+                    } catch (Exception e) {
+                        sendLogs(channel, List.of("Bot: Failed in IAUpload!"), String.format("jobs/%s/log.txt", jobId));
+                        failingTask = "IAUpload Pseudo Task";
+                        success = false;
+                        failCode = 999;
                     }
+
                 }
 
                 System.out.println(archiveUrl);
