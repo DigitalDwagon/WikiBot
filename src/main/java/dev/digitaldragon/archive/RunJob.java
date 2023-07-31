@@ -182,7 +182,7 @@ public class RunJob {
                 if (success) {
                     TextChannel successChannel = WikiBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
-                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: $s\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, archiveUrl, note)).queue();
+                        successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: %s\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, archiveUrl, note)).queue();
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Success! Job " + jobId + " completed successfully.");
                     if (!archiveUrl.isEmpty())
                         WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Archive URL: " + archiveUrl);
