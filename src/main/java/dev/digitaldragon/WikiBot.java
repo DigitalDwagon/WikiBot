@@ -3,7 +3,8 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.digitaldragon.commands.DiscordCommandListener;
+import dev.digitaldragon.commands.DiscordDokuWikiListener;
+import dev.digitaldragon.commands.DiscordMediaWikiListener;
 import dev.digitaldragon.commands.IrcCommandListener;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class WikiBot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
-                .addEventListeners(new DiscordCommandListener())
+                .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener())
                 .build();
 
         ircClient = Client.builder()
