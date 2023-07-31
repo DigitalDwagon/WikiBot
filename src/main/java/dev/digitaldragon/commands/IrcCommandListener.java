@@ -3,6 +3,7 @@ package dev.digitaldragon.commands;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
+import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
@@ -36,41 +37,40 @@ public class IrcCommandListener {
             return;
         }
 
-        String[] parts = event.getMessage().split(" ", 3);
-        if (parts.length < 3) {
+        String[] parts = event.getMessage().split(" ", 2);
+        if (parts.length < 2) {
             channel.sendMessage(nick + ": Not enough arguments!");
             return;
         }
-
-        String url = parts[1];
-        String explain = parts[2].split("-", 2)[0];
-        String opts = "-" + parts[2].split("-", 2)[1]; //todo jank lol
-        if (opts.equals("-")) {
-            channel.sendMessage(nick + ": No options given!");
-            return;
-        }
-        explain = explain.trim();
-        opts = opts.trim();
-
-        try {
-            new URL(url);
-        } catch (MalformedURLException e) {
-            channel.sendMessage(nick + ": Invalid URL! Remember: the URL parser expects a protocol (http://, https://, etc.) - domains don't count!");
-            return;
-        }
-
+        String opts = parts[1];
 
         if (event.getMessage().startsWith("!doku")) {
-            String options = DokuWikiDumperPlugin.parseCommandLineOptions(opts);
+            CommandLineParser parser = DokuWikiDumperPlugin.getCommandLineParser();
+            try {
+                parser.parse(opts.split(" "));
+            } catch (IllegalArgumentException e) {
+                channel.sendMessage(nick + ": " + e.getMessage());
+                return;
+            }
+
+            if (parser.getOption("url") == null) {
+                channel.sendMessage(nick + ": URL is required! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
+                return;
+            }
+            String url = parser.getOption("url").toString();
 
             if (event.getMessage().startsWith("!dokusingle ")) {
-                if (explain.isEmpty()) {
-                    channel.sendMessage(nick + ": No explanation given!");
+                if (parser.getOption("explain") == null) {
+                    channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
                     return;
                 }
-                DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, options);
+                String explain = parser.getOption("explain").toString();
+
+                DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, DokuWikiDumperPlugin.parserToOptions(parser));
             }
             if (event.getMessage().startsWith("!dokubulk ")) {
+                String options = DokuWikiDumperPlugin.parserToOptions(parser);
+
                 Map<String, String> tasks;
                 try {
                     tasks = BulkArchiveParser.parse(url);
@@ -82,13 +82,13 @@ public class IrcCommandListener {
                     String jobUrl = entry.getKey();
                     String note = entry.getValue();
 
-                    DokuWikiDumperPlugin.startJob(discordChannel, jobUrl, note, nick, nick, DokuWikiDumperPlugin.parseCommandLineOptions(opts));
+                    DokuWikiDumperPlugin.startJob(discordChannel, jobUrl, note, nick, nick, options);
                 }
                 channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
             }
         }
 
-        if (event.getMessage().startsWith("!mediawiki")) {
+        /*if (event.getMessage().startsWith("!mediawiki")) {
             String options = WikiTeam3Plugin.parseCommandLineOptions(opts);
             if (event.getMessage().startsWith("!mediawikisingle ")) {
                 if (explain.isEmpty()) {
@@ -113,7 +113,7 @@ public class IrcCommandListener {
                 }
                 channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
             }
-        }
+        }*/
     }
 
     @Handler
@@ -123,12 +123,12 @@ public class IrcCommandListener {
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
         channel.sendMessage(nick + ": Bot operator is DigitalDragons.");
-        channel.sendMessage(nick + ": !dokusingle <url> <explanation> <--options> - Archive a DokuWiki with DokuWikiDumper.");
-        channel.sendMessage(nick + ": !dokubulk <file url> <--options> - Archive DokuWikis in bulk via a text file. Each line should be a URL followed by an explanation, separated by a space. Explanation optional, but highly encouraged.");
-        channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-errors --ignore-action-disabled-edit --no-resume --insecure --content --media --html --pdf --auto --current-only");
-        channel.sendMessage(nick + ": !mediawikisingle <url> <explanation> <--options> - Archive a MediaWiki with WikiTeam3.");
-        channel.sendMessage(nick + ": !mediawikibulk <file url> <--options> - The same as dokubulk, but using WikiTeam3 tools.");
-        channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index");
+        channel.sendMessage(nick + ": !dokusingle <--options> - Archive a DokuWiki with DokuWikiDumper. --explain <your explanation> and --url <target DokuWiki URL) are required.");
+        channel.sendMessage(nick + ": !dokubulk <--options> - Archive DokuWikis in bulk via a text file specified with --url <file URL>. Each line should be a URL followed by an explanation, separated by a space. Explanation optional, but highly encouraged.");
+        channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-errors --ignore-action-disabled-edit --insecure --content --media --html --pdf --auto --current-only");
+        channel.sendMessage(nick + ": !mediawikisingle <--options> - Archive a MediaWiki with WikiTeam3. --explain <your explanation> and --url <target DokuWiki URL) are required.");
+        channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools.");
+        channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index --url");
     }
 
     private boolean isVoiced(Channel channel, User user) {

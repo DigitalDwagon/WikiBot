@@ -1,6 +1,7 @@
 package dev.digitaldragon.archive;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.EnvConfig;
@@ -177,7 +178,7 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
         }
     }
 
-    public static String parseCommandLineOptions(String args) {
+    /*public static String parseCommandLineOptions(String args) {
         String[] validArgs = {
                 "--retry",
                 "--ignore-disposition-header-missing",
@@ -212,6 +213,70 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
         }
         result.append("--upload ");
         return result.toString().trim() + " "; // code always expects a trailing space after options, so we add one in here. todo hack
+    }*/
+
+    public static CommandLineParser getCommandLineParser() {
+        CommandLineParser parser = new CommandLineParser();
+        parser.addBooleanOption("ignore-disposition-header-missing");
+        parser.addIntOption("retry");
+        parser.addIntOption("hard-retry");
+        parser.addDoubleOption("delay");
+        parser.addIntOption("threads");
+        parser.addBooleanOption("ignore-errors");
+        parser.addBooleanOption("ignore-action-disabled-edit");
+        parser.addBooleanOption("insecure");
+        parser.addBooleanOption("content");
+        parser.addBooleanOption("media");
+        parser.addBooleanOption("html");
+        parser.addBooleanOption("pdf");
+        parser.addBooleanOption("auto");
+        parser.addBooleanOption("current-only");
+        parser.addStringOption("explain");
+        parser.addUrlOption("url");
+        return parser;
+    }
+
+    public static String parserToOptions(CommandLineParser commandLineParser) {
+        StringBuilder options = new StringBuilder();
+        parseInt("retry", commandLineParser, options);
+        parseInt("hard-retry", commandLineParser, options);
+        parseInt("threads", commandLineParser, options);
+
+        parseDouble("delay", commandLineParser, options);
+
+
+        parseBoolean("ignore-disposition-header-missing", commandLineParser, options);
+        parseBoolean("ignore-errors", commandLineParser, options);
+        parseBoolean("ignore-action-disabled-edit", commandLineParser, options);
+        parseBoolean("insecure", commandLineParser, options);
+        parseBoolean("content", commandLineParser, options);
+        parseBoolean("media", commandLineParser, options);
+        parseBoolean("html", commandLineParser, options);
+        parseBoolean("pdf", commandLineParser, options);
+        parseBoolean("auto", commandLineParser, options);
+        parseBoolean("current-only", commandLineParser, options);
+
+        options.append("--upload ");
+
+        return options.toString();
+    }
+
+    private static void parseBoolean(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) == Boolean.TRUE) {
+            options.append("--").append(name).append(" ");
+        }
+    }
+
+    private static void parseInt(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) instanceof Integer) {
+            options.append("--").append(name).append(" ").append(commandLineParser.getOption(name)).append(" ");
+        }
+    }
+
+    private static void parseDouble(String name, CommandLineParser commandLineParser, StringBuilder options) {
+        if (commandLineParser.getOption(name) instanceof Double) {
+            options.append("--").append(name).append(" ").append(commandLineParser.getOption(name)).append(" ");
+        }
     }
 
 }
