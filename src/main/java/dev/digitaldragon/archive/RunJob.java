@@ -183,7 +183,7 @@ public class RunJob {
                     TextChannel successChannel = WikiBot.getInstance().getTextChannelById("1127417094930169918");
                     if (successChannel != null)
                         successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: %s\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, archiveUrl, note)).queue();
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Success! Job " + jobId + " completed successfully.");
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Success! Job " + jobId + " completed successfully.");
                     if (!archiveUrl.isEmpty())
                         WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Archive URL: " + archiveUrl);
 
@@ -192,7 +192,7 @@ public class RunJob {
                     if (failChannel != null)
                         failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
                     channel.sendMessage("Task indicated as failed.").queue();
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userMention + ": Job " + jobId + " failed on task " + failingTask + " with exit code " + failCode + ".");
+                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Job " + jobId + " failed on task " + failingTask + " with exit code " + failCode + ".");
 
 
                 }
