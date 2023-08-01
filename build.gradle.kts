@@ -65,7 +65,7 @@ tasks {
         options.release.set(17)
     }
     shadowJar {
-        archiveFileName.set("ArchiveBot-shadow.jar")
+        archiveFileName.set("WikiBot-shadow.jar")
         manifest.attributes["Main-Class"] = "dev.digitaldragon.WikiBot"
     }
     javadoc {
