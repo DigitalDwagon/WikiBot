@@ -147,7 +147,7 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
         processBooleanOption(event, "current_only", "--current-only", options);
         processBooleanOption(event, "no_resume", "--no-resume", options);
         processBooleanOption(event, "insecure", "--insecure", options);
-        processBooleanOption(event, "ignore_errors", "--ignore-errors", options);
+        //processBooleanOption(event, "ignore_errors", "--ignore-errors", options); todo
         processBooleanOption(event, "ignore_disabled_edit", "--ignore-action-disabled-edit", options);
         processBooleanOption(event, "content", "--content", options);
         processBooleanOption(event, "media", "--media", options);
@@ -222,7 +222,7 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
         parser.addIntOption("hard-retry");
         parser.addDoubleOption("delay");
         parser.addIntOption("threads");
-        parser.addBooleanOption("ignore-errors");
+        //parser.addBooleanOption("ignore-errors"); todo
         parser.addBooleanOption("ignore-action-disabled-edit");
         parser.addBooleanOption("insecure");
         parser.addBooleanOption("content");
@@ -246,7 +246,7 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
 
 
         parseBoolean("ignore-disposition-header-missing", commandLineParser, options);
-        parseBoolean("ignore-errors", commandLineParser, options);
+        //parseBoolean("ignore-errors", commandLineParser, options); todo
         parseBoolean("ignore-action-disabled-edit", commandLineParser, options);
         parseBoolean("insecure", commandLineParser, options);
         parseBoolean("content", commandLineParser, options);

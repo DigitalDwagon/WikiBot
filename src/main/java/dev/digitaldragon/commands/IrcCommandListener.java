@@ -137,7 +137,7 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": Bot operator is DigitalDragons.");
         channel.sendMessage(nick + ": !dokusingle <--options> - Archive a DokuWiki with DokuWikiDumper. --explain <your explanation> and --url <target DokuWiki URL) are required.");
         channel.sendMessage(nick + ": !dokubulk <--options> - Archive DokuWikis in bulk via a text file specified with --url <file URL>. Each line should be a URL followed by an explanation, separated by a space. Explanation optional, but highly encouraged.");
-        channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-errors --ignore-action-disabled-edit --insecure --content --media --html --pdf --auto --current-only");
+        channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-action-disabled-edit --insecure --content --media --html --pdf --auto --current-only");
         channel.sendMessage(nick + ": !mediawikisingle <--options> - Archive a MediaWiki with WikiTeam3. --explain <your explanation> and --url <target DokuWiki URL) are required.");
         channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools.");
         channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index --url");
