@@ -180,7 +180,7 @@ public class RunJob {
                 channel.sendMessage("Logs are available at " + logsUrl).queue();
 
                 if (success) {
-                    TextChannel successChannel = WikiBot.getInstance().getTextChannelById("1127417094930169918");
+                    TextChannel successChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_success_channel"));
                     if (successChannel != null)
                         successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: %s\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, archiveUrl, note)).queue();
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Success! Job " + jobId + " completed successfully.");
@@ -188,7 +188,7 @@ public class RunJob {
                         WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Archive URL: " + archiveUrl);
 
                 } else {
-                    TextChannel failChannel = WikiBot.getInstance().getTextChannelById("1127440691602141184");
+                    TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
                     if (failChannel != null)
                         failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
                     channel.sendMessage("Task indicated as failed.").queue();

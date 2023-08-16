@@ -67,7 +67,7 @@ public class WikiBot {
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
         System.out.println(bucket.getName());
 
-        Guild testServer = instance.getGuildById("349920496550281226");
+        Guild testServer = instance.getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
         if (testServer != null) {
 
             // ----------------------------- dokuwiki ----------------------------- //
@@ -146,11 +146,11 @@ public class WikiBot {
     }
 
     public static TextChannel getLogsChannel() {
-        Guild testServer = WikiBot.getInstance().getGuildById("349920496550281226");
+        Guild testServer = WikiBot.getInstance().getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
         if (testServer == null) {
             return null;
         }
-        TextChannel channel = (TextChannel) testServer.getGuildChannelById("1112606638017368124");
+        TextChannel channel = (TextChannel) testServer.getGuildChannelById(EnvConfig.getConfigs().get("discord_channel").trim());
         return channel;
     }
 
