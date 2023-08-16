@@ -172,9 +172,9 @@ public class RunJob {
 
                 System.out.println(archiveUrl);
 
-                UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "dokuwikiarchiver/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text", "inline");
+                UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "wikibot/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text", "inline");
 
-                String logsUrl = String.format("https://cdn.digitaldragon.dev/dokuwikiarchiver/jobs/%s/log.txt", jobId);
+                String logsUrl = String.format("https://cdn.digitaldragon.dev/wikibot/jobs/%s/log.txt", jobId);
                 channel.sendMessage("Job ended.").queue();
                 channel.sendMessage("Note: ```" + note + "```").queue();
                 channel.sendMessage("Logs are available at " + logsUrl).queue();
