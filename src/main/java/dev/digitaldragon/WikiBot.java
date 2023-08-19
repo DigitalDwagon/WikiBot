@@ -3,6 +3,7 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import dev.digitaldragon.commands.DiscordAdminListener;
 import dev.digitaldragon.commands.DiscordDokuWikiListener;
 import dev.digitaldragon.commands.DiscordMediaWikiListener;
 import dev.digitaldragon.commands.IrcCommandListener;
@@ -43,7 +44,7 @@ public class WikiBot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
-                .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener())
+                .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener())
                 .build();
 
         ircClient = Client.builder()
@@ -142,6 +143,8 @@ public class WikiBot {
             testServer.upsertCommand("mediawikiarchive", "Archive a MediaWiki using WikiTeam3 (mediawiki-scraper) and upload to archive.org")
                     .addSubcommands(mediaSingle, mediaBulk)
                     .queue();
+
+            testServer.upsertCommand("poke", "Poke the bot to reconnect to IRC").queue();
         }
     }
 

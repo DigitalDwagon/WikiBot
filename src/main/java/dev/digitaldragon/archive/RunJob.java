@@ -2,10 +2,7 @@ package dev.digitaldragon.archive;
 
 import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.util.AfterTask;
-import dev.digitaldragon.util.CommandTask;
-import dev.digitaldragon.util.EnvConfig;
-import dev.digitaldragon.util.UploadObject;
+import dev.digitaldragon.util.*;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import org.apache.commons.io.IOUtils;
@@ -183,21 +180,21 @@ public class RunJob {
                     TextChannel successChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_success_channel"));
                     if (successChannel != null)
                         successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: %s\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, archiveUrl, note)).queue();
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Success! Job " + jobId + " completed successfully.");
-                    if (!archiveUrl.isEmpty())
-                        WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Archive URL: " + archiveUrl);
+
+                    IRCClient.sendMessage(userName, "Success! Job " + jobId + " completed successfully.");
+                    IRCClient.sendMessage("Archive URL: " + archiveUrl);
 
                 } else {
                     TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
                     if (failChannel != null)
                         failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s \nLogs: %s\nJob ID: `%s`\nFailed Task: `%s`\nExit Code: `%s`\nNote: ```%s```", jobName, userMention, channel.getAsMention(), logsUrl, jobId, failingTask, failCode, note)).queue();
                     channel.sendMessage("Task indicated as failed.").queue();
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Job " + jobId + " failed on task " + failingTask + " with exit code " + failCode + ".");
+                    IRCClient.sendMessage(userName, String.format("Job %s failed on task %s with exit code %s.", jobId, failingTask, failCode));
 
 
                 }
-                WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Explanation: " + note);
-                WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), "Logs: " + logsUrl);
+                IRCClient.sendMessage("Explanation: " + note);
+                IRCClient.sendMessage("Logs: " + logsUrl);
 
             } catch (Exception e) {
                 e.printStackTrace();
