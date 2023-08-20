@@ -105,7 +105,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
                 .queue(thread -> {
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + "! (WikiTeam3)");
                     thread.sendMessage(String.format("Running job with WikiTeam3 <https://github.com/saveweb/wikiteam3> (for %s). `%s` ```%s``` Job ID: %s", userName, options, note, jobId)).queue(message -> message.pin().queue());
-                    RunJob.startArchive(jobId, note, userMention, userName, thread, jobId, AfterTask.NONE, downloadTask);
+                    RunJob.startArchive(jobId, note, userMention, userName, thread, jobId, AfterTask.MEDIAWIKI, downloadTask);
                 });
     }
 
@@ -254,7 +254,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
             options.append(" ");
         }
 
-        options.append("--upload ");
+        //options.append("--upload ");
 
         return options.toString();
     }
