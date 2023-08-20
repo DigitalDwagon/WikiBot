@@ -16,24 +16,26 @@ import java.util.List;
 import java.util.UUID;
 
 public class Uploader {
-    public static void reupload(String uploadJobId, String userName, String userMention, TextChannel channel) throws IOException {
-        File directory = RunJob.createWorkingDirectory(uploadJobId);
-        for (File file : directory.listFiles()) {
-            if (!file.isDirectory()) {
-                continue;
+    public static void reupload(String uploadJobId, String userName, String userMention, TextChannel channel) {
+        try {
+            File directory = RunJob.createWorkingDirectory(uploadJobId);
+            for (File file : directory.listFiles()) {
+                if (!file.isDirectory()) {
+                    continue;
+                }
+
+                if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("siteinfo.json"))) {
+                    WikiTeam3(uploadJobId, userName, userMention, channel);
+                    continue;
+                }
+
+                if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("meta"))) {
+                    DokuWikiDumper(uploadJobId, userName, userMention, channel);
+                    continue;
+                }
             }
-
-            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("siteinfo.json"))) {
-                WikiTeam3(uploadJobId, userName, userMention, channel);
-                continue;
-            }
-
-            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("meta"))) {
-                DokuWikiDumper(uploadJobId, userName, userMention, channel);
-                continue;
-            }
-
-
+        } catch (IOException exception) {
+            System.out.println("Error: " + exception.getMessage());
         }
     }
     public static void WikiTeam3(String jobId, String userName, String userMention, TextChannel channel) {

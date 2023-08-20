@@ -2,6 +2,7 @@ package dev.digitaldragon.commands;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.DokuWikiDumperPlugin;
+import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
@@ -22,7 +23,7 @@ import java.util.SortedSet;
 public class IrcCommandListener {
     @Handler
     public void message(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!mediawiki"))
+        if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!reupload"))
             return;
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
@@ -126,6 +127,14 @@ public class IrcCommandListener {
                 channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
             }*/
         }
+
+        if (event.getMessage().startsWith("!reupload")) {
+            if (opts.contains(" ")) {
+                channel.sendMessage(nick + ": Too many arguments!");
+                return;
+            }
+            Uploader.reupload(opts, nick, nick, discordChannel);
+        }
     }
 
     @Handler
@@ -139,7 +148,7 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": !dokubulk <--options> - Archive DokuWikis in bulk via a text file specified with --url <file URL>. Each line should be a URL followed by an explanation, separated by a space. Explanation optional, but highly encouraged.");
         channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-action-disabled-edit --insecure --content --media --html --pdf --auto --current-only");
         channel.sendMessage(nick + ": !mediawikisingle <--options> - Archive a MediaWiki with WikiTeam3. --explain <your explanation> and --url <target DokuWiki URL) are required.");
-        channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools.");
+        //channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools."); currently disabled on IRC side.
         channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index --url");
     }
 

@@ -22,11 +22,7 @@ public class DiscordReuploadListener extends ListenerAdapter {
             return;
         }
 
-        try {
-            event.getHook().editOriginal("Starting...").queue();
-            Uploader.reupload(event.getOption("jobid").getAsString(), event.getUser().getName(), event.getUser().getAsMention(), channel);
-        } catch (IOException e) {
-            event.getMessageChannel().sendMessage("Sorry, something went wrong.").queue();
-        }
+        event.getHook().editOriginal("Starting...").queue();
+        Uploader.reupload(event.getOption("jobid").getAsString(), event.getUser().getName(), event.getUser().getAsMention(), channel);
     }
 }
