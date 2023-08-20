@@ -128,7 +128,7 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), String.format("%s: Launched job %s for %s! (DokuWikiDumper)", userName, jobId, url));
-                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, AfterTask.DOKUWIKI, task);
+                    RunJob.startArchive(url, note, userMention, userName, thread, jobId, AfterTask.NONE, task);
                     thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, userMention, options, note, jobId)).queue(message -> message.pin().queue());
                 });
     }

@@ -3,10 +3,7 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.digitaldragon.commands.DiscordAdminListener;
-import dev.digitaldragon.commands.DiscordDokuWikiListener;
-import dev.digitaldragon.commands.DiscordMediaWikiListener;
-import dev.digitaldragon.commands.IrcCommandListener;
+import dev.digitaldragon.commands.*;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
@@ -44,7 +41,7 @@ public class WikiBot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
-                .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener())
+                .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener())
                 .build();
 
         ircClient = Client.builder()
@@ -145,6 +142,10 @@ public class WikiBot {
                     .queue();
 
             testServer.upsertCommand("poke", "Poke the bot to reconnect to IRC").queue();
+
+            testServer.upsertCommand("reupload", "Reupload a failed upload to the Internet Archive")
+                    .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
+                    .queue();
         }
     }
 

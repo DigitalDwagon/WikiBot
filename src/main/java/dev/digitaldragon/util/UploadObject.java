@@ -30,7 +30,7 @@ public class UploadObject {
         // conditions and data corruptions. The request returns a 412 error if the
         // preconditions are not met.
         Storage.BlobWriteOption precondition;
-        if (storage.get(bucketName, objectName) == null) {
+        /*if (storage.get(bucketName, objectName) == null) {
             // For a target object that does not yet exist, set the DoesNotExist precondition.
             // This will cause the request to fail if the object is created before the request runs.
             precondition = Storage.BlobWriteOption.doesNotExist();
@@ -40,8 +40,8 @@ public class UploadObject {
             // changes before the request runs.
             precondition =
                     Storage.BlobWriteOption.generationMatch();
-        }
-        Blob uploaded = storage.createFrom(blobInfo, Paths.get(filePath), precondition);
+        }*/
+        Blob uploaded = storage.createFrom(blobInfo, Paths.get(filePath));
         uploaded.toBuilder().setContentType(contentType).setContentDisposition(contentDisposition).build().update();
 
         System.out.println(

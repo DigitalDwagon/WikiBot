@@ -88,7 +88,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
             threadName = "Unnamed Job";
 
         //CommandTask downloadTask = new CommandTask("launcher wiki.txt " + options, 2, "DownloadMediaWiki");
-        CommandTask downloadTask = new CommandTask("dumpgenerator " + options, 1, "DownloadMediaWiki");
+        CommandTask downloadTask = new CommandTask("wikiteam3dumpgenerator " + options, 1, "WikiTeam3");
         downloadTask.setSuccessCode(0);
         downloadTask.setAlwaysSuccessful(false);
 
@@ -97,15 +97,15 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         //todo this does not work as it needs to be run in the dump directory.
         */
 
-        CommandTask compressionTask = new CommandTask("find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 2, "CompressMediaWiki");
+        //CommandTask compressionTask = new CommandTask("find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '(cd \"{}\" && 7za a -t7z \"wikidump.7z\" *)' \\; -exec sh -c '(cd \"{}\" && 7za a -t7z \"history.7z\" *.json *.xml *.txt *.html)' \\;\n", 2, "CompressMediaWiki");
 
 
 
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + "! (WikiTeam3)");
-                    thread.sendMessage(String.format("Running job on <%s> with WikiTeam3 <https://github.com/mediawiki-client-tools/mediawiki-scraper> (for %s). `%s` ```%s```", userName, options, note, jobId)).queue(message -> message.pin().queue());
-                    RunJob.startArchive(jobId, note, userMention, userName, thread, jobId, AfterTask.MEDIAWIKI, downloadTask, compressionTask);
+                    thread.sendMessage(String.format("Running job with WikiTeam3 <https://github.com/saveweb/wikiteam3> (for %s). `%s` ```%s``` Job ID: %s", userName, options, note, jobId)).queue(message -> message.pin().queue());
+                    RunJob.startArchive(jobId, note, userMention, userName, thread, jobId, AfterTask.NONE, downloadTask);
                 });
     }
 
@@ -253,6 +253,8 @@ public class WikiTeam3Plugin extends ListenerAdapter {
             options.append(commandLineParser.getOption("url"));
             options.append(" ");
         }
+
+        options.append("--upload ");
 
         return options.toString();
     }

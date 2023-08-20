@@ -38,8 +38,8 @@ public class RunJob {
      * @throws IllegalArgumentException if no tasks are provided
      */
     public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, AfterTask afterTask, CommandTask... tasks) {
-        if (tasks.length < 1)
-            throw new IllegalArgumentException();
+        //if (tasks.length < 1)
+        //    throw new IllegalArgumentException();
 
         WikiBot.getExecutorService().submit(() -> {
             try {
@@ -90,7 +90,7 @@ public class RunJob {
                     }
                 }
 
-                if (afterTask == AfterTask.MEDIAWIKI && success) { //todo we should be able to remove this when upstream is fixed :D
+                /*if (afterTask == AfterTask.MEDIAWIKI && success) { //todo we should be able to remove this when upstream is fixed :D
                     sendLogs(channel,
                             List.of("----- Bot: Starting Task: IAUpload Pseudo Task -----")
                             , String.format("jobs/%s/log.txt", jobId));
@@ -165,6 +165,55 @@ public class RunJob {
                         failCode = 999;
                     }
 
+                }*/
+
+                if ((afterTask == AfterTask.MEDIAWIKI || afterTask == AfterTask.DOKUWIKI ) && success) { //todo still no --upload :(
+                    sendLogs(channel,
+                            List.of("----- Bot: Starting Task: Uploader Pseudo Task -----")
+                            , String.format("jobs/%s/log.txt", jobId));
+                    try {
+                        for (File file : workingDir.listFiles()) {
+                            if (!file.isDirectory()) {
+                                continue;
+                            }
+
+                            String commandString = "";
+                            if (afterTask == AfterTask.MEDIAWIKI)
+                                commandString = "wikiteam3uploader " + file.getName();
+
+                            if (afterTask == AfterTask.DOKUWIKI)
+                                commandString = "dokuWikiUploader " + file.getName();
+
+
+                            sendLogs(channel,
+                                    List.of("----- Bot: Starting Task: Uploader Pseudo Task -----")
+                                    , String.format("jobs/%s/log.txt", jobId));
+
+                            ProcessBuilder processBuilder = getExecutingProcess(commandString, workingDir);
+                            Process process = handleLogs(processBuilder, channel, jobId);
+                            System.out.println("Process ended. For: Uploader Pseudo Task");
+                            int exitCode = 999;
+
+                            if (process != null)
+                                exitCode = process.waitFor();
+
+                            if (exitCode != 0) {
+                                success = false;
+                                failCode = exitCode;
+                                failingTask = "Uploader Pseudo Task";
+                            }
+
+                            sendLogs(channel,
+                                    List.of("----- Bot: Finishing Task: Uploader Pseudo Task -----")
+                                    , String.format("jobs/%s/log.txt", jobId));
+                        }
+                    } catch (Exception e) {
+                        sendLogs(channel, List.of("Bot: Failed in Uploader!"), String.format("jobs/%s/log.txt", jobId));
+                        failingTask = "IAUpload Pseudo Task";
+                        success = false;
+                        failCode = 999;
+                    }
+
                 }
 
                 System.out.println(archiveUrl);
@@ -210,7 +259,7 @@ public class RunJob {
      * @param channel  the thread channel to send the logs to
      * @param jobId    the id of the job associated with the logs
      */
-    private static Process handleLogs(ProcessBuilder processBuilder, ThreadChannel channel, String jobId) {
+    public static Process handleLogs(ProcessBuilder processBuilder, ThreadChannel channel, String jobId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         try {
             Process process = processBuilder.start();
@@ -288,7 +337,7 @@ public class RunJob {
      * @throws UnsupportedOperationException if the operating system is not supported
      */
     @NotNull
-    private static ProcessBuilder getExecutingProcess(String command, File dumpsDir) throws IOException {
+    public static ProcessBuilder getExecutingProcess(String command, File dumpsDir) throws IOException {
         ProcessBuilder processBuilder;
         String os = System.getProperty("os.name").toLowerCase();
 
@@ -351,7 +400,7 @@ public class RunJob {
      * @param jobId  the ID of the job to create the log file for
      * @throws IOException when creation fails
      */
-    private static File createWorkingDirectory(String jobId) throws IOException {
+    public static File createWorkingDirectory(String jobId) throws IOException {
         String logFilePath = String.format("jobs/%s/log.txt", jobId);
         File logFile = new File(logFilePath);
 
