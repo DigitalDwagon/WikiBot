@@ -16,6 +16,8 @@ import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -150,6 +152,24 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": !mediawikisingle <--options> - Archive a MediaWiki with WikiTeam3. --explain <your explanation> and --url <target DokuWiki URL) are required.");
         //channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools."); currently disabled on IRC side.
         channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index --url");
+    }
+
+    @Handler
+    public void checkCommand(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!check"))
+            return;
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+
+        String[] parts = event.getMessage().split(" ", 2);
+        if (parts.length < 2) {
+            channel.sendMessage(nick + ": Not enough arguments!");
+            return;
+        }
+        String opts = parts[1];
+        opts = URLEncoder.encode(opts);
+        String url = "https://archive.org/search?query=originalurl%3A%28" + opts + "%29";
+        channel.sendMessage(nick + ": " + url);
     }
 
     private boolean isVoiced(Channel channel, User user) {
