@@ -152,6 +152,8 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": !mediawikisingle <--options> - Archive a MediaWiki with WikiTeam3. --explain <your explanation> and --url <target DokuWiki URL) are required.");
         //channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools."); currently disabled on IRC side.
         channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index --url");
+        channel.sendMessage(nick + ": !reupload <job ID> - Reupload a job that failed to upload the first time.");
+        channel.sendMessage(nick + ": !check <search> - Generate an Internet Archive search link for a given string. Checks the originalurl field.");
     }
 
     @Handler
