@@ -41,8 +41,7 @@ public class Uploader {
     public static void WikiTeam3(String jobId, String userName, String userMention, TextChannel channel) {
         channel.createThreadChannel("Reupload " + jobId).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
-                    IRCClient.sendMessage(userName, "Reuploading " + jobId + ". (WikiTeam3)");
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + "! (WikiTeam3 Reupload)");
+                    IRCClient.sendMessage(userName, "Launched job " + jobId + "! (WikiTeam3 Reupload)");
                     thread.sendMessage(String.format("Running reupload with WikiTeam3 (for %s). Job ID: %s", userName, jobId)).queue(message -> message.pin().queue());
                     RunJob.startArchive(jobId, "Reupload", userMention, userName, thread, jobId, AfterTask.MEDIAWIKI);
                 });
@@ -51,8 +50,7 @@ public class Uploader {
     public static void DokuWikiDumper(String jobId, String userName, String userMention, TextChannel channel) {
         channel.createThreadChannel("Reupload " + jobId).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
-                    IRCClient.sendMessage(userName, "Reuploading " + jobId + ". (DokuWikiDumper)");
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), userName + ": Launched job " + jobId + "! (DokuWikiDumper Reupload)");
+                    IRCClient.sendMessage(userName, "Launched job " + jobId + "! (DokuWikiDumper Reupload)");
                     thread.sendMessage(String.format("Running reupload with DokuWikiUploader (for %s). Job ID: %s", userName, jobId)).queue(message -> message.pin().queue());
                     RunJob.startArchive(jobId, "Reupload", userMention, userName, thread, jobId, AfterTask.DOKUWIKI);
                 });

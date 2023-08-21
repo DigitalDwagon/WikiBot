@@ -5,6 +5,7 @@ import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.EnvConfig;
+import dev.digitaldragon.util.IRCClient;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -127,9 +128,9 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
         channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     String jobId = UUID.randomUUID().toString();
-                    WikiBot.ircClient.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), String.format("%s: Launched job %s for %s! (DokuWikiDumper)", userName, jobId, url));
+                    IRCClient.sendMessage(userName, String.format("Launched job %s for %s! (DokuWikiDumper)", jobId, url));
                     RunJob.startArchive(url, note, userMention, userName, thread, jobId, AfterTask.NONE, task);
-                    thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, userMention, options, note, jobId)).queue(message -> message.pin().queue());
+                    thread.sendMessage(String.format("Running job on <%s> with DokuWikiDumper (<>) (for %s). `%s` ```%s``` \n Job ID: %s", url, userName, options, note, jobId)).queue(message -> message.pin().queue());
                 });
     }
 

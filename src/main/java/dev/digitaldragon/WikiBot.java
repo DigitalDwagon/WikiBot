@@ -5,6 +5,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import dev.digitaldragon.commands.*;
 import dev.digitaldragon.util.EnvConfig;
+import dev.digitaldragon.util.IRCClient;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -30,8 +31,6 @@ public class WikiBot {
     @Getter
     public static JDA instance;
     @Getter
-    public static Client ircClient;
-    @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(5);
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
 
@@ -44,21 +43,7 @@ public class WikiBot {
                 .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener())
                 .build();
 
-        ircClient = Client.builder()
-                .nick(EnvConfig.getConfigs().get("ircnick").trim())
-                .realName(EnvConfig.getConfigs().get("ircnick").trim())
-                .user(EnvConfig.getConfigs().get("ircnick").trim())
-                .server().host("irc.hackint.org").port(6697).secure(true).then()
-                .buildAndConnect();
-
-        ircClient.getEventManager().registerEventListener(new IrcCommandListener());
-
-        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("irclogin"))) {
-            ircClient.getAuthManager().addProtocol(new GameSurge(ircClient, EnvConfig.getConfigs().get("ircnick").trim(), EnvConfig.getConfigs().get("ircpass").trim()));
-        }
-        ircClient.addChannel(EnvConfig.getConfigs().get("ircchannel").trim());
-
-
+        IRCClient.connect();
         instance.awaitReady();
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
