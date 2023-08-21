@@ -179,7 +179,7 @@ public class RunJob {
 
                             String commandString = "";
                             if (afterTask == AfterTask.MEDIAWIKI)
-                                commandString = "wikiteam3uploader " + file.getName();
+                                commandString = "wikiteam3uploader " + file.getName() + " --zstd-level 22";
 
                             if (afterTask == AfterTask.DOKUWIKI)
                                 commandString = "dokuWikiUploader " + file.getName();
