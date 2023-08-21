@@ -135,6 +135,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         processBooleanOption(event, "xml_api_export", "--xmlapiexport", options);
         processBooleanOption(event, "xml_revisions", "--xmlrevisions", options);
         processBooleanOption(event, "current_only", "--curonly", options);
+        processBooleanOption(event, "force", "--force", options);
 
         processUrlOption(event, "api", "--api", options);
         processUrlOption(event, "index", "--index", options);
@@ -230,6 +231,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parser.addUrlOption("index");
         parser.addUrlOption("url");
         parser.addStringOption("explain");
+        parser.addBooleanOption("force");
         return parser;
     }
 
@@ -247,6 +249,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parseBoolean("xmlrevisions", commandLineParser, options);
         parseBoolean("curonly", commandLineParser, options);
         parseBoolean("insecure", commandLineParser, options);
+        parseBoolean("force", commandLineParser, options);
         parseUrl("api", commandLineParser, options);
         parseUrl("index", commandLineParser, options);
 
