@@ -48,8 +48,9 @@ public class DiscordMediaWikiListener extends ListenerAdapter {
             for (Map.Entry<String, String> entry : tasks.entrySet()) {
                 String url = entry.getKey();
                 String note = entry.getValue();
+                String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
 
-                DokuWikiDumperPlugin.startJob(channel, url, note, event.getUser().getAsMention(), event.getUser().getName(), WikiTeam3Plugin.parseDiscordOptions(event));
+                WikiTeam3Plugin.startJob(channel, note, event.getUser().getAsMention(), event.getUser().getName(), options);
             }
             event.getHook().editOriginal("Launched " + tasks.size() + " jobs!").queue();
         }
