@@ -29,6 +29,9 @@ dependencies {
     //used for XML parsing in link extractor.
     implementation("org.jsoup:jsoup:1.16.1")
 
+    //used to decompress zstd streams
+    // https://mvnrepository.com/artifact/com.github.luben/zstd-jni
+    implementation("com.github.luben:zstd-jni:1.5.5-5")
 
 
     //compileOnly("org.projectlombok:lombok:1.18.26")

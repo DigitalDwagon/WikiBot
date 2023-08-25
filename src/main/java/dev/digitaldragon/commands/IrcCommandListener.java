@@ -7,6 +7,7 @@ import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.backfeed.LinkExtract;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
+import dev.digitaldragon.util.TransferUploader;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Actor;
@@ -15,15 +16,12 @@ import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedSet;
+import java.util.*;
 
 public class IrcCommandListener {
     @Handler
@@ -178,16 +176,26 @@ public class IrcCommandListener {
     }
 
     @Handler
-    public void testParser(ChannelMessageEvent event) {
+    public void testParser(ChannelMessageEvent event) throws FileNotFoundException {
         if (!event.getMessage().startsWith("!testparser"))
             return;
 
         File file = new File("test.xml");
-        List<String> urls = LinkExtract.extractLinksFromFile(file);
+        Set<String> urls = LinkExtract.extractLinksFromFile(new FileInputStream(file));
+
+        //write to file
+        File write = new File("outlinks_test.txt");
         for (String url : urls) {
-            System.out.println(url);
+            writeLineToFile(write, url);
         }
-        event.getChannel().sendMessage("Done!");
+        try {
+            String url = TransferUploader.uploadFileToTransferSh(write);
+            event.getChannel().sendMessage("Done! " + url);
+        } catch (IOException e) {
+            e.printStackTrace();
+            event.getChannel().sendMessage("Failed upload!");
+
+        }
     }
 
     private boolean isVoiced(Channel channel, User user) {
@@ -208,5 +216,14 @@ public class IrcCommandListener {
             }
         }
         return false;
+    }
+
+    private static void writeLineToFile(File file, String line) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            writer.append(line);
+            writer.append('\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
