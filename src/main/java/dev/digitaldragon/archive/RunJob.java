@@ -1,13 +1,10 @@
 package dev.digitaldragon.archive;
 
-import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.util.*;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
