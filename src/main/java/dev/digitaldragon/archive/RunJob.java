@@ -35,9 +35,6 @@ public class RunJob {
      * @throws IllegalArgumentException if no tasks are provided
      */
     public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, AfterTask afterTask, CommandTask... tasks) {
-        //if (tasks.length < 1)
-        //    throw new IllegalArgumentException();
-
         WikiBot.getExecutorService().submit(() -> {
             try {
                 File workingDir = createWorkingDirectory(jobId);
@@ -86,83 +83,6 @@ public class RunJob {
                         break;
                     }
                 }
-
-                /*if (afterTask == AfterTask.MEDIAWIKI && success) { //todo we should be able to remove this when upstream is fixed :D
-                    sendLogs(channel,
-                            List.of("----- Bot: Starting Task: IAUpload Pseudo Task -----")
-                            , String.format("jobs/%s/log.txt", jobId));
-                    try {
-                        for (File file : workingDir.listFiles()) {
-                            if (!file.isDirectory()) {
-                                continue;
-                            }
-                            // upload wikidump.7z and history.7z to archive.org
-                            JSONObject metadata;
-                            try {
-                                InputStream input = new FileInputStream(file.getPath() + "/siteinfo.json");
-                                String jsonText = IOUtils.toString(input, StandardCharsets.UTF_8);
-                                JSONObject siteInfo = new JSONObject(jsonText);
-                                JSONObject query = siteInfo.getJSONObject("query");
-                                metadata = query.getJSONObject("general");
-                            } catch (Exception e) {
-                                sendLogs(channel, List.of("Bot: Failed to read siteinfo.json"), String.format("jobs/%s/log.txt", jobId));
-                                failingTask = "IAUpload";
-                                failCode = 9;
-                                metadata = new JSONObject();
-                            }
-                            String identifier = "wiki-" + file.getName();
-                            archiveUrl = "https://archive.org/details/" + identifier;
-                            String siteName = metadata.getString("sitename");
-                            String title = "Wiki: " + siteName;
-                            String originalUrl = metadata.getString("base");
-                            String description = String.format("<a href=\\\"%s\\\" rel=\\\"nofollow\\\">%s</a> dumped with <a href=\\\"https://github.com/mediawiki-client-tools/mediawiki-scraper\\\"rel=\\\"nofollow\\\">WikiTeam3</a> via WikiBot.",
-                                    originalUrl, siteName);
-                            String subject = "wiki;wikiteam;WikiBot;MediaWiki;wikiteam3;wikidump";
-
-                            StringBuilder iaCommand = new StringBuilder("ia upload ");
-                            iaCommand.append(identifier).append(" ");
-                            iaCommand.append(file.getAbsolutePath()).append("/").append("wikidump.7z").append(" ");
-                            iaCommand.append(file.getAbsolutePath()).append("/").append("history.7z").append(" ");
-                            iaCommand.append("--metadata=\"title:").append(title).append("\" ");
-                            iaCommand.append("--metadata=\"description:").append(description).append("\" ");
-                            iaCommand.append("--metadata=\"originalurl:").append(originalUrl).append("\" ");
-                            iaCommand.append("--metadata=\"subject:").append(subject).append("\" ");
-                            iaCommand.append("--metadata=\"mediatype:web\"");
-
-                            String commandString = iaCommand.toString();
-                            System.out.println(commandString);
-
-
-                            sendLogs(channel,
-                                    List.of("----- Bot: Starting Task: IAUpload Pseudo Task -----")
-                                    , String.format("jobs/%s/log.txt", jobId));
-
-                            ProcessBuilder processBuilder = getExecutingProcess(commandString, workingDir);
-                            Process process = handleLogs(processBuilder, channel, jobId);
-                            System.out.println("Process ended. For: IAUpload Pseudo Task");
-                            int exitCode = 999;
-
-                            if (process != null)
-                                exitCode = process.waitFor();
-
-                            if (exitCode != 0) {
-                                success = false;
-                                failCode = exitCode;
-                                failingTask = "IAUpload Pseudo Task";
-                            }
-
-                            sendLogs(channel,
-                                    List.of("----- Bot: Finishing Task: IAUpload Pseudo Task -----")
-                                    , String.format("jobs/%s/log.txt", jobId));
-                        }
-                    } catch (Exception e) {
-                        sendLogs(channel, List.of("Bot: Failed in IAUpload!"), String.format("jobs/%s/log.txt", jobId));
-                        failingTask = "IAUpload Pseudo Task";
-                        success = false;
-                        failCode = 999;
-                    }
-
-                }*/
 
                 if ((afterTask == AfterTask.MEDIAWIKI || afterTask == AfterTask.DOKUWIKI ) && success) { //todo still no --upload :(
                     sendLogs(channel,
