@@ -170,7 +170,7 @@ public class IrcCommandListener {
         }
         String opts = parts[1];
         opts = URLEncoder.encode(opts);
-        String url = "https://archive.org/search?query=originalurl%3A%28" + opts + "%29";
+        String url = "https://archive.org/search?query=originalurl%3A%28*" + opts + "*%29";
         channel.sendMessage(nick + ": " + url);
     }
 
