@@ -1,6 +1,5 @@
 package dev.digitaldragon.util;
 
-import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.commands.IrcCommandListener;
 import lombok.Getter;
 import org.kitteh.irc.client.library.Client;

@@ -1,18 +1,15 @@
 package dev.digitaldragon.archive;
 
-import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
-import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.IRCClient;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 public class DokuWikiDumperPlugin extends ListenerAdapter {
     /*@Override

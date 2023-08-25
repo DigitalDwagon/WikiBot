@@ -4,8 +4,6 @@ import com.google.cloud.storage.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UploadObject {
     public static void uploadObject(

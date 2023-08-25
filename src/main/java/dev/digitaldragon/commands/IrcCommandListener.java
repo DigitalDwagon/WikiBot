@@ -10,18 +10,17 @@ import dev.digitaldragon.util.BulkArchiveParser;
 import dev.digitaldragon.util.TransferUploader;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
-import org.kitteh.irc.client.library.element.Actor;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
 
 public class IrcCommandListener {
     @Handler

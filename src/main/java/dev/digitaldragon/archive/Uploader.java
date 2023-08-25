@@ -1,19 +1,13 @@
 package dev.digitaldragon.archive;
 
-import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.util.AfterTask;
-import dev.digitaldragon.util.CommandTask;
-import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.IRCClient;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 
 public class Uploader {
     public static void reupload(String uploadJobId, String userName, String userMention, TextChannel channel) {

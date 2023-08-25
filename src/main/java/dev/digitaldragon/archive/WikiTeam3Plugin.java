@@ -1,10 +1,8 @@
 package dev.digitaldragon.archive;
 
-import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
-import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.IRCClient;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
@@ -13,10 +11,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class WikiTeam3Plugin extends ListenerAdapter {
     /*@Override

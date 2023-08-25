@@ -1,7 +1,6 @@
 package dev.digitaldragon.commands;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.Message;
