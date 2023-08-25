@@ -5,10 +5,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,39 +19,70 @@ public class LinkExtract {
     public static List<String> extractLinksFromFile(File file) {
         List<String> links = new ArrayList<>();
         try {
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             InputStream inputStream = new FileInputStream(file);
-            Document document = Jsoup.parse(inputStream, "UTF-8", "");
+            XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(inputStream);
 
-            //extract elements
-            Elements text = document.select("text");
-            Elements summaries = document.select("summary");
+            boolean insideSiteInfo = false;
+            boolean insideBase = false;
+            boolean insideParsable = false;
+            String baseText = null;
+            String wikiHost = null;
 
-            String wikiHost = getWikiHost(document);
-            links.addAll(getLinks(text, wikiHost));
-            links.addAll(getLinks(summaries, wikiHost));
-        } catch (IOException exception) {
-            System.out.println("Error parsing file " + file.getName());
-            exception.printStackTrace();
-        }
-        return links;
-    }
+            while (xmlStreamReader.hasNext()) {
+                int event = xmlStreamReader.next();
+                switch (event) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        String elementName = xmlStreamReader.getLocalName();
+                        if ("siteinfo".equals(elementName)) {
+                            insideSiteInfo = true;
+                        } else if ("base".equals(elementName) && insideSiteInfo) {
+                            insideBase = true;
+                        } else if ("text".equals(elementName) || "summary".equals(elementName)) {
+                            insideParsable = true;
+                        }
+                    break;
 
-    private static String getWikiHost(Document document) {
-        Element element = document.selectFirst("siteinfo > base");
-        if (element == null)
-            return null;
-        String url = element.text();
-        return getHostFromUrl(url);
-    }
+                    case XMLStreamConstants.CHARACTERS:
+                        if (insideBase) {
+                            baseText = xmlStreamReader.getText();
+                            wikiHost = getHostFromUrl(baseText);
+                            System.out.println(baseText);
+                            System.out.println(wikiHost);
+                        }
+                        if (insideParsable) {
+                            links.addAll(checkAndGetLinks(xmlStreamReader.getText(), wikiHost));
+                        }
+                    break;
 
-    private static List<String> getLinks(Elements elements, String wikiHost) {
-        List<String> links = new ArrayList<>();
-        for (Element element : elements) {
-            String text = element.text();
-            // generic text parsing for urls
-            if (text.contains("://")) {
-                links.addAll(getLinksFromBody(text, wikiHost));
+                    case XMLStreamConstants.END_ELEMENT:
+                        elementName = xmlStreamReader.getLocalName();
+                        if ("siteinfo".equals(elementName)) {
+                            insideSiteInfo = false;
+                        } else if ("text".equals(elementName) || "summary".equals(elementName)) {
+                            insideParsable = false;
+                        } if ("base".equals(elementName)) {
+                            insideBase = false;
+                        }
+                    break;
+                }
             }
+
+            xmlStreamReader.close();
+            inputStream.close();
+        } catch (XMLStreamException | IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return links;
+
+    }
+
+    private static List<String> checkAndGetLinks(String body, String wikiHost) {
+        List<String> links = new ArrayList<>();
+        if (body.contains("://")) {
+            links.addAll(getLinksFromBody(body, wikiHost));
         }
         return links;
     }
@@ -80,7 +112,6 @@ public class LinkExtract {
 
     private static String cleanUrl(String string) {
         // remove garbage trailing characters eg to fix "(available at https://example.com/)":
-
         if (string.contains("]")) {
             string = string.substring(0, string.indexOf("]"));
         }
@@ -121,6 +152,11 @@ public class LinkExtract {
             string = string.substring(0, string.length() - 3);
         }
 
+
+        //remove all text before the first "http" instance
+        if (string.contains("http")) {
+            string = string.substring(string.indexOf("http"));
+        }
 
         return string;
     }
