@@ -22,11 +22,13 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-alpha.12")
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
     implementation("org.kitteh.irc:client-lib:8.0.0")
-    // https://mvnrepository.com/artifact/com.martiansoftware/jsap
-    implementation("com.martiansoftware:jsap:2.1")
-    implementation("org.json:json:20230227")
+    implementation("org.json:json:20230227") //not used, but it might be useful later
     // https://mvnrepository.com/artifact/commons-io/commons-io
-    implementation("commons-io:commons-io:2.13.0")
+    //implementation("commons-io:commons-io:2.13.0")
+
+    //used for XML parsing in link extractor.
+    implementation("org.jsoup:jsoup:1.16.1")
+
 
 
     //compileOnly("org.projectlombok:lombok:1.18.26")

@@ -4,6 +4,7 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
+import dev.digitaldragon.backfeed.LinkExtract;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -14,10 +15,12 @@ import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -172,6 +175,19 @@ public class IrcCommandListener {
         opts = URLEncoder.encode(opts);
         String url = "https://archive.org/search?query=originalurl%3A%28*" + opts + "*%29";
         channel.sendMessage(nick + ": " + url);
+    }
+
+    @Handler
+    public void testParser(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!testparser"))
+            return;
+
+        File file = new File("test.xml");
+        List<String> urls = LinkExtract.extractLinksFromFile(file);
+        for (String url : urls) {
+            System.out.println(url);
+        }
+        event.getChannel().sendMessage("Done!");
     }
 
     private boolean isVoiced(Channel channel, User user) {
