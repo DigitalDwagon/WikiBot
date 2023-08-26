@@ -5,6 +5,8 @@ import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.backfeed.LinkExtract;
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.WikiTeam3Job;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
 import dev.digitaldragon.util.TransferUploader;
@@ -17,10 +19,7 @@ import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 public class IrcCommandListener {
     @Handler
@@ -195,6 +194,15 @@ public class IrcCommandListener {
             event.getChannel().sendMessage("Failed upload!");
 
         }
+    }
+
+    @Handler
+    public void testNewBackend(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!testnewbackend"))
+            return;
+
+        Job job = new WikiTeam3Job("testuser", UUID.randomUUID().toString(), "TestJob", "a");
+        job.run();
     }
 
     private boolean isVoiced(Channel channel, User user) {
