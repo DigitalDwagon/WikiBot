@@ -6,6 +6,7 @@ import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.backfeed.LinkExtract;
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.WikiTeam3Job;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
@@ -19,6 +20,8 @@ import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class IrcCommandListener {
@@ -109,7 +112,10 @@ public class IrcCommandListener {
                     return;
                 }
                 String explain = parser.getOption("explain").toString();
-                WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
+                //WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
+                Job job = new WikiTeam3Job(nick, UUID.randomUUID().toString(), "test job!", WikiTeam3Plugin.parserToOptions(parser), explain);
+                JobManager.submit(job);
+                channel.sendMessage(nick + ": Started job " + job.getId() + "!");
             }
             /*if (event.getMessage().startsWith("!mediawikibulk ")) {
                 Map<String, String> tasks;
@@ -136,6 +142,65 @@ public class IrcCommandListener {
             }
             Uploader.reupload(opts, nick, nick, discordChannel);
         }
+    }
+
+    @Handler
+    public void abortCommand(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!abort"))
+            return;
+
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+        if (event.getMessage().split(" ").length < 2) {
+            channel.sendMessage(nick + ": Not enough arguments!");
+            return;
+        }
+        String jobId = event.getMessage().split(" ")[1];
+        if (JobManager.abort(jobId)) {
+            channel.sendMessage(nick + ": Aborted job " + jobId + "!");
+        } else {
+            channel.sendMessage(nick + ": Failed to abort job " + jobId + "! It might not exist, be in a task that can't be aborted, or have already finished.");
+        }
+    }
+
+    @Handler
+    public void statusCommand(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!status"))
+            return;
+
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+        if (event.getMessage().split(" ").length < 2) {
+            channel.sendMessage(nick + ": Not enough arguments!");
+            return;
+        }
+        String jobId = event.getMessage().split(" ")[1];
+        Job job = JobManager.get(jobId);
+        if (job == null) {
+            channel.sendMessage(nick + ": Job " + jobId + " does not exist!");
+            return;
+        }
+        StringBuilder message = new StringBuilder();
+        message.append(nick).append(": Job").append(jobId).append(" (").append(job.getType()).append(")").append(" is ");
+        if (job.isRunning()) {
+            message.append("running");
+        } else {
+            message.append("not running");
+        }
+
+        if (job.getRunningTask() != null) {
+            message.append(" (task ").append(job.getRunningTask()).append("). ");
+        } else {
+            message.append(". ");
+        }
+
+        message.append("Status: ");
+        message.append(job.getStatus().toString());
+        message.append(". Started: ");
+        message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago.");
+
+
+        channel.sendMessage(message.toString());
     }
 
     @Handler
@@ -201,8 +266,8 @@ public class IrcCommandListener {
         if (!event.getMessage().startsWith("!testnewbackend"))
             return;
 
-        Job job = new WikiTeam3Job("testuser", UUID.randomUUID().toString(), "TestJob", "a");
-        job.run();
+        //Job job = new WikiTeam3Job("testuser", UUID.randomUUID().toString(), "TestJob", "a");
+        //job.run();
     }
 
     private boolean isVoiced(Channel channel, User user) {
