@@ -55,6 +55,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         processBooleanOption(event, "xml_revisions", "--xmlrevisions", options);
         processBooleanOption(event, "current_only", "--curonly", options);
         processBooleanOption(event, "force", "--force", options);
+        processBooleanOption(event, "disable_image_verification", "--disable-image-verify", options);
 
         processUrlOption(event, "api", "--api", options);
         processUrlOption(event, "index", "--index", options);
@@ -118,6 +119,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parser.addUrlOption("url");
         parser.addStringOption("explain");
         parser.addBooleanOption("force");
+        parser.addBooleanOption("disable-image-verify");
         return parser;
     }
 
@@ -136,6 +138,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parseBoolean("curonly", commandLineParser, options);
         parseBoolean("insecure", commandLineParser, options);
         parseBoolean("force", commandLineParser, options);
+        parseBoolean("disable-image-verify", commandLineParser, options);
         parseUrl("api", commandLineParser, options);
         parseUrl("index", commandLineParser, options);
 
