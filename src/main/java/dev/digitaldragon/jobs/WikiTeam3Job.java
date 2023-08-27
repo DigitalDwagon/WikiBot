@@ -1,17 +1,24 @@
 package dev.digitaldragon.jobs;
 
+import dev.digitaldragon.backfeed.LinkExtract;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.ThreadChannel;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public class WikiTeam3Job implements Job {
     private String id = null;
-    private String name = null;
-    private String userName = null;
+    private String name = "undefined";
+    private String userName = "undefined";
     private JobStatus status = null;
     private String runningTask = null;
     private Instant startTime = null;
@@ -24,9 +31,15 @@ public class WikiTeam3Job implements Job {
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    private final GenericLogsHandler handler = new GenericLogsHandler(this);
+    @Setter
+    private ThreadChannel threadChannel = null;
+    private GenericLogsHandler handler;
 
     public WikiTeam3Job(String userName, String id, String name, String params, String explanation) {
+        System.out.println(name);
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
         this.userName = userName;
         this.id = id;
         this.name = name;
@@ -34,11 +47,13 @@ public class WikiTeam3Job implements Job {
         this.status = JobStatus.QUEUED;
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.downloadCommand = new RunCommand("wikiteam3dumpgenerator " + params, directory, handler::onMessage);
         this.explanation = explanation;
+        this.handler = new GenericLogsHandler(this);
+        this.downloadCommand = new RunCommand("wikiteam3dumpgenerator " + params, directory, handler);
     }
 
     private void failure() {
+        logsUrl = CommonTasks.uploadLogs(this);
         status = JobStatus.FAILED;
         if (runningTask.equals("AbortTask")) {
             status = JobStatus.ABORTED;
@@ -50,6 +65,7 @@ public class WikiTeam3Job implements Job {
     public void run() {
         startTime = Instant.now();
         status = JobStatus.RUNNING;
+
         if (!runDownload()) {
             failure();
             return;
@@ -59,15 +75,21 @@ public class WikiTeam3Job implements Job {
             return;
         }
 
+        logsUrl = CommonTasks.uploadLogs(this);
+
+        runningTask = "LinkExtract";
+        CommonTasks.extractLinks(this);
+
         status = JobStatus.COMPLETED;
         runningTask = null;
+        handler.end();
         JobEvents.onJobSuccess(this);
     }
 
     private boolean runDownload() {
         runningTask = "DownloadMediaWiki";
         handler.onMessage("----- Bot: Task " + runningTask + " started -----");
-        return runAndVerify(downloadCommand);
+        return CommonTasks.runAndVerify(downloadCommand, handler, runningTask);
     }
 
     private boolean runUpload() {
@@ -86,25 +108,10 @@ public class WikiTeam3Job implements Job {
         if (uploadCommand == null) {
             return false;
         }
-        return runAndVerify(uploadCommand);
+        return CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
     }
 
-    private boolean runAndVerify(RunCommand uploadCommand) {
-        uploadCommand.run();
 
-        try {
-            int exitCode = uploadCommand.getProcess().waitFor();
-            handler.onMessage("----- Bot: Task " + runningTask + " finished -----");
-            handler.onMessage("----- Bot: Exit code: " + exitCode + " -----");
-
-            if (exitCode == 0) {
-                return true;
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public boolean abort() {
         if (runningTask.equals("DownloadMediaWiki")) {

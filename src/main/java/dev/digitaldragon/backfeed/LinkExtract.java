@@ -1,5 +1,7 @@
 package dev.digitaldragon.backfeed;
 
+import dev.digitaldragon.jobs.Job;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
