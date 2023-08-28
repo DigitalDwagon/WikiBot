@@ -5,10 +5,7 @@ import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.backfeed.LinkExtract;
-import dev.digitaldragon.jobs.DokuWikiDumperJob;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.WikiTeam3Job;
+import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
 import dev.digitaldragon.util.EnvConfig;
@@ -78,7 +75,7 @@ public class IrcCommandListener {
                 if (parser.getOption("old-backend") == Boolean.TRUE) {
                     DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, DokuWikiDumperPlugin.parserToOptions(parser));
                 } else {
-                    Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), url, WikiTeam3Plugin.parserToOptions(parser), explain);
+                    Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), url, DokuWikiDumperPlugin.parserToOptions(parser), explain);
                     JobManager.submit(job);
                 }
             }
@@ -162,11 +159,21 @@ public class IrcCommandListener {
         }
 
         if (event.getMessage().startsWith("!reupload")) {
+            boolean oldbackend = false;
+            if (opts.endsWith(" oldbackend")) {
+                oldbackend = true;
+                opts = opts.replace(" oldbackend", "");
+            }
             if (opts.contains(" ")) {
                 channel.sendMessage(nick + ": Too many arguments!");
                 return;
             }
-            Uploader.reupload(opts, nick, nick, discordChannel);
+            if (oldbackend) {
+                Uploader.reupload(opts, nick, nick, discordChannel);
+            } else {
+                Job job = new ReuploadJob(nick, UUID.randomUUID().toString(), opts);
+                JobManager.submit(job);
+            }
         }
     }
 

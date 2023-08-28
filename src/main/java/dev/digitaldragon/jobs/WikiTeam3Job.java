@@ -35,6 +35,8 @@ public class WikiTeam3Job implements Job {
     private ThreadChannel threadChannel = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
+    private boolean aborted;
+
 
     public WikiTeam3Job(String userName, String id, String name, String params, String explanation) {
         System.out.println(name);
@@ -57,7 +59,8 @@ public class WikiTeam3Job implements Job {
         logsUrl = CommonTasks.uploadLogs(this);
         status = JobStatus.FAILED;
         failedTaskCode = code;
-        if (runningTask.equals("AbortTask")) {
+        handler.end();
+        if (aborted) {
             status = JobStatus.ABORTED;
             JobEvents.onJobAbort(this);
         } else {
@@ -66,6 +69,8 @@ public class WikiTeam3Job implements Job {
     }
 
     public void run() {
+        if (aborted)
+            return;
         startTime = Instant.now();
         status = JobStatus.RUNNING;
 
@@ -125,7 +130,7 @@ public class WikiTeam3Job implements Job {
             downloadCommand.getProcess().destroyForcibly();
             status = JobStatus.ABORTED;
             handler.onMessage("----- Bot: Aborted task " + runningTask + " -----");
-            runningTask = "AbortTask";
+            aborted = true;
             return true;
         }
         return false;

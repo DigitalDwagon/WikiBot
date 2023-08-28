@@ -43,6 +43,8 @@ public class GenericLogsHandler implements StringLogHandler {
                     this.threadChannel = thread;
                     job.setThreadChannel(thread);
                 });
+
+        onMessage("----- Bot: Logs manager init -----");
     }
 
     public void onMessage(String message) {
