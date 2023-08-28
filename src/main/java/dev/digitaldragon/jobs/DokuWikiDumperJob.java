@@ -1,21 +1,15 @@
 package dev.digitaldragon.jobs;
 
-import dev.digitaldragon.backfeed.LinkExtract;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Getter
-public class WikiTeam3Job implements Job {
+public class DokuWikiDumperJob implements Job {
     private String id = null;
     private String name = "undefined";
     private String userName = "undefined";
@@ -36,7 +30,7 @@ public class WikiTeam3Job implements Job {
     private GenericLogsHandler handler;
     private int failedTaskCode;
 
-    public WikiTeam3Job(String userName, String id, String name, String params, String explanation) {
+    public DokuWikiDumperJob(String userName, String id, String name, String params, String explanation) {
         System.out.println(name);
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -50,7 +44,7 @@ public class WikiTeam3Job implements Job {
         this.directory.mkdirs();
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand("wikiteam3dumpgenerator " + params, directory, handler);
+        this.downloadCommand = new RunCommand("dokuWikiDumper " + params, directory, handler);
     }
 
     private void failure(int code) {
@@ -74,16 +68,8 @@ public class WikiTeam3Job implements Job {
             failure(runDownload);
             return;
         }
-        int runUpload = runUpload();
-        if (runUpload != 0) {
-            failure(runUpload);
-            return;
-        }
 
         logsUrl = CommonTasks.uploadLogs(this);
-
-        runningTask = "LinkExtract";
-        CommonTasks.extractLinks(this);
 
         status = JobStatus.COMPLETED;
         runningTask = null;
@@ -92,34 +78,14 @@ public class WikiTeam3Job implements Job {
     }
 
     private int runDownload() {
-        runningTask = "DownloadMediaWiki";
+        runningTask = "DokuWikiDumper";
         handler.onMessage("----- Bot: Task " + runningTask + " started -----");
         return CommonTasks.runAndVerify(downloadCommand, handler, runningTask);
     }
 
-    private int runUpload() {
-        runningTask = "UploadMediaWiki";
-        handler.onMessage("----- Bot: Task " + runningTask + " started -----");
-        if (directory.listFiles() == null) {
-            return 999;
-        }
-
-        for (File file : directory.listFiles()) {
-            if (file.isDirectory()) {
-                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", directory, handler::onMessage);
-                break;
-            }
-        }
-        if (uploadCommand == null) {
-            return 999;
-        }
-        return CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
-    }
-
-
 
     public boolean abort() {
-        if (runningTask.equals("DownloadMediaWiki")) {
+        if (runningTask.equals("DokuWikiDumper")) {
             handler.onMessage("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
             downloadCommand.getProcess().destroyForcibly();
@@ -138,10 +104,10 @@ public class WikiTeam3Job implements Job {
 
 
     public JobType getType() {
-        return JobType.WIKITEAM3;
+        return JobType.DOKUWIKIDUMPER;
     }
 
     public List<String> getAllTasks() {
-        return List.of("DownloadMediaWiki", "UploadMediaWiki", "LinkExtract");
+        return List.of("DokuWikiDumper");
     }
 }

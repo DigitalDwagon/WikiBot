@@ -5,11 +5,13 @@ import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.backfeed.LinkExtract;
+import dev.digitaldragon.jobs.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.WikiTeam3Job;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.BulkArchiveParser;
+import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.TransferUploader;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
@@ -37,7 +39,7 @@ public class IrcCommandListener {
             channel.sendMessage(nick + ": Something went wrong.");
         }
 
-        if (!isVoiced(channel, event.getActor())) {
+        if (!isVoiced(channel, event.getActor()) && !Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"))) {
             event.getChannel().sendMessage(event.getActor().getNick() + ": Requires (@) or (+).");
             return;
         }
@@ -51,6 +53,7 @@ public class IrcCommandListener {
 
         if (event.getMessage().startsWith("!doku")) {
             CommandLineParser parser = DokuWikiDumperPlugin.getCommandLineParser();
+            parser.addBooleanOption("old-backend");
             try {
                 parser.parse(opts.split(" "));
             } catch (IllegalArgumentException e) {
@@ -71,7 +74,13 @@ public class IrcCommandListener {
                 }
                 String explain = parser.getOption("explain").toString();
 
-                DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, DokuWikiDumperPlugin.parserToOptions(parser));
+
+                if (parser.getOption("old-backend") == Boolean.TRUE) {
+                    DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, DokuWikiDumperPlugin.parserToOptions(parser));
+                } else {
+                    Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), url, WikiTeam3Plugin.parserToOptions(parser), explain);
+                    JobManager.submit(job);
+                }
             }
             if (event.getMessage().startsWith("!dokubulk ")) {
                 String options = DokuWikiDumperPlugin.parserToOptions(parser);
@@ -87,7 +96,12 @@ public class IrcCommandListener {
                     String jobUrl = entry.getKey();
                     String note = entry.getValue();
 
-                    DokuWikiDumperPlugin.startJob(discordChannel, jobUrl, note, nick, nick, options);
+                    if (parser.getOption("old-backend") == Boolean.TRUE) {
+                        DokuWikiDumperPlugin.startJob(discordChannel, jobUrl, note, nick, nick, options);
+                    } else {
+                        Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), jobUrl, WikiTeam3Plugin.parserToOptions(parser), note);
+                        JobManager.submit(job);
+                    }
                 }
                 channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
             }
@@ -95,6 +109,7 @@ public class IrcCommandListener {
 
         if (event.getMessage().startsWith("!mediawiki")) {
             CommandLineParser parser = WikiTeam3Plugin.getCommandLineParser();
+            parser.addBooleanOption("old-backend");
             try {
                 parser.parse(opts.split(" "));
             } catch (IllegalArgumentException e) {
@@ -106,16 +121,27 @@ public class IrcCommandListener {
                 channel.sendMessage(nick + ": You need to specify --url, --api, or --index! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
                 return;
             }
+
+            String jobName = parser.getOption("url") == null ? null : parser.getOption("url").toString();
+            if (jobName == null)
+                jobName = parser.getOption("api") == null ? null : parser.getOption("api").toString();
+            if (jobName == null)
+                jobName = parser.getOption("index") == null ? null : parser.getOption("index").toString();
+
+
             if (event.getMessage().startsWith("!mediawikisingle ")) {
                 if (parser.getOption("explain") == null) {
                     channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
                     return;
                 }
                 String explain = parser.getOption("explain").toString();
-                //WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
-                Job job = new WikiTeam3Job(nick, UUID.randomUUID().toString(), "test job!", WikiTeam3Plugin.parserToOptions(parser), explain);
-                JobManager.submit(job);
-                channel.sendMessage(nick + ": Started job " + job.getId() + "!");
+
+                if (parser.getOption("old-backend") == Boolean.TRUE) {
+                    WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
+                } else {
+                    Job job = new WikiTeam3Job(nick, UUID.randomUUID().toString(), jobName, WikiTeam3Plugin.parserToOptions(parser), explain);
+                    JobManager.submit(job);
+                }
             }
             /*if (event.getMessage().startsWith("!mediawikibulk ")) {
                 Map<String, String> tasks;
@@ -151,6 +177,11 @@ public class IrcCommandListener {
 
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
+        if (!isVoiced(channel, event.getActor()) && !Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"))) {
+            event.getChannel().sendMessage(event.getActor().getNick() + ": Requires (@) or (+).");
+            return;
+        }
+
         if (event.getMessage().split(" ").length < 2) {
             channel.sendMessage(nick + ": Not enough arguments!");
             return;
@@ -197,7 +228,8 @@ public class IrcCommandListener {
         message.append("Status: ");
         message.append(job.getStatus().toString());
         message.append(". Started: ");
-        message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago.");
+        message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
+        message.append("\"").append(job.getExplanation()).append("\"");
 
 
         channel.sendMessage(message.toString());

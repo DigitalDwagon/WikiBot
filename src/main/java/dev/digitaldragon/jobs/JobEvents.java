@@ -7,16 +7,15 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 public class JobEvents {
     public static void onJobFailure(Job job) {
-        IRCClient.sendMessage(job.getUserName(), "Success! Job " + job.getId() + " completed successfully.");
-        IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
+        IRCClient.sendMessage(job.getUserName(), "Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".");
         IRCClient.sendMessage("Explanation: " + job.getExplanation());
         IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
 
         TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
         if (failChannel != null)
-            failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: %s\nExplanation: ```%s```", job.getName(), job.getUserName(), job.getThreadChannel(), job.getLogsUrl(), job.getId(), job.getArchiveUrl(), job.getExplanation())).queue();
+            failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nFailed Task: %s\nExit code: `%s`\nExplanation: ```%s```", job.getName(), job.getUserName(), job.getThreadChannel(), job.getLogsUrl(), job.getId(), job.getRunningTask(), job.getFailedTaskCode(), job.getExplanation())).queue();
 
-        job.getThreadChannel().sendMessage("Job ended.").queue();
+        job.getThreadChannel().sendMessage("Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".").queue();
         job.getThreadChannel().sendMessage("Explanation: ```" + job.getExplanation() + "```").queue();
         job.getThreadChannel().sendMessage("Logs are available at " + job.getLogsUrl()).queue();
         job.getThreadChannel().sendMessage("Task indicated as failed.").queue();
@@ -39,14 +38,16 @@ public class JobEvents {
 
     public static void onJobAbort(Job job) {
         IRCClient.sendMessage(job.getUserName(), "Your job " + job.getId() + " was aborted.");
+        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+
+        TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
+        if (failChannel != null)
+            failChannel.sendMessage(String.format("%s for %s was aborted:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nFailed Task: %s\nExit code: `%s`\nExplanation: ```%s```", job.getName(), job.getUserName(), job.getThreadChannel(), job.getLogsUrl(), job.getId(), job.getRunningTask(), job.getFailedTaskCode(), job.getExplanation())).queue();
+
     }
 
     public static void onJobQueued(Job job) {
         IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
 
-    }
-
-    public static void onJobLogLine(Job job, String log) {
-        //log to discord
     }
 }

@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.Set;
 
 public class CommonTasks {
-    public static boolean runAndVerify(RunCommand command, GenericLogsHandler handler, String taskName) {
+    public static int runAndVerify(RunCommand command, GenericLogsHandler handler, String taskName) {
         command.run();
 
         try {
@@ -15,13 +15,11 @@ public class CommonTasks {
             handler.onMessage("----- Bot: Task " + taskName + " finished -----");
             handler.onMessage("----- Bot: Exit code: " + exitCode + " -----");
 
-            if (exitCode == 0) {
-                return true;
-            }
+            return exitCode;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return false;
+        return 999;
     }
 
     public static String uploadLogs(Job job) {

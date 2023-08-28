@@ -25,4 +25,5 @@ public interface Job {
     public ThreadChannel getThreadChannel();
     public void setThreadChannel(ThreadChannel channel);
     public void setArchiveUrl(String url);
+    public int getFailedTaskCode();
 }

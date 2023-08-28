@@ -122,7 +122,8 @@ public class WikiBot {
                         .addOption(OptionType.BOOLEAN, "current_only", "Only dump the latest revision, no history. (default off)", false)
                         .addOption(OptionType.INTEGER, "api_chunksize", "Chunk size for MediaWiki API requests (1-500, default 50)", false)
                         .addOption(OptionType.BOOLEAN, "force", "Force download, even when there is a recent dump on IA (default off)", false)
-                        .addOption(OptionType.BOOLEAN, "disable_image_verification", "Disable verification of the image size and hash after it's downloaded (default off)", false);
+                        .addOption(OptionType.BOOLEAN, "disable_image_verification", "Disable verification of the image size and hash after it's downloaded (default off)", false)
+                        .addOption(OptionType.BOOLEAN, "old_backend", "Run jobs through the legacy backend. WARNING: DISABLES /STATUS AND /ABORT. (default off)", false);
             }
 
             testServer.upsertCommand("mediawikiarchive", "Archive a MediaWiki using WikiTeam3 (mediawiki-scraper) and upload to archive.org")
