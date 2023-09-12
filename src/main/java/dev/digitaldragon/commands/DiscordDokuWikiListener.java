@@ -2,6 +2,9 @@ package dev.digitaldragon.commands;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.DokuWikiDumperPlugin;
+import dev.digitaldragon.jobs.DokuWikiDumperJob;
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -13,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class DiscordDokuWikiListener extends ListenerAdapter {
     @Override
@@ -32,7 +36,11 @@ public class DiscordDokuWikiListener extends ListenerAdapter {
                 return;
             String explain = Objects.requireNonNull(event.getOption("explain")).getAsString();
             event.getHook().editOriginal("Launching job for <" + url + ">").queue();
-            DokuWikiDumperPlugin.startJob(channel, url, explain, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
+            //DokuWikiDumperPlugin.startJob(channel, url, explain, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
+            String id = UUID.randomUUID().toString();
+            Job job = new DokuWikiDumperJob(event.getUser().getName(), id, url, DokuWikiDumperPlugin.parseDiscordOptions(event), explain);
+            JobManager.submit(job);
+
         }
 
         if (Objects.equals(event.getSubcommandName(), "bulk")) {
@@ -48,7 +56,10 @@ public class DiscordDokuWikiListener extends ListenerAdapter {
                 String url = entry.getKey();
                 String note = entry.getValue();
 
-                DokuWikiDumperPlugin.startJob(channel, url, note, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
+                //DokuWikiDumperPlugin.startJob(channel, url, note, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
+                String id = UUID.randomUUID().toString();
+                Job job = new DokuWikiDumperJob(event.getUser().getName(), id, url, DokuWikiDumperPlugin.parseDiscordOptions(event), note);
+                JobManager.submit(job);
             }
             event.getHook().editOriginal("Launched " + tasks.size() + " jobs!").queue();
         }

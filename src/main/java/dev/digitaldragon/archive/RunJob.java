@@ -32,7 +32,6 @@ public class RunJob {
      * @param channel     the thread channel to send the logs and notifications to
      * @param jobId       the ID of the job associated with the archive process
      * @param tasks       tasks to perform during the archive process
-     * @throws IllegalArgumentException if no tasks are provided
      */
     public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, AfterTask afterTask, CommandTask... tasks) {
         WikiBot.getExecutorService().submit(() -> {

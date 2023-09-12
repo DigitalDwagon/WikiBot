@@ -209,7 +209,7 @@ public class IrcCommandListener {
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
         if (event.getMessage().split(" ").length < 2) {
-            channel.sendMessage(nick + ": Not enough arguments!");
+            channel.sendMessage(nick + ": " + JobManager.getActiveJobs().size() + " running jobs.");
             return;
         }
         String jobId = event.getMessage().split(" ")[1];

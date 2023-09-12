@@ -2,6 +2,10 @@ package dev.digitaldragon.commands;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.ReuploadJob;
+import dev.digitaldragon.jobs.WikiTeam3Job;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -13,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class DiscordMediaWikiListener extends ListenerAdapter {
     @Override
@@ -32,7 +37,9 @@ public class DiscordMediaWikiListener extends ListenerAdapter {
             String explain = Objects.requireNonNull(event.getOption("explain")).getAsString();
             event.getHook().editOriginal("Launching job!").queue();
             String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
-            WikiTeam3Plugin.startJob(channel, explain, event.getUser().getAsMention(), event.getUser().getName(), options);
+            //WikiTeam3Plugin.startJob(channel, explain, event.getUser().getAsMention(), event.getUser().getName(), options);
+            Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), url + "wikiteam3", options, explain);
+            JobManager.submit(job);
         }
 
         if (Objects.equals(event.getSubcommandName(), "bulk")) {
@@ -49,7 +56,9 @@ public class DiscordMediaWikiListener extends ListenerAdapter {
                 String note = entry.getValue();
                 String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
 
-                WikiTeam3Plugin.startJob(channel, note, event.getUser().getAsMention(), event.getUser().getName(), options);
+                //WikiTeam3Plugin.startJob(channel, note, event.getUser().getAsMention(), event.getUser().getName(), options);
+                Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), url, options, note);
+                JobManager.submit(job);
             }
             event.getHook().editOriginal("Launched " + tasks.size() + " jobs!").queue();
         }
