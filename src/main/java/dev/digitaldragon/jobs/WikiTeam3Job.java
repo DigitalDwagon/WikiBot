@@ -87,7 +87,6 @@ public class WikiTeam3Job implements Job {
 
         logsUrl = CommonTasks.uploadLogs(this);
 
-        JobEvents.onJobTaskChange(this);
         runningTask = "LinkExtract";
         CommonTasks.extractLinks(this);
 
@@ -105,7 +104,6 @@ public class WikiTeam3Job implements Job {
 
     private int runUpload() {
         runningTask = "UploadMediaWiki";
-        JobEvents.onJobTaskChange(this);
         handler.onMessage("----- Bot: Task " + runningTask + " started -----");
         if (directory.listFiles() == null) {
             return 999;
