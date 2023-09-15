@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 public class JobEvents {
     public static void onJobFailure(Job job) { //This method is called when a job fails (due to an improper task exit code, etc, as dictated by the job). The runningTask is the task that failed
+        JobManager.pokeQueue(); // TODO not great
         IRCClient.sendMessage(job.getUserName(), "Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".");
         IRCClient.sendMessage("Explanation: " + job.getExplanation());
         IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
@@ -22,6 +23,7 @@ public class JobEvents {
     }
 
     public static void onJobSuccess(Job job) { //This method is called when a job succeeds.
+        JobManager.pokeQueue(); // TODO not great
         IRCClient.sendMessage(job.getUserName(), "Success! Job " + job.getId() + " completed successfully.");
         IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
         IRCClient.sendMessage("Explanation: " + job.getExplanation());
@@ -49,5 +51,9 @@ public class JobEvents {
     public static void onJobQueued(Job job) { //This method is called when a job is queued, but before it starts running.
         IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
 
+    }
+
+    public static void onJobTaskChange(Job job) {
+        JobManager.pokeQueue(); // TODO not great
     }
 }
