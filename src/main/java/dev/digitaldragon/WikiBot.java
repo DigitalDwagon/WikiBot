@@ -7,8 +7,12 @@ import dev.digitaldragon.commands.DiscordAdminListener;
 import dev.digitaldragon.commands.DiscordDokuWikiListener;
 import dev.digitaldragon.commands.DiscordMediaWikiListener;
 import dev.digitaldragon.commands.DiscordReuploadListener;
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.warcs.WarcproxManager;
+import dev.digitaldragon.web.DashboardWebsocket;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -19,6 +23,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.json.JSONObject;
+import spark.Spark;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -27,6 +33,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static spark.Spark.*;
 
 public class WikiBot {
     @Getter
@@ -37,6 +45,11 @@ public class WikiBot {
 
 
     public static void main (String[] args) throws LoginException, InterruptedException, IOException {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down...");
+            WarcproxManager.stopCleanly();
+        }));
+        WarcproxManager.run();
         instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
@@ -136,6 +149,32 @@ public class WikiBot {
                     .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
                     .queue();
         }
+        // WebSocket route definition (as mentioned in previous response).
+        webSocket("/api/logfirehose", DashboardWebsocket.class);
+        Spark.port(4567);
+        enableCORS("*", "*", "*");
+        // API endpoint to retrieve job information by ID.
+        get("/api/jobs/:id", (req, res) -> {
+            String jobId = req.params(":id");
+            Job job = JobManager.get(jobId);
+            if (job != null) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("jobId", jobId);
+                jsonObject.put("status", job.getStatus());
+                jsonObject.put("explanation", job.getExplanation());
+                jsonObject.put("user", job.getUserName());
+                jsonObject.put("started", job.getStartTime());
+                jsonObject.put("name", job.getName());
+
+                res.status(200);
+                return jsonObject.toString();
+            } else {
+                res.status(404);
+                return "Job not found";
+            }
+        });
+
+
     }
 
     public static TextChannel getLogsChannel() {
@@ -145,6 +184,30 @@ public class WikiBot {
         }
         TextChannel channel = (TextChannel) testServer.getGuildChannelById(EnvConfig.getConfigs().get("discord_channel").trim());
         return channel;
+    }
+
+
+    private static void enableCORS(final String origin, final String methods, final String headers) {
+        options("/*", (request, response) -> {
+            String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+            if (accessControlRequestHeaders != null) {
+                response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+            }
+
+            String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+            if (accessControlRequestMethod != null) {
+                response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+            }
+
+            return "OK";
+        });
+
+        before((request, response) -> {
+            response.header("Access-Control-Allow-Origin", origin);
+            response.header("Access-Control-Request-Method", methods);
+            response.header("Access-Control-Allow-Headers", headers);
+            response.type("application/json");
+        });
     }
 
 }
