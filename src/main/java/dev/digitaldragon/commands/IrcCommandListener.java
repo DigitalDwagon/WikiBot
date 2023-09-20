@@ -209,7 +209,7 @@ public class IrcCommandListener {
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
         if (event.getMessage().split(" ").length < 2) {
-            channel.sendMessage(nick + ": " + JobManager.getActiveJobs().size() + " running jobs.");
+            channel.sendMessage(nick + ": " + JobManager.getActiveJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.");
             return;
         }
         String jobId = event.getMessage().split(" ")[1];
@@ -219,7 +219,7 @@ public class IrcCommandListener {
             return;
         }
         StringBuilder message = new StringBuilder();
-        message.append(nick).append(": Job").append(jobId).append(" (").append(job.getType()).append(")").append(" is ");
+        message.append(nick).append(": Job ").append(jobId).append(" (").append(job.getType()).append(")").append(" is ");
         if (job.isRunning()) {
             message.append("running");
         } else {
@@ -242,21 +242,14 @@ public class IrcCommandListener {
         channel.sendMessage(message.toString());
     }
 
+
     @Handler
     public void helpCommand(ChannelMessageEvent event) {
         if (!event.getMessage().startsWith("!help"))
             return;
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
-        channel.sendMessage(nick + ": Bot operator is DigitalDragons.");
-        channel.sendMessage(nick + ": !dokusingle <--options> - Archive a DokuWiki with DokuWikiDumper. --explain <your explanation> and --url <target DokuWiki URL) are required.");
-        channel.sendMessage(nick + ": !dokubulk <--options> - Archive DokuWikis in bulk via a text file specified with --url <file URL>. Each line should be a URL followed by an explanation, separated by a space. Explanation optional, but highly encouraged.");
-        channel.sendMessage(nick + ": Supported DokuWikiDumper options are: --retry --ignore-disposition-header-missing --hard-retry --delay --threads --ignore-action-disabled-edit --insecure --content --media --html --pdf --auto --current-only");
-        channel.sendMessage(nick + ": !mediawikisingle <--options> - Archive a MediaWiki with WikiTeam3. --explain <your explanation> and --url <target DokuWiki URL) are required.");
-        //channel.sendMessage(nick + ": !mediawikibulk <--options> - The same as dokubulk, but using WikiTeam3 tools."); currently disabled on IRC side.
-        channel.sendMessage(nick + ": Supported WikiTeam3 options are: --delay --retries --api_chunksize --xml --images --bypass-cdn-image-compression --xmlapiexport --xmlrevisions --curonly --api --index --url");
-        channel.sendMessage(nick + ": !reupload <job ID> - Reupload a job that failed to upload the first time.");
-        channel.sendMessage(nick + ": !check <search> - Generate an Internet Archive search link for a given string. Checks the originalurl field.");
+        channel.sendMessage(nick + ": https://cdn.digitaldragon.dev/wikibot/help.html");
     }
 
     @Handler

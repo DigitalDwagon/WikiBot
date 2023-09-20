@@ -4,6 +4,7 @@ import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
 import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.warcs.WarcproxManager;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -107,6 +108,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parser.addDoubleOption("delay");
         parser.addIntOption("retries");
         parser.addIntOption("api_chunksize");
+        parser.addIntOption("index-check-threshold");
         parser.addBooleanOption("xml");
         parser.addBooleanOption("images");
         parser.addBooleanOption("bypass-cdn-image-compression");
@@ -120,6 +122,9 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parser.addStringOption("explain");
         parser.addBooleanOption("force");
         parser.addBooleanOption("disable-image-verify");
+        parser.addBooleanOption("warc-images");
+        parser.addBooleanOption("warc-pages");
+        parser.addBooleanOption("warc-pages-history");
         return parser;
     }
 
@@ -129,6 +134,7 @@ public class WikiTeam3Plugin extends ListenerAdapter {
 
         parseInt("retries", commandLineParser, options);
         parseInt("api_chunksize", commandLineParser, options);
+        parseInt("index-check-threshold", commandLineParser, options);
 
         parseBoolean("xml", commandLineParser, options);
         parseBoolean("images", commandLineParser, options);
@@ -139,8 +145,22 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         parseBoolean("insecure", commandLineParser, options);
         parseBoolean("force", commandLineParser, options);
         parseBoolean("disable-image-verify", commandLineParser, options);
+        parseBoolean("insecure", commandLineParser, options);
+        parseBoolean("force", commandLineParser, options);
+        parseBoolean("warc-images", commandLineParser, options);
+        parseBoolean("warc-pages", commandLineParser, options);
+        parseBoolean("warc-pages-history", commandLineParser, options);
         parseUrl("api", commandLineParser, options);
         parseUrl("index", commandLineParser, options);
+
+        if (commandLineParser.getOption("warc-images") == Boolean.TRUE ||
+                commandLineParser.getOption("warc-pages") == Boolean.TRUE ||
+                commandLineParser.getOption("warc-pages-history") == Boolean.TRUE) {
+            options.append("--warc-proxy localhost:8000 --warc-ca-path ");
+            options.append(WarcproxManager.getWarcproxCa().getAbsolutePath());
+            options.append(" ");
+
+        }
 
         if (commandLineParser.getOption("url") != null) {
             options.append(commandLineParser.getOption("url"));

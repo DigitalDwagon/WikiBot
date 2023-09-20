@@ -19,10 +19,6 @@ public class JobManager {
         executorService.submit(job::run);
     }
 
-    public static void submit(Job job, String bucket) {
-
-    }
-
     public static boolean abort(String id) {
         Job job = jobs.get(id);
         if (job != null && job.isRunning()) {

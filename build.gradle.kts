@@ -33,7 +33,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.luben/zstd-jni
     implementation("com.github.luben:zstd-jni:1.5.5-5")
 
-
+    //web library for dashboard
+    implementation("com.sparkjava:spark-core:2.9.4")
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }

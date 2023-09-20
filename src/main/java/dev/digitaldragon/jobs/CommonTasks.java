@@ -7,6 +7,8 @@ import java.io.*;
 import java.util.Set;
 
 public class CommonTasks {
+
+
     public static int runAndVerify(RunCommand command, StringLogHandler handler, String taskName) {
         command.run();
 
