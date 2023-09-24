@@ -1,10 +1,10 @@
-package dev.digitaldragon.commands;
+package dev.digitaldragon.interfaces.discord;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.archive.DokuWikiDumperPlugin;
-import dev.digitaldragon.jobs.DokuWikiDumperJob;
+import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.WikiTeam3Job;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -18,11 +18,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DiscordDokuWikiListener extends ListenerAdapter {
+public class DiscordMediaWikiListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if (!event.getName().equals("dokuwikiarchive"))
+        if (!event.getName().equals("mediawikiarchive"))
             return;
+
         TextChannel channel = WikiBot.getLogsChannel();
         if (channel == null) {
             event.reply("Something went wrong.").setEphemeral(true).queue();
@@ -32,15 +33,12 @@ public class DiscordDokuWikiListener extends ListenerAdapter {
         event.deferReply().setEphemeral(true).queue();
         if (Objects.equals(event.getSubcommandName(), "single")) {
             String url = getUrlOption(event, "url");
-            if (url == null)
-                return;
             String explain = Objects.requireNonNull(event.getOption("explain")).getAsString();
-            event.getHook().editOriginal("Launching job for <" + url + ">").queue();
-            //DokuWikiDumperPlugin.startJob(channel, url, explain, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
-            String id = UUID.randomUUID().toString();
-            Job job = new DokuWikiDumperJob(event.getUser().getName(), id, url, DokuWikiDumperPlugin.parseDiscordOptions(event), explain);
+            event.getHook().editOriginal("Launching job!").queue();
+            String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
+            //WikiTeam3Plugin.startJob(channel, explain, event.getUser().getAsMention(), event.getUser().getName(), options);
+            Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), url + "wikiteam3", options, explain);
             JobManager.submit(job);
-
         }
 
         if (Objects.equals(event.getSubcommandName(), "bulk")) {
@@ -55,10 +53,10 @@ public class DiscordDokuWikiListener extends ListenerAdapter {
             for (Map.Entry<String, String> entry : tasks.entrySet()) {
                 String url = entry.getKey();
                 String note = entry.getValue();
+                String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
 
-                //DokuWikiDumperPlugin.startJob(channel, url, note, event.getUser().getAsMention(), event.getUser().getName(), DokuWikiDumperPlugin.parseDiscordOptions(event));
-                String id = UUID.randomUUID().toString();
-                Job job = new DokuWikiDumperJob(event.getUser().getName(), id, url, DokuWikiDumperPlugin.parseDiscordOptions(event), note);
+                //WikiTeam3Plugin.startJob(channel, note, event.getUser().getAsMention(), event.getUser().getName(), options);
+                Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), url, options, note);
                 JobManager.submit(job);
             }
             event.getHook().editOriginal("Launched " + tasks.size() + " jobs!").queue();

@@ -1,6 +1,6 @@
 package dev.digitaldragon.util;
 
-import dev.digitaldragon.commands.IrcCommandListener;
+import dev.digitaldragon.interfaces.irc.IrcCommandListener;
 import lombok.Getter;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.feature.auth.GameSurge;

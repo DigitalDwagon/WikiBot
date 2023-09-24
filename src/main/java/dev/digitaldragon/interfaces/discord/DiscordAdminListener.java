@@ -1,4 +1,4 @@
-package dev.digitaldragon.commands;
+package dev.digitaldragon.interfaces.discord;
 
 import dev.digitaldragon.util.IRCClient;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
