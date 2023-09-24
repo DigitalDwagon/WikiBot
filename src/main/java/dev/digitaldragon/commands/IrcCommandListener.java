@@ -26,7 +26,7 @@ import java.util.*;
 public class IrcCommandListener {
     @Handler
     public void message(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!reupload"))
+        if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!reupload") && !event.getMessage().startsWith("!mw") && !event.getMessage().startsWith("!dw"))
             return;
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
@@ -41,6 +41,15 @@ public class IrcCommandListener {
             return;
         }
 
+        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("pause_submissions"))) {
+            if (isOped(channel, event.getActor())) {
+                channel.sendMessage(nick + ": WARN - submissions are paused for a pending update. Please abort this job and try again later if it is non-urgent.");
+            } else {
+                channel.sendMessage(nick + ": Submissions are paused for a pending update. Please try again later.");
+                return;
+            }
+        }
+
         String[] parts = event.getMessage().split(" ", 2);
         if (parts.length < 2) {
             channel.sendMessage(nick + ": Not enough arguments!");
@@ -48,7 +57,7 @@ public class IrcCommandListener {
         }
         String opts = parts[1];
 
-        if (event.getMessage().startsWith("!doku")) {
+        if (event.getMessage().startsWith("!doku") || event.getMessage().startsWith("!dw")) {
             CommandLineParser parser = DokuWikiDumperPlugin.getCommandLineParser();
             parser.addBooleanOption("old-backend");
             try {
@@ -64,7 +73,7 @@ public class IrcCommandListener {
             }
             String url = parser.getOption("url").toString();
 
-            if (event.getMessage().startsWith("!dokusingle ")) {
+            if (event.getMessage().startsWith("!dokusingle ") || event.getMessage().startsWith("!dw ")) {
                 if (parser.getOption("explain") == null) {
                     channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
                     return;
@@ -104,7 +113,7 @@ public class IrcCommandListener {
             }
         }
 
-        if (event.getMessage().startsWith("!mediawiki")) {
+        if (event.getMessage().startsWith("!mediawiki") || event.getMessage().startsWith("!mw ")) {
             CommandLineParser parser = WikiTeam3Plugin.getCommandLineParser();
             parser.addBooleanOption("old-backend");
             try {
@@ -126,7 +135,7 @@ public class IrcCommandListener {
                 jobName = parser.getOption("index") == null ? null : parser.getOption("index").toString();
 
 
-            if (event.getMessage().startsWith("!mediawikisingle ")) {
+            if (event.getMessage().startsWith("!mediawikisingle ") || event.getMessage().startsWith("!mw ")) {
                 if (parser.getOption("explain") == null) {
                     channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
                     return;

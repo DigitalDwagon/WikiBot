@@ -1,5 +1,6 @@
 package dev.digitaldragon.backfeed;
 
+import com.google.common.net.InternetDomainName;
 import dev.digitaldragon.jobs.Job;
 
 import javax.xml.stream.XMLInputFactory;
@@ -132,7 +133,8 @@ public class LinkExtract {
     private static String getHostFromUrl(String string) {
         try {
             URL url = new URL(string);
-            return url.getHost();
+            String host = url.getHost();
+            return InternetDomainName.from(host).topPrivateDomain().toString();
         } catch (MalformedURLException e) {
             return null;
         }

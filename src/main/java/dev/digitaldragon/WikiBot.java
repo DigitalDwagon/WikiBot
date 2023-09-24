@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.Spark;
 
@@ -172,6 +173,23 @@ public class WikiBot {
                 res.status(404);
                 return "Job not found";
             }
+        });
+
+        get("/api/jobs", (req, res) -> {
+            JSONObject jsonObject = new JSONObject();
+            JSONArray runningJobs = new JSONArray();
+            for (Job job : JobManager.getActiveJobs()) {
+                runningJobs.put(job.getId());
+            }
+            jsonObject.put("running", runningJobs);
+
+            JSONArray queuedJobs = new JSONArray();
+            for (Job job : JobManager.getQueuedJobs()) {
+                queuedJobs.put(job.getId());
+            }
+            jsonObject.put("queued", queuedJobs);
+            res.status(200);
+            return jsonObject.toString();
         });
 
 

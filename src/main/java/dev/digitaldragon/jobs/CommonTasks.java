@@ -61,8 +61,6 @@ public class CommonTasks {
 
     public static void extractLinks(Job job) {
         for (File file : job.getDirectory().listFiles()) {
-            System.out.println(file.getName());
-            System.out.println(file.getAbsolutePath());
             if (file.isDirectory()) {
                 extractLinksFromDumpsDir(job, file);
             }
@@ -71,19 +69,20 @@ public class CommonTasks {
 
     private static void extractLinksFromDumpsDir(Job job, File directory) {
         for (File file : directory.listFiles()) {
-            System.out.println(file.getName());
-            System.out.println(file.getAbsolutePath());
             if (file.getAbsolutePath().endsWith(".xml")) {
+                System.out.println(file.getAbsolutePath());
                 try {
                     Set<String> links = LinkExtract.extractLinksFromFile(new FileInputStream(file));
                     File linkFile = new File(job.getDirectory(), "links.txt");
+                    File globalLinkFile = new File("all_links.txt");
                     for (String link : links) {
                         writeLineToFile(linkFile, link);
+                        writeLineToFile(globalLinkFile, link);
                     }
                     if (links.isEmpty()) {
                         System.out.println("No links found in " + file.getName());
                     }
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) { //todo
                     e.printStackTrace();
                 }
             }
