@@ -22,7 +22,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-alpha.12")
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
     implementation("org.kitteh.irc:client-lib:8.0.0")
-    implementation("org.json:json:20230227") //not used, but it might be useful later
+    implementation("org.json:json:20230227")
     // https://mvnrepository.com/artifact/commons-io/commons-io
     //implementation("commons-io:commons-io:2.13.0")
 
@@ -35,6 +35,10 @@ dependencies {
 
     //web library for dashboard
     implementation("com.sparkjava:spark-core:2.9.4")
+
+    // https://mvnrepository.com/artifact/com.beust/jcommander
+    implementation("com.beust:jcommander:1.82")
+
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }
