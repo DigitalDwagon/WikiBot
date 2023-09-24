@@ -1,5 +1,6 @@
 package dev.digitaldragon.archive;
 
+import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class WikiTeam3Plugin extends ListenerAdapter {
     /**
      * Starts a WikiTeam3 archiving job in the given text channel.
-     * Deprecated: use {@link dev.digitaldragon.jobs.WikiTeam3Job} and {@link dev.digitaldragon.jobs.JobManager} instead.
+     * Deprecated: use {@link WikiTeam3Job} and {@link dev.digitaldragon.jobs.JobManager} instead.
      *
      * @param channel the text channel where the job will be started
      * @param note note for the job

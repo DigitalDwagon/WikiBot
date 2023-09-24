@@ -7,8 +7,6 @@ import java.io.*;
 import java.util.Set;
 
 public class CommonTasks {
-
-
     public static int runAndVerify(RunCommand command, StringLogHandler handler, String taskName) {
         command.run();
 
@@ -57,7 +55,6 @@ public class CommonTasks {
         }
         return CommonTasks.runAndVerify(uploadCommand, handler, job.getRunningTask());
     }
-
 
     public static void extractLinks(Job job) {
         for (File file : job.getDirectory().listFiles()) {

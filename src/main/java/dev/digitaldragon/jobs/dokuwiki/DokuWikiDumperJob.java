@@ -1,5 +1,6 @@
-package dev.digitaldragon.jobs;
+package dev.digitaldragon.jobs.dokuwiki;
 
+import dev.digitaldragon.jobs.*;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;

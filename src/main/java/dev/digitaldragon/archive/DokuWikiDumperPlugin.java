@@ -1,5 +1,6 @@
 package dev.digitaldragon.archive;
 
+import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class DokuWikiDumperPlugin extends ListenerAdapter {
     /**
      * Starts a DokuWikiDumper archiving job in the specified text channel.
-     * Deprecated: use {@link dev.digitaldragon.jobs.DokuWikiDumperJob} and {@link dev.digitaldragon.jobs.JobManager} instead.
+     * Deprecated: use {@link DokuWikiDumperJob} and {@link dev.digitaldragon.jobs.JobManager} instead.
      *
      * @param channel The text channel where the job will be started.
      * @param url The URL for the job.
