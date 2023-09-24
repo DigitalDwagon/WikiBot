@@ -15,6 +15,17 @@ import java.net.URL;
 import java.util.UUID;
 
 public class WikiTeam3Plugin extends ListenerAdapter {
+    /**
+     * Starts a WikiTeam3 archiving job in the given text channel.
+     * Deprecated: use {@link dev.digitaldragon.jobs.WikiTeam3Job} and {@link dev.digitaldragon.jobs.JobManager} instead.
+     *
+     * @param channel the text channel where the job will be started
+     * @param note note for the job
+     * @param userMention the mention of the user starting the job
+     * @param userName the name of the user starting the job
+     * @param options the options for the job
+     */
+    @Deprecated
     public static void startJob(TextChannel channel, String note, String userMention, String userName, String options) {
         String jobId = UUID.randomUUID().toString();
         String threadName;
@@ -41,6 +52,12 @@ public class WikiTeam3Plugin extends ListenerAdapter {
                 });
     }
 
+    /**
+     * Parses the Discord options from a SlashCommandInteractionEvent and returns them as a WikiTeam3 --options string.
+     *
+     * @param event the SlashCommandInteractionEvent containing the options
+     * @return the parsed options as a string
+     */
     public static String parseDiscordOptions(SlashCommandInteractionEvent event) {
         StringBuilder options = new StringBuilder();
 
@@ -103,6 +120,11 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         options.append(command).append(" ").append(optionValue).append(" ");
     }
 
+    /**
+     * Returns the command line parser for parsing options for WikiTeam3.
+     *
+     * @return the command line parser
+     */
     public static CommandLineParser getCommandLineParser() {
         CommandLineParser parser = new CommandLineParser();
         parser.addDoubleOption("delay");
@@ -128,6 +150,12 @@ public class WikiTeam3Plugin extends ListenerAdapter {
         return parser;
     }
 
+    /**
+     * Converts a CommandLineParser made by {@link WikiTeam3Plugin#getCommandLineParser()} into a string in --option format.
+     *
+     * @param commandLineParser the command line parser object
+     * @return the string representing the parsed options
+     */
     public static String parserToOptions(CommandLineParser commandLineParser) {
         StringBuilder options = new StringBuilder();
         parseDouble("delay", commandLineParser, options);

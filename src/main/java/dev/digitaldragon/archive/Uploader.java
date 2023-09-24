@@ -10,6 +10,16 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Uploader {
+    /**
+     * Reuploads a dump based on its job ID.
+     * Deprecated: use {@link dev.digitaldragon.jobs.ReuploadJob} instead.
+     *
+     * @param uploadJobId The ID of the upload job.
+     * @param userName The name of the user.
+     * @param userMention The mention of the user.
+     * @param channel The text channel to send the reuploaded file to.
+     */
+    @Deprecated
     public static void reupload(String uploadJobId, String userName, String userMention, TextChannel channel) {
         try {
             File directory = RunJob.createWorkingDirectory(uploadJobId);
@@ -32,6 +42,7 @@ public class Uploader {
             System.out.println("Error: " + exception.getMessage());
         }
     }
+
     public static void WikiTeam3(String jobId, String userName, String userMention, TextChannel channel) {
         channel.createThreadChannel("Reupload " + jobId).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {

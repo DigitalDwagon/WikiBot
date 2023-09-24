@@ -5,8 +5,8 @@ import lombok.Getter;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.feature.auth.GameSurge;
 
+@Getter
 public class IRCClient {
-    @Getter
     private static Client client;
 
     public static void sendMessage(String message) {

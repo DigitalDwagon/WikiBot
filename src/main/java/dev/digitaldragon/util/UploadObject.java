@@ -6,6 +6,18 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public class UploadObject {
+    /**
+     * Uploads a file to a Google Cloud Storage bucket.
+     *
+     * @param projectId The ID of the Google Cloud project.
+     * @param bucketName The name of the Google Cloud Storage bucket.
+     * @param objectName The name of the object to be created or overwritten.
+     * @param filePath The path of the file to be uploaded.
+     * @param contentType The content type of the file, for example text/plain or image/png
+     * @param contentDisposition The content disposition of the file.
+     *
+     * @throws IOException If an I/O error occurs while reading the file or uploading to the bucket.
+     */
     public static void uploadObject(
             String projectId, String bucketName, String objectName, String filePath, String contentType, String contentDisposition) throws IOException {
         // The ID of your GCP project

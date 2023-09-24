@@ -1,18 +1,12 @@
 package dev.digitaldragon.jobs;
 
-import dev.digitaldragon.backfeed.LinkExtract;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 public class WikiTeam3Job implements Job {

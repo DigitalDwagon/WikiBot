@@ -25,7 +25,7 @@ import java.util.*;
 
 public class IrcCommandListener {
     @Handler
-    public void message(ChannelMessageEvent event) {
+    public void message(ChannelMessageEvent event) { //todo this method is too long and rather messy
         if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!reupload") && !event.getMessage().startsWith("!mw") && !event.getMessage().startsWith("!dw"))
             return;
         String nick = event.getActor().getNick();

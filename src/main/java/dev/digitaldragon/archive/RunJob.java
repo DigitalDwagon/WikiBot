@@ -19,11 +19,12 @@ import java.util.concurrent.Executors;
  * The DokuWikiArchive class provides methods to archive a DokuWiki wiki using DokuWikiDumper, logging to Discord and uploading the results to archive.org.
  */
 
-
+@Deprecated
 public class RunJob {
     static String archiveUrl = "";
     /**
      * Runs an archiving job, sending the logs to a channel and saving them to a log file.
+     * Deprecated: use {@link dev.digitaldragon.jobs.JobManager} and the Job system instead.
      *
      * @param jobName     name used to refer to the job being run
      * @param note        a note to include in the archive process
@@ -31,8 +32,10 @@ public class RunJob {
      * @param userName    the name of the user initiating the archive process
      * @param channel     the thread channel to send the logs and notifications to
      * @param jobId       the ID of the job associated with the archive process
+     * @param afterTask   the task to perform after the archive process runs
      * @param tasks       tasks to perform during the archive process
      */
+    @Deprecated
     public static void startArchive(String jobName, String note, String userMention, String userName, ThreadChannel channel, String jobId, AfterTask afterTask, CommandTask... tasks) {
         WikiBot.getExecutorService().submit(() -> {
             try {

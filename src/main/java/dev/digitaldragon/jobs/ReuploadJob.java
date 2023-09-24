@@ -1,6 +1,5 @@
 package dev.digitaldragon.jobs;
 
-import dev.digitaldragon.archive.RunJob;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;

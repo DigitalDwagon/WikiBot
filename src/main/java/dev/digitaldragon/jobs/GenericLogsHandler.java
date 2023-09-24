@@ -1,7 +1,6 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.util.DiscordClient;
 import dev.digitaldragon.web.DashboardWebsocket;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;

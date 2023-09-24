@@ -6,8 +6,19 @@ import java.net.URL;
 import java.nio.file.Files;
 
 public class TransferUploader {
-    public static String uploadFileToTransferSh(File file) throws IOException {
-        String transferShUrl = "https://transfer.archivete.am/";
+    /**
+     * Uploads a file to transfer.sh.
+     *
+     * @param file The file to be uploaded.
+     * @param name The name of the file on the destination server.
+     * @return The response from the server.
+     * @throws IOException If there was an error during the upload process.
+     */
+    public static String uploadFileToTransferSh(File file, String name) throws IOException {
+        if (name.contains("/")) {
+            throw new IllegalArgumentException("The name of the file cannot contain a slash (/)!");
+        }
+        String transferShUrl = "https://transfer.archivete.am/" + name;
 
         HttpURLConnection connection = null;
         try {
@@ -37,5 +48,16 @@ public class TransferUploader {
                 connection.disconnect();
             }
         }
+    }
+
+    /**
+     * Uploads a file to the transfer.sh provider.
+     *
+     * @param file The file to be uploaded.
+     * @return The URL of the uploaded file on TransferSh.
+     * @throws IOException if an I/O error occurs while uploading the file.
+     */
+    public static String uploadFileToTransferSh(File file) throws IOException {
+        return uploadFileToTransferSh(file, file.getName());
     }
 }

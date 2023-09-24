@@ -4,7 +4,6 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.ReuploadJob;
 import dev.digitaldragon.jobs.WikiTeam3Job;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.Message;
