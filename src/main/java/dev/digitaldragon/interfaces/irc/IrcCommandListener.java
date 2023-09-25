@@ -7,10 +7,7 @@ import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
-import dev.digitaldragon.interfaces.generic.ReuploadHelper;
-import dev.digitaldragon.interfaces.generic.StatusHelper;
-import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
+import dev.digitaldragon.interfaces.generic.*;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
@@ -149,11 +146,10 @@ public class IrcCommandListener {
             return;
         }
         String jobId = event.getMessage().split(" ")[1];
-        if (JobManager.abort(jobId)) {
-            channel.sendMessage(nick + ": Aborted job " + jobId + "!");
-        } else {
-            channel.sendMessage(nick + ": Failed to abort job " + jobId + "! It might not exist, be in a task that can't be aborted, or have already finished.");
-        }
+
+        String message = AbortHelper.abortJob(jobId);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
     }
 
     @Handler
