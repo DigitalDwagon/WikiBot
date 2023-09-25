@@ -166,6 +166,16 @@ public class WikiBot {
                 jsonObject.put("user", job.getUserName());
                 jsonObject.put("started", job.getStartTime());
                 jsonObject.put("name", job.getName());
+                jsonObject.put("runningTask", job.getRunningTask());
+                //jsonObject.put("directory", job.getDirectory());
+                jsonObject.put("failedTaskCode", job.getFailedTaskCode());
+                jsonObject.put("threadChannel", job.getThreadChannel().getId());
+                jsonObject.put("archiveUrl", job.getArchiveUrl());
+                jsonObject.put("type", job.getType());
+                jsonObject.put("isRunning", job.isRunning());
+                jsonObject.put("allTasks", job.getAllTasks());
+                jsonObject.put("logsUrl", job.getLogsUrl());
+
 
                 res.status(200);
                 return jsonObject.toString();
