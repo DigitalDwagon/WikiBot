@@ -7,6 +7,7 @@ import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
@@ -64,16 +65,22 @@ public class IrcCommandListener {
 
         TextChannel discordChannel;
         try {
-            discordChannel = getLogsChannel();
+            discordChannel = WikiBot.getLogsChannelSafely();
             checkUserPermissions(channel, event.getActor());
         } catch (UserErrorException e) {
             channel.sendMessage(nick + ": " + e.getMessage());
             return;
         }
 
-        handleDokuCommands(event, channel, discordChannel, nick, opts);
-        handleMediaWikiCommands(event, channel, discordChannel, nick, opts);
-        handleReuploadCommands(event, channel, discordChannel, nick, opts);
+        try {
+            handleDokuCommands(event, channel, discordChannel, nick, opts);
+            handleMediaWikiCommands(event, nick, opts);
+            handleReuploadCommands(event, channel, discordChannel, nick, opts);
+        } catch (UserErrorException exception) {
+            channel.sendMessage(nick + ": " + exception.getMessage());
+            return;
+        }
+
     }
 
     private void checkUserPermissions(Channel channel, User user) throws UserErrorException {
@@ -88,14 +95,6 @@ public class IrcCommandListener {
                 throw new UserErrorException("Submissions are paused for a pending update. Please try again later.");
             }
         }
-    }
-
-    private TextChannel getLogsChannel() throws UserErrorException {
-        TextChannel discordChannel = WikiBot.getLogsChannel();
-        if (discordChannel == null) {
-            throw new UserErrorException("Something went wrong.");
-        }
-        return discordChannel;
     }
 
     private void handleDokuCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) { //todo this method is long and kind of messy
@@ -157,45 +156,14 @@ public class IrcCommandListener {
         }
     }
 
-    private void handleMediaWikiCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) { //todo this method is long and kind of messy
+    private void handleMediaWikiCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
         if (!event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!mw"))
             return;
 
-        CommandLineParser parser = WikiTeam3Plugin.getCommandLineParser();
-        parser.addBooleanOption("old-backend");
-        try {
-            parser.parse(opts.split(" "));
-        } catch (IllegalArgumentException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        }
+        String message = WikiTeam3Helper.beginJob(opts, nick);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
 
-        if (parser.getOption("url") == null && parser.getOption("api") == null && parser.getOption("index") == null) {
-            channel.sendMessage(nick + ": You need to specify --url, --api, or --index! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
-            return;
-        }
-
-        String jobName = parser.getOption("url") == null ? null : parser.getOption("url").toString();
-        if (jobName == null)
-            jobName = parser.getOption("api") == null ? null : parser.getOption("api").toString();
-        if (jobName == null)
-            jobName = parser.getOption("index") == null ? null : parser.getOption("index").toString();
-
-
-        if (event.getMessage().startsWith("!mediawikisingle ") || event.getMessage().startsWith("!mw ")) {
-            if (parser.getOption("explain") == null) {
-                channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
-                return;
-            }
-            String explain = parser.getOption("explain").toString();
-
-            if (parser.getOption("old-backend") == Boolean.TRUE) {
-                WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
-            } else {
-                Job job = new WikiTeam3Job(nick, UUID.randomUUID().toString(), jobName, WikiTeam3Plugin.parserToOptions(parser), explain);
-                JobManager.submit(job);
-            }
-        }
     }
 
     private void handleReuploadCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) {

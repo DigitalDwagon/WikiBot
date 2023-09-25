@@ -3,6 +3,7 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.discord.DiscordAdminListener;
 import dev.digitaldragon.interfaces.discord.DiscordDokuWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordMediaWikiListener;
@@ -212,6 +213,14 @@ public class WikiBot {
         }
         TextChannel channel = (TextChannel) testServer.getGuildChannelById(EnvConfig.getConfigs().get("discord_channel").trim());
         return channel;
+    }
+
+    public static TextChannel getLogsChannelSafely() throws UserErrorException {
+        TextChannel discordChannel = WikiBot.getLogsChannel();
+        if (discordChannel == null) {
+            throw new UserErrorException("Something went wrong.");
+        }
+        return discordChannel;
     }
 
 
