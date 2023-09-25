@@ -32,12 +32,12 @@ public class IrcCommandListener {
     public void message(ChannelMessageEvent event) {
         String[] commands = new String[]{
                 "dw",
-                "dokusingle ",
-                "dokubulk ",
-                "mw ",
-                "mediawikisingle ",
-                "mediawikibulk ",
-                "reupload "
+                "dokusingle",
+                "dokubulk",
+                "mw",
+                "mediawikisingle",
+                "mediawikibulk",
+                "reupload"
         };
         //return if event does not start with one of the above commands
         boolean startsWithCommand = false;
@@ -45,6 +45,7 @@ public class IrcCommandListener {
         for (String command : commands) {
             if (event.getMessage().startsWith(prefix + command + " ")) {
                 startsWithCommand = true;
+                System.out.println(true);
                 break;
             }
         }
@@ -309,7 +310,7 @@ public class IrcCommandListener {
         }
         String opts = parts[1];
         opts = URLEncoder.encode(opts);
-        String url = "https://archive.org/search?query=originalurl%3A%28*" + opts + "*%29";
+        String url = "https://archive.org/search?query=originalurl%3A%28%2A" + opts + "%2A%29";
         channel.sendMessage(nick + ": " + url);
     }
 

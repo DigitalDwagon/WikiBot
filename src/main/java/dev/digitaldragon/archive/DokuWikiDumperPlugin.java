@@ -152,6 +152,11 @@ public class DokuWikiDumperPlugin extends ListenerAdapter {
 
         options.append("--upload ");
 
+        if (commandLineParser.getOption("url") != null) {
+            options.append(commandLineParser.getOption("url"));
+            options.append(" ");
+        }
+
         return options.toString();
     }
 
