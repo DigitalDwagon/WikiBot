@@ -7,6 +7,7 @@ import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -73,7 +74,7 @@ public class IrcCommandListener {
         }
 
         try {
-            handleDokuCommands(event, channel, discordChannel, nick, opts);
+            handleDokuCommands(event, nick, opts);
             handleMediaWikiCommands(event, nick, opts);
             handleReuploadCommands(event, channel, discordChannel, nick, opts);
         } catch (UserErrorException exception) {
@@ -97,63 +98,13 @@ public class IrcCommandListener {
         }
     }
 
-    private void handleDokuCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) { //todo this method is long and kind of messy
+    private void handleDokuCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
         if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!dw"))
             return;
 
-        CommandLineParser parser = DokuWikiDumperPlugin.getCommandLineParser();
-        parser.addBooleanOption("old-backend");
-        try {
-            parser.parse(opts.split(" "));
-        } catch (IllegalArgumentException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        }
-
-        if (parser.getOption("url") == null) {
-            channel.sendMessage(nick + ": URL is required! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
-            return;
-        }
-        String url = parser.getOption("url").toString();
-
-        if (event.getMessage().startsWith("!dokusingle ") || event.getMessage().startsWith("!dw ")) {
-            if (parser.getOption("explain") == null) {
-                channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
-                return;
-            }
-            String explain = parser.getOption("explain").toString();
-
-
-            if (parser.getOption("old-backend") == Boolean.TRUE) {
-                DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, DokuWikiDumperPlugin.parserToOptions(parser));
-            } else {
-                Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), url, DokuWikiDumperPlugin.parserToOptions(parser), explain);
-                JobManager.submit(job);
-            }
-        }
-        if (event.getMessage().startsWith("!dokubulk ")) {
-            String options = DokuWikiDumperPlugin.parserToOptions(parser);
-
-            Map<String, String> tasks;
-            try {
-                tasks = BulkArchiveParser.parse(url);
-            } catch (Exception e) {
-                channel.sendMessage(nick + ": " + e.getMessage());
-                return;
-            }
-            for (Map.Entry<String, String> entry : tasks.entrySet()) {
-                String jobUrl = entry.getKey();
-                String note = entry.getValue();
-
-                if (parser.getOption("old-backend") == Boolean.TRUE) {
-                    DokuWikiDumperPlugin.startJob(discordChannel, jobUrl, note, nick, nick, options);
-                } else {
-                    Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), jobUrl, WikiTeam3Plugin.parserToOptions(parser), note);
-                    JobManager.submit(job);
-                }
-            }
-            channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
-        }
+        String message = DokuWikiDumperHelper.beginJob(opts, nick);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
     }
 
     private void handleMediaWikiCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
