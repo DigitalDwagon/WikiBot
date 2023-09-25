@@ -63,24 +63,16 @@ public class IrcCommandListener {
             channel.sendMessage(nick + ": Not enough arguments!");
             return;
         }
+
         String opts = parts[1];
-
-        TextChannel discordChannel;
         try {
-            discordChannel = WikiBot.getLogsChannelSafely();
             checkUserPermissions(channel, event.getActor());
-        } catch (UserErrorException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        }
 
-        try {
             handleDokuCommands(event, nick, opts);
             handleMediaWikiCommands(event, nick, opts);
             handleReuploadCommands(event, channel, nick, opts);
         } catch (UserErrorException exception) {
             channel.sendMessage(nick + ": " + exception.getMessage());
-            return;
         }
 
     }
