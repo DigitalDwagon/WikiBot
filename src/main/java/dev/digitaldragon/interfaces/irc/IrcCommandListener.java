@@ -9,6 +9,7 @@ import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.ReuploadHelper;
+import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -160,40 +161,16 @@ public class IrcCommandListener {
         if (!event.getMessage().startsWith("!status"))
             return;
 
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
+        String jobId;
         if (event.getMessage().split(" ").length < 2) {
-            channel.sendMessage(nick + ": " + JobManager.getActiveJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.");
-            return;
-        }
-        String jobId = event.getMessage().split(" ")[1];
-        Job job = JobManager.get(jobId);
-        if (job == null) {
-            channel.sendMessage(nick + ": Job " + jobId + " does not exist!");
-            return;
-        }
-        StringBuilder message = new StringBuilder();
-        message.append(nick).append(": Job ").append(jobId).append(" (").append(job.getType()).append(")").append(" is ");
-        if (job.isRunning()) {
-            message.append("running");
+            jobId = null;
         } else {
-            message.append("not running");
+            jobId = event.getMessage().split(" ")[1];
         }
 
-        if (job.getRunningTask() != null) {
-            message.append(" (task ").append(job.getRunningTask()).append("). ");
-        } else {
-            message.append(". ");
-        }
-
-        message.append("Status: ");
-        message.append(job.getStatus().toString());
-        message.append(". Started: ");
-        message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
-        message.append("\"").append(job.getExplanation()).append("\"");
-
-
-        channel.sendMessage(message.toString());
+        String message = StatusHelper.getStatus(jobId);
+        if (message != null)
+            event.getChannel().sendMessage(event.getActor().getNick() + ": " + message);
     }
 
 
