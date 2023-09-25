@@ -8,6 +8,7 @@ import dev.digitaldragon.archive.Uploader;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
+import dev.digitaldragon.interfaces.generic.ReuploadHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -76,7 +77,7 @@ public class IrcCommandListener {
         try {
             handleDokuCommands(event, nick, opts);
             handleMediaWikiCommands(event, nick, opts);
-            handleReuploadCommands(event, channel, discordChannel, nick, opts);
+            handleReuploadCommands(event, channel, nick, opts);
         } catch (UserErrorException exception) {
             channel.sendMessage(nick + ": " + exception.getMessage());
             return;
@@ -117,7 +118,7 @@ public class IrcCommandListener {
 
     }
 
-    private void handleReuploadCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) {
+    private void handleReuploadCommands(ChannelMessageEvent event, Channel channel, String nick, String opts) throws UserErrorException {
         if (!event.getMessage().startsWith("!reupload"))
             return;
 
@@ -130,12 +131,10 @@ public class IrcCommandListener {
             channel.sendMessage(nick + ": Too many arguments!");
             return;
         }
-        if (oldbackend) {
-            Uploader.reupload(opts, nick, nick, discordChannel);
-        } else {
-            Job job = new ReuploadJob(nick, UUID.randomUUID().toString(), opts);
-            JobManager.submit(job);
-        }
+
+        String message = ReuploadHelper.beginJob(opts, nick, oldbackend);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
     }
 
     @Handler
