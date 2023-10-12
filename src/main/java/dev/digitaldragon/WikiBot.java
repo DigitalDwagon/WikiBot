@@ -132,7 +132,7 @@ public class WikiBot {
                         .addOption(OptionType.BOOLEAN, "bypass_compression", "Bypass CDN image compression (eg Cloudflare Polish)", false)
                         .addOption(OptionType.BOOLEAN, "xml_api_export", "Export XML dump using API:revisions instead of Special:Export (requires current_only, default: off)", false)
                         .addOption(OptionType.BOOLEAN, "xml_revisions", "Export all revisions from API:Allrevisions. MW 1.27+ Only (no current_only, default: off)", false)
-                        .addOption(OptionType.INTEGER, "delay", "Delay between requests (0-200, default 5)", false)
+                        .addOption(OptionType.NUMBER, "delay", "Delay between requests (0-200, default 5)", false)
                         .addOption(OptionType.INTEGER, "retry", "Maximum number of retries (0-50, default 5)", false)
                         .addOption(OptionType.BOOLEAN, "current_only", "Only dump the latest revision, no history. (default off)", false)
                         .addOption(OptionType.INTEGER, "api_chunksize", "Chunk size for MediaWiki API requests (1-500, default 50)", false)

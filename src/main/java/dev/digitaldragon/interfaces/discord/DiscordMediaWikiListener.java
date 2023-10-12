@@ -2,8 +2,11 @@ package dev.digitaldragon.interfaces.discord;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.WikiTeam3Plugin;
+import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
 import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.Message;
@@ -32,34 +35,16 @@ public class DiscordMediaWikiListener extends ListenerAdapter {
 
         event.deferReply().setEphemeral(true).queue();
         if (Objects.equals(event.getSubcommandName(), "single")) {
-            String url = getUrlOption(event, "url");
-            String explain = Objects.requireNonNull(event.getOption("explain")).getAsString();
-            event.getHook().editOriginal("Launching job!").queue();
-            String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
-            //WikiTeam3Plugin.startJob(channel, explain, event.getUser().getAsMention(), event.getUser().getName(), options);
-            Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), url + "wikiteam3", options, explain);
-            JobManager.submit(job);
+            try {
+                WikiTeam3Helper.beginJob(parseDiscordOptions(event), event.getUser().getName());
+            } catch (UserErrorException exception) {
+                event.getHook().editOriginal(exception.getMessage()).queue();
+            }
+            event.getHook().editOriginal("Launched!").queue();
         }
 
         if (Objects.equals(event.getSubcommandName(), "bulk")) {
-            Message.Attachment bulk = Objects.requireNonNull(event.getOption("file")).getAsAttachment();
-            Map<String, String> tasks;
-            try {
-                tasks = BulkArchiveParser.parse(bulk.getUrl());
-            } catch (Exception e) {
-                event.getHook().editOriginal(e.getMessage()).queue();
-                return;
-            }
-            for (Map.Entry<String, String> entry : tasks.entrySet()) {
-                String url = entry.getKey();
-                String note = entry.getValue();
-                String options = WikiTeam3Plugin.parseDiscordOptions(event) + url;
-
-                //WikiTeam3Plugin.startJob(channel, note, event.getUser().getAsMention(), event.getUser().getName(), options);
-                Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), url, options, note);
-                JobManager.submit(job);
-            }
-            event.getHook().editOriginal("Launched " + tasks.size() + " jobs!").queue();
+            event.getHook().editOriginal("Sorry, this command is disabled for now.").queue();
         }
     }
 
@@ -72,5 +57,50 @@ public class DiscordMediaWikiListener extends ListenerAdapter {
             return null;
         }
         return url;
+    }
+
+    public static WikiTeam3Args parseDiscordOptions(SlashCommandInteractionEvent event) {
+        WikiTeam3Args args = new WikiTeam3Args();
+
+        if (event.getOption("delay") != null)
+            args.setDelay(event.getOption("delay").getAsDouble());
+        if (event.getOption("retry") != null)
+            args.setRetries(event.getOption("retry").getAsInt());
+        if (event.getOption("api_chunksize") != null)
+            args.setApiChunkSize(event.getOption("api_chunksize").getAsInt());
+
+        args.setXml(getBooleanOptionSafely(event, "xml"));
+        args.setImages(getBooleanOptionSafely(event, "images"));
+        args.setBypassCdnImageCompression(getBooleanOptionSafely(event, "bypass_compression"));
+        args.setXmlApiExport(getBooleanOptionSafely(event, "xml_api_export"));
+        args.setXmlRevisions(getBooleanOptionSafely(event, "xml_revisions"));
+        args.setCurrentOnly(getBooleanOptionSafely(event, "current_only"));
+        args.setForce(getBooleanOptionSafely(event, "force"));
+        args.setDisableImageVerify(getBooleanOptionSafely(event, "disable_image_verification"));
+
+        if (event.getOption("api") != null)
+            args.setApi(event.getOption("api").getAsString());
+        if (event.getOption("index") != null)
+            args.setIndex(event.getOption("index").getAsString());
+
+        return args;
+    }
+
+    private static boolean getBooleanOptionSafely(SlashCommandInteractionEvent event, String option) {
+        if (event.getOption(option) != null)
+            return event.getOption(option).getAsBoolean();
+        return false;
+    }
+
+    private static void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options) {
+        processBooleanOption(event, option, command, options, false);
+    }
+
+
+    private static void processBooleanOption(SlashCommandInteractionEvent event, String option, String command, StringBuilder options, boolean defaultValue) {
+        boolean optionValue = event.getOption(option) != null ? event.getOption(option).getAsBoolean() : defaultValue;
+        if (optionValue) {
+            options.append(command).append(" ");
+        }
     }
 }
