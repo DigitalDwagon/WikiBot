@@ -17,7 +17,10 @@ public class StatusHelper {
 
 
         StringBuilder message = new StringBuilder();
-        message.append("Job ").append(jobId).append(" (").append(job.getType()).append(")").append(" is ");
+        message.append("Job ").append(jobId).append(" | ").append(job.getName())
+                .append(" (").append(job.getType()).append(")")
+                .append(" is ");
+
         if (job.isRunning()) {
             message.append("running");
         } else {
