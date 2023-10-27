@@ -8,6 +8,13 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class StatusHelper {
+    /**
+     * Returns a user-friendly message about the status of the job with the given ID.
+     * The ID may be null, in which case the general system status is returned.
+     *
+     * @param jobId the ID of the job
+     * @return the status of the job
+     */
     public static String getStatus(String jobId) {
         if (jobId == null)
             return JobManager.getActiveJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.";

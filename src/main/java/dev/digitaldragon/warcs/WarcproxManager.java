@@ -7,6 +7,11 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The WarcproxManager class is responsible for managing the WarcProx service.
+ * It provides methods to start and stop the service, and automatically uploads
+ * generated WARCs to the Internet Archive.
+ */
 public class WarcproxManager {
     private static final ExecutorService executor = Executors.newFixedThreadPool(2);
     private static RunCommand warcprox = null;

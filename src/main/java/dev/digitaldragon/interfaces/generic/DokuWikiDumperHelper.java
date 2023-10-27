@@ -15,6 +15,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class DokuWikiDumperHelper {
+    /**
+     * Begins a new job with the given unparsed arguments and username.
+     *
+     * @param unparsedArgs the command line arguments to parse
+     * @param userName the name of the user initiating the job
+     * @return a string representing the result of the job initiation
+     * @throws UserErrorException if there is an error with user input
+     */
     public static String beginJob(String unparsedArgs, String userName) throws UserErrorException {
         CommandLineParser parser = DokuWikiDumperPlugin.getCommandLineParser();
         parser.addBooleanOption("old-backend");
@@ -35,6 +43,14 @@ public class DokuWikiDumperHelper {
         return beginJob(parser, userName);
     }
 
+    /**
+     * Begins a new job with the given parsed command line arguments and username.
+     *
+     * @param parser the parsed command line arguments
+     * @param userName the name of the user initiating the job
+     * @return a string representing the result of the job initiation
+     * @throws UserErrorException if there is an error with user input
+     */
     public static String beginJob(CommandLineParser parser, String userName) throws UserErrorException {
         TextChannel discordChannel = WikiBot.getLogsChannelSafely();
         String explain = parser.getOption("explain").toString();

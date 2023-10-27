@@ -1,5 +1,6 @@
 package dev.digitaldragon.util;
 
+import com.google.common.annotations.Beta;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -11,7 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
+@Beta
 public class BulkArchiveParser {
     public static Map<String, String> parse(String fileLink) throws IOException {
         Map<String, String> tasks = new HashMap<>();

@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The EnvConfig class provides functionality to read environment configurations from the .env file in
+ * the directory the jar is located in.
+ */
 public class EnvConfig {
     private static final Map<String, String> configs = new ConcurrentHashMap<>();
     @Getter

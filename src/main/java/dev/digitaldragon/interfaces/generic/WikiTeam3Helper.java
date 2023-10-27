@@ -15,7 +15,14 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import java.util.UUID;
 
 public class WikiTeam3Helper {
-    //TODO switch to the new Args class-type parser here to enable compatibility with more platforms and modules.
+    /**
+     * Begins a job with the given unparsed arguments and username.
+     *
+     * @param unparsedArgs The unparsed arguments for the job.
+     * @param userName The name of the user.
+     * @return A string representing the result of the job initiation.
+     * @throws UserErrorException If there is an error with the user input.
+     */ //TODO switch to the new Args class-type parser here to enable compatibility with more platforms and modules.
     public static String beginJob(String unparsedArgs, String userName) throws UserErrorException {
         WikiTeam3Args args = new WikiTeam3Args();
         try {
@@ -29,6 +36,14 @@ public class WikiTeam3Helper {
         return beginJob(args, userName);
     }
 
+    /**
+     * Begins a job with the given arguments and username.
+     *
+     * @param args The parsed arguments for the job.
+     * @param userName The name of the user.
+     * @return A string representing the result of the job initiation.
+     * @throws UserErrorException If there is an error with the user input.
+     */
     public static String beginJob(WikiTeam3Args args, String userName) throws UserErrorException {
         args.check();
         if (args.getUrl() == null && args.getApi() == null && args.getIndex() == null)

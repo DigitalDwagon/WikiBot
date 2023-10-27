@@ -9,6 +9,14 @@ import java.io.File;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * The DokuWikiDumperJob class represents a job for dumping a DokuWiki instance.
+ *
+ * This class implements the Job interface.
+ *
+ * The DokuWikiDumperJob class provides methods for creating, running, and
+ * aborting a DokuWiki dump job.
+ */
 @Getter
 public class DokuWikiDumperJob implements Job {
     private String id = null;

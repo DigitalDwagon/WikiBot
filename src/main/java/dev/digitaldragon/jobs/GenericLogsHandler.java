@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * A StringLogHandler that writes logs to log.txt and a Discord channel.
+ */
 public class GenericLogsHandler implements StringLogHandler {
     private final Job job;
     private ThreadChannel threadChannel;
