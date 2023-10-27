@@ -1,15 +1,9 @@
 package dev.digitaldragon.interfaces.discord;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
-import dev.digitaldragon.util.BulkArchiveParser;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -17,9 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 public class DiscordMediaWikiListener extends ListenerAdapter {
     @Override

@@ -2,16 +2,13 @@ package dev.digitaldragon.interfaces.generic;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.archive.DokuWikiDumperPlugin;
-import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.parser.CommandLineParser;
-import dev.digitaldragon.util.BulkArchiveParser;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class DokuWikiDumperHelper {

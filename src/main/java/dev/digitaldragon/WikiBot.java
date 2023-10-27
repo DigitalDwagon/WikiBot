@@ -8,12 +8,9 @@ import dev.digitaldragon.interfaces.discord.DiscordAdminListener;
 import dev.digitaldragon.interfaces.discord.DiscordDokuWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordMediaWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordReuploadListener;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
-import dev.digitaldragon.interfaces.api.DashboardWebsocket;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -24,9 +21,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import spark.Spark;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -35,8 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static spark.Spark.*;
 
 public class WikiBot {
     @Getter

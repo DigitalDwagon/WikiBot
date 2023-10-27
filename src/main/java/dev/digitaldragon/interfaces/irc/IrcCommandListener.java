@@ -2,31 +2,19 @@ package dev.digitaldragon.interfaces.irc;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.archive.DokuWikiDumperPlugin;
-import dev.digitaldragon.archive.Uploader;
-import dev.digitaldragon.archive.WikiTeam3Plugin;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
-import dev.digitaldragon.jobs.*;
-import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
-import dev.digitaldragon.parser.CommandLineParser;
-import dev.digitaldragon.util.BulkArchiveParser;
 import dev.digitaldragon.util.EnvConfig;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
+import java.util.Optional;
+import java.util.SortedSet;
 
 public class IrcCommandListener {
     @Handler

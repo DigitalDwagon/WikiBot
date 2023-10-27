@@ -1,6 +1,5 @@
 package dev.digitaldragon.interfaces.generic;
 
-import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 

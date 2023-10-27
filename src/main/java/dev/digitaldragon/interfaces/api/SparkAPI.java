@@ -1,6 +1,5 @@
 package dev.digitaldragon.interfaces.api;
 
-import com.google.cloud.storage.Acl;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
@@ -8,16 +7,12 @@ import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import spark.Spark;
 
-import java.util.Objects;
-
 import static spark.Spark.*;
-import static spark.Spark.before;
 
 public class SparkAPI {
     public static void register() {
