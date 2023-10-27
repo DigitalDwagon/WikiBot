@@ -13,7 +13,7 @@ import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.util.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
-import dev.digitaldragon.web.DashboardWebsocket;
+import dev.digitaldragon.interfaces.api.DashboardWebsocket;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -118,7 +118,6 @@ public class WikiBot {
                     .addOption(OptionType.STRING, "url", "url for the wiki you want to archive", false);
 
 
-
             List<SubcommandData> mediaCommands = new ArrayList<SubcommandData>();
             mediaCommands.add(mediaSingle);
             mediaCommands.add(mediaBulk);
@@ -151,59 +150,6 @@ public class WikiBot {
                     .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
                     .queue();
         }
-        // WebSocket route definition (as mentioned in previous response).
-        webSocket("/api/logfirehose", DashboardWebsocket.class);
-        Spark.port(4567);
-        enableCORS("*", "*", "*");
-        // API endpoint to retrieve job information by ID.
-        get("/api/jobs/:id", (req, res) -> {
-            String jobId = req.params(":id");
-            Job job = JobManager.get(jobId);
-            if (job != null) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("jobId", jobId);
-                jsonObject.put("status", job.getStatus());
-                jsonObject.put("explanation", job.getExplanation());
-                jsonObject.put("user", job.getUserName());
-                jsonObject.put("started", job.getStartTime());
-                jsonObject.put("name", job.getName());
-                jsonObject.put("runningTask", job.getRunningTask());
-                //jsonObject.put("directory", job.getDirectory());
-                jsonObject.put("failedTaskCode", job.getFailedTaskCode());
-                jsonObject.put("threadChannel", job.getThreadChannel().getId());
-                jsonObject.put("archiveUrl", job.getArchiveUrl());
-                jsonObject.put("type", job.getType());
-                jsonObject.put("isRunning", job.isRunning());
-                jsonObject.put("allTasks", job.getAllTasks());
-                jsonObject.put("logsUrl", job.getLogsUrl());
-
-
-                res.status(200);
-                return jsonObject.toString();
-            } else {
-                res.status(404);
-                return "Job not found";
-            }
-        });
-
-        get("/api/jobs", (req, res) -> {
-            JSONObject jsonObject = new JSONObject();
-            JSONArray runningJobs = new JSONArray();
-            for (Job job : JobManager.getActiveJobs()) {
-                runningJobs.put(job.getId());
-            }
-            jsonObject.put("running", runningJobs);
-
-            JSONArray queuedJobs = new JSONArray();
-            for (Job job : JobManager.getQueuedJobs()) {
-                queuedJobs.put(job.getId());
-            }
-            jsonObject.put("queued", queuedJobs);
-            res.status(200);
-            return jsonObject.toString();
-        });
-
-
     }
 
     public static TextChannel getLogsChannel() {
@@ -222,29 +168,4 @@ public class WikiBot {
         }
         return discordChannel;
     }
-
-
-    private static void enableCORS(final String origin, final String methods, final String headers) {
-        options("/*", (request, response) -> {
-            String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-            if (accessControlRequestHeaders != null) {
-                response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
-            }
-
-            String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
-            if (accessControlRequestMethod != null) {
-                response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
-            }
-
-            return "OK";
-        });
-
-        before((request, response) -> {
-            response.header("Access-Control-Allow-Origin", origin);
-            response.header("Access-Control-Request-Method", methods);
-            response.header("Access-Control-Allow-Headers", headers);
-            response.type("application/json");
-        });
-    }
-
 }

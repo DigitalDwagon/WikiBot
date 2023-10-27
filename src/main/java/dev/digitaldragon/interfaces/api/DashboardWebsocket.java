@@ -1,4 +1,4 @@
-package dev.digitaldragon.web;
+package dev.digitaldragon.interfaces.api;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
