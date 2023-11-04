@@ -4,6 +4,7 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.interfaces.api.SparkAPI;
 import dev.digitaldragon.interfaces.discord.DiscordAdminListener;
 import dev.digitaldragon.interfaces.discord.DiscordDokuWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordMediaWikiListener;
@@ -142,6 +143,8 @@ public class WikiBot {
                     .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
                     .queue();
         }
+
+        SparkAPI.register();
     }
 
     public static TextChannel getLogsChannel() {

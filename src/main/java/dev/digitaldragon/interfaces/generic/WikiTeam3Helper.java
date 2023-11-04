@@ -40,7 +40,7 @@ public class WikiTeam3Helper {
      * @return A string representing the result of the job initiation.
      * @throws UserErrorException If there is an error with the user input.
      */
-    public static String beginJob(WikiTeam3Args args, String userName) throws UserErrorException {
+    public static String beginJob(WikiTeam3Args args, String userName, String jobId) throws UserErrorException {
         args.check();
         if (args.getUrl() == null && args.getApi() == null && args.getIndex() == null)
             return "You need to specify --url, --api, or --index! Note: URLs are required in the form of an option, eg \"--url https://wikipedia.org\"";
@@ -55,8 +55,12 @@ public class WikiTeam3Helper {
 
         String explain = args.getExplain();
 
-        Job job = new WikiTeam3Job(userName, UUID.randomUUID().toString(), jobName, args.get(), explain);
+        Job job = new WikiTeam3Job(userName, jobId, jobName, args.get(), explain);
         JobManager.submit(job);
         return null;
+    }
+
+    public static String beginJob(WikiTeam3Args args, String userName) throws UserErrorException {
+        return beginJob(args, userName, UUID.randomUUID().toString());
     }
 }

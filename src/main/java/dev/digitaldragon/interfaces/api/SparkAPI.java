@@ -1,5 +1,6 @@
 package dev.digitaldragon.interfaces.api;
 
+import com.google.gson.Gson;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
@@ -7,10 +8,13 @@ import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import spark.Spark;
+
+import java.util.UUID;
 
 import static spark.Spark.*;
 
@@ -24,6 +28,7 @@ public class SparkAPI {
         getAllJobs(); //GET /api/jobs
         getJob(); //GET /api/jobs/:id
         runCommand(); //POST /api/command
+        createJob(); //POST /api/jobs
 
     }
 
@@ -56,10 +61,14 @@ public class SparkAPI {
             if (!req.requestMethod().equals("POST")) {
                 return;
             }
-            // x-platform-user header is required
-            String username = req.headers("X-Platform-User");
-            if (username == null) {
+            // require a set username
+            if (req.headers("X-Platform-User") == null) {
                 halt(400, error("You must set a username via the X-Platform-User header"));
+            }
+
+            //require a set platform name
+            if (req.headers("X-Platform") == null) {
+                halt(400, error("You must specify your application via the X-Platform header"));
             }
 
             //valid JSON is required
@@ -155,6 +164,50 @@ public class SparkAPI {
             return success(successMessage);
 
 
+        });
+    }
+
+    private static void createJob() {
+        post("/api/jobs", (req, res) -> {
+            try {
+                JSONObject json = new JSONObject(req.body());
+                if (!json.has("jobType")) {
+                    res.status(400);
+                    return error("You must include a valid \"jobType\" in your request. It may be one of: WIKITEAM3");
+                }
+                JSONObject clean = new JSONObject(req.body());
+                clean.remove("jobType");
+                String username = req.headers("X-Platform-User");
+
+                try {
+                    if (json.getString("jobType").equalsIgnoreCase("wikiteam3")) {
+                        System.out.println(clean);
+                        WikiTeam3Args args = new Gson().fromJson(clean.toString(), WikiTeam3Args.class);
+                        System.out.println(args.getExplain());
+                        System.out.println(args.getUrl());
+                        String jobId = UUID.randomUUID().toString();
+                        String message = WikiTeam3Helper.beginJob(args, username, jobId);
+                        if (message != null) {
+                            res.status(400);
+                            return error(message);
+                        }
+                        JSONObject response = new JSONObject();
+                        response.put("jobId", jobId);
+                        response.put("success", true);
+                        return response.toString();
+                    } else {
+                        res.status(400);
+                        return error("Invalid or unknown job type.");
+                    }
+                } catch (UserErrorException exception) {
+                    res.status(400);
+                    return error(exception.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return "oops";
         });
     }
 
