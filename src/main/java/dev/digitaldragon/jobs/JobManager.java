@@ -1,5 +1,8 @@
 package dev.digitaldragon.jobs;
 
+import net.dv8tion.jda.api.entities.ThreadChannel;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,5 +69,34 @@ public class JobManager {
         return jobs.values().stream().filter(job -> job.getStatus() == JobStatus.QUEUED).collect(Collectors.toList());
     }
 
+    public static JSONObject getJsonForJob(Job job) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("status", job.getStatus());
+        jsonObject.put("explanation", job.getExplanation());
+        jsonObject.put("user", job.getUserName());
+        jsonObject.put("started", job.getStartTime());
+        jsonObject.put("name", job.getName());
+        jsonObject.put("runningTask", job.getRunningTask());
+        //jsonObject.put("directory", job.getDirectory());
+        jsonObject.put("failedTaskCode", job.getFailedTaskCode());
+        ThreadChannel channel = job.getThreadChannel();
+        if (channel != null)
+            jsonObject.put("threadChannel", job.getThreadChannel().getId());
+        jsonObject.put("archiveUrl", job.getArchiveUrl());
+        jsonObject.put("type", job.getType());
+        jsonObject.put("isRunning", job.isRunning());
+        jsonObject.put("allTasks", job.getAllTasks());
+        jsonObject.put("logsUrl", job.getLogsUrl());
+        return jsonObject;
+    }
+
+    public static JSONObject getJsonForJob(String jobId) {
+        Job job = jobs.get(jobId);
+        if (job != null) {
+            return getJsonForJob(job);
+        } else {
+            return null;
+        }
+    }
 
 }

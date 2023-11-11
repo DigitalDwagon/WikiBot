@@ -2,6 +2,7 @@ package dev.digitaldragon.interfaces.irc;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.google.common.primitives.Chars;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
@@ -13,8 +14,7 @@ import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.net.URLEncoder;
-import java.util.Optional;
-import java.util.SortedSet;
+import java.util.*;
 
 public class IrcCommandListener {
     @Handler
@@ -142,7 +142,8 @@ public class IrcCommandListener {
 
     @Handler
     public void statusCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!status"))
+        boolean garbled = event.getMessage().startsWith("!s") && !event.getMessage().startsWith("!status");
+        if (!event.getMessage().startsWith("!status") && !garbled)
             return;
 
         String jobId;
@@ -153,8 +154,12 @@ public class IrcCommandListener {
         }
 
         String message = StatusHelper.getStatus(jobId);
-        if (message != null)
+        if (message != null) {
+            if (garbled) {
+
+            }
             event.getChannel().sendMessage(event.getActor().getNick() + ": " + message);
+        }
     }
 
 
@@ -238,5 +243,56 @@ public class IrcCommandListener {
             }
         }
         return false;
+    }
+
+    public static String getFunnyMessage(String username, String message) {
+        List<Character> chars = Chars.asList(message.toCharArray());
+        Collections.shuffle(chars);
+        message = new String(Chars.toArray(chars));
+
+        //10% chance:
+        if (Math.random() < 0.1) {
+            List<String> easterEggMessages = new ArrayList<>();
+            easterEggMessages.add("I'm sorry," + username +  ". I'm afraid I can't do that."); // HAL 9000
+            easterEggMessages.add("Who do you think you are, fireonlive?"); // joke about fireonlive's sutats spam
+            easterEggMessages.add("It's time to stop."); // original
+            easterEggMessages.add("The command is a lie."); // portal "The cake is a lie"
+            //easterEggMessages.add("wikibot - the less cool archivebot since 2023"); // original
+            easterEggMessages.add("All your wiki are belong to us."); // internet "All your base are belong to us"
+            easterEggMessages.add("You're a wizard, " + username + "."); // harry potter "You're a wizard, Harry."
+            easterEggMessages.add("It's dangerous to archive alone. Take this!"); // zelda "It's dangerous to go alone. Take this!"
+            easterEggMessages.add("This statement is false."); // paradox (portal)
+            easterEggMessages.add("I'll be back."); // original
+            easterEggMessages.add("There's no crying in archiving!"); // a league of their own "There's no crying in baseball!"
+            //10
+            easterEggMessages.add("I'm not locked in here with you. You're locked in here with me!"); // watchmen
+            easterEggMessages.add("It's a trap!"); // star wars
+            easterEggMessages.add("The first rule of Archive Club is to always talk about Archive Club."); // fight club "The first rule of Fight Club is: You do not talk about Fight Club."
+            easterEggMessages.add("Show me the data!"); // jerry maguire "Show me the money!"
+            easterEggMessages.add("This is the way."); // the mandalorian
+            easterEggMessages.add("I'm not a robot, you're a robot!"); // original
+            easterEggMessages.add("That's a bold strategy," + username +". Let's see if it pays off."); // dodgeball "That's a bold strategy, Cotton. Let's see if it pays off for 'em."
+            easterEggMessages.add("I've got a jar of dirt! I've got a jar of dirt!"); // pirates of the caribbean
+            easterEggMessages.add("I can haz status?"); // lolcats "I can haz cheezburger?"
+            //20
+            easterEggMessages.add("Press Alt + F4 for a surprise!"); // "original"
+            easterEggMessages.add("As seen on TV!"); // makes fun of the "as seen on TV" ads, minecraft splash text
+            easterEggMessages.add("That's no moon..."); // star wars
+            easterEggMessages.add("Now bug-free!"); // original based on Minecraft splash text
+            easterEggMessages.add("Yes sir, Mister " + username + "!"); // portal "Yes sir, Mister Johnson!"
+            easterEggMessages.add("No step on snek."); // meme
+            easterEggMessages.add("Dead links. Dead links everywhere. https://irc.digitaldragon.dev/uploads/344bd7146de4b822/image.png"); // meme
+            easterEggMessages.add("Nobody expects the ArchiveTeam inquisition!"); // original
+            easterEggMessages.add("I like trains."); // asdfmovie
+            easterEggMessages.add("https://irc.digitaldragon.dev/uploads/2f2619de2036ae3f/image.png"); // meme
+            //30
+            easterEggMessages.add("This is my swamp!"); // shrek
+
+            //pick a random message from the list
+            Random random = new Random();
+            message = easterEggMessages.get(random.nextInt(easterEggMessages.size()));
+
+        }
+        return message;
     }
 }

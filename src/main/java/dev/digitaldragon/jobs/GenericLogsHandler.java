@@ -1,7 +1,7 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.api.DashboardWebsocket;
+import dev.digitaldragon.interfaces.api.LogWebsocket;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 
@@ -52,7 +52,7 @@ public class GenericLogsHandler implements StringLogHandler {
 
     public void onMessage(String message) {
         try {
-            DashboardWebsocket.sendLogMessageToClients(job.getId(), message);
+            LogWebsocket.sendLogMessageToClients(job.getId(), message);
 
             System.out.println(message);
             writeLineToFile(new File(job.getDirectory(), "log.txt"), message);

@@ -9,6 +9,7 @@ import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
+import dev.digitaldragon.util.EnvConfig;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,9 +21,12 @@ import static spark.Spark.*;
 
 public class SparkAPI {
     public static void register() {
-        webSocket("/api/logfirehose", DashboardWebsocket.class);
+        webSocket("/api/logfirehose", LogWebsocket.class);
+        webSocket("/api/jobevents", UpdatesWebsocket.class);
+
         Spark.port(4567);
         enableCORS("*", "*", "*");
+        postValidation(); //validate all POST requests
 
         //register routes
         getAllJobs(); //GET /api/jobs
@@ -67,9 +71,20 @@ public class SparkAPI {
             }
 
             //require a set platform name
-            if (req.headers("X-Platform") == null) {
+            String platform = req.headers("X-Platform");
+            if (platform == null) {
                 halt(400, error("You must specify your application via the X-Platform header"));
             }
+
+            String auth = req.headers("Authorization");
+            if (auth == null) {
+                halt(400, error("You must specify an API key via the Authorization header"));
+            }
+            auth = auth.replaceFirst("Bearer ", "");
+            if (!auth.equals(EnvConfig.getConfigs().get("api_key_" + platform))) {
+                halt(401, error("Invalid API key"));
+            }
+
 
             //valid JSON is required
             try {
@@ -78,7 +93,6 @@ public class SparkAPI {
                 halt(400, error("Invalid JSON"));
             }
 
-            //TODO API Auth check
 
         });
     }
@@ -107,23 +121,8 @@ public class SparkAPI {
             String jobId = req.params(":id");
             Job job = JobManager.get(jobId);
             if (job != null) {
-                JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObject = JobManager.getJsonForJob(job);
                 jsonObject.put("jobId", jobId);
-                jsonObject.put("status", job.getStatus());
-                jsonObject.put("explanation", job.getExplanation());
-                jsonObject.put("user", job.getUserName());
-                jsonObject.put("started", job.getStartTime());
-                jsonObject.put("name", job.getName());
-                jsonObject.put("runningTask", job.getRunningTask());
-                //jsonObject.put("directory", job.getDirectory());
-                jsonObject.put("failedTaskCode", job.getFailedTaskCode());
-                jsonObject.put("threadChannel", job.getThreadChannel().getId());
-                jsonObject.put("archiveUrl", job.getArchiveUrl());
-                jsonObject.put("type", job.getType());
-                jsonObject.put("isRunning", job.isRunning());
-                jsonObject.put("allTasks", job.getAllTasks());
-                jsonObject.put("logsUrl", job.getLogsUrl());
-
 
                 res.status(200);
                 return jsonObject.toString();
