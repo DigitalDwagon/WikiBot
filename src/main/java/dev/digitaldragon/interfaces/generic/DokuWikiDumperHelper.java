@@ -46,19 +46,13 @@ public class DokuWikiDumperHelper {
      * @param parser the parsed command line arguments
      * @param userName the name of the user initiating the job
      * @return a string representing the result of the job initiation
-     * @throws UserErrorException if there is an error with user input
      */
-    public static String beginJob(CommandLineParser parser, String userName) throws UserErrorException {
-        TextChannel discordChannel = WikiBot.getLogsChannelSafely();
+    public static String beginJob(CommandLineParser parser, String userName) {
         String explain = parser.getOption("explain").toString();
         String url = parser.getOption("url").toString();
 
-        if (parser.getOption("old-backend") == Boolean.TRUE) {
-            DokuWikiDumperPlugin.startJob(discordChannel, url, explain, userName, userName, DokuWikiDumperPlugin.parserToOptions(parser));
-        } else {
-            Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), url, DokuWikiDumperPlugin.parserToOptions(parser), explain);
-            JobManager.submit(job);
-        }
+        Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), url, DokuWikiDumperPlugin.parserToOptions(parser), explain);
+        JobManager.submit(job);
 
         return null;
     }

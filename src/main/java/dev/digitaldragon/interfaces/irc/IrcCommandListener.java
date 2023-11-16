@@ -100,17 +100,12 @@ public class IrcCommandListener {
         if (!event.getMessage().startsWith("!reupload"))
             return;
 
-        boolean oldbackend = false;
-        if (opts.endsWith(" oldbackend")) {
-            oldbackend = true;
-            opts = opts.replace(" oldbackend", "");
-        }
         if (opts.contains(" ")) {
             channel.sendMessage(nick + ": Too many arguments!");
             return;
         }
 
-        String message = ReuploadHelper.beginJob(opts, nick, oldbackend);
+        String message = ReuploadHelper.beginJob(opts, nick);
         if (message != null)
             event.getChannel().sendMessage(nick + ": " + message);
     }
