@@ -10,7 +10,7 @@ import dev.digitaldragon.interfaces.discord.DiscordDokuWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordMediaWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordReuploadListener;
 import dev.digitaldragon.util.EnvConfig;
-import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;

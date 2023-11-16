@@ -4,7 +4,7 @@ import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
 import dev.digitaldragon.parser.CommandLineParser;
 import dev.digitaldragon.util.AfterTask;
 import dev.digitaldragon.util.CommandTask;
-import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;

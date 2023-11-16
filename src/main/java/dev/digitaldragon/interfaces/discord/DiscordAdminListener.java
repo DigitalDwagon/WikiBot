@@ -1,6 +1,6 @@
 package dev.digitaldragon.interfaces.discord;
 
-import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;

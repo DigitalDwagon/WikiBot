@@ -3,7 +3,7 @@ package dev.digitaldragon.jobs;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
 import dev.digitaldragon.util.EnvConfig;
-import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public class JobEvents {

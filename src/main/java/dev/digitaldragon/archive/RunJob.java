@@ -1,6 +1,7 @@
 package dev.digitaldragon.archive;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.util.*;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
