@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DiscordDokuWikiListener extends ListenerAdapter {
+public class DiscordDokuWikiListener extends ListenerAdapter {/*
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if (!event.getName().equals("dokuwikiarchive"))
@@ -74,5 +74,5 @@ public class DiscordDokuWikiListener extends ListenerAdapter {
             return null;
         }
         return url;
-    }
+    }*/
 }

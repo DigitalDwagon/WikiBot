@@ -13,7 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
-public class DiscordMediaWikiListener extends ListenerAdapter {
+public class DiscordMediaWikiListener extends ListenerAdapter {/*
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if (!event.getName().equals("mediawikiarchive"))
@@ -94,5 +94,5 @@ public class DiscordMediaWikiListener extends ListenerAdapter {
         if (optionValue) {
             options.append(command).append(" ");
         }
-    }
+    }*/
 }
