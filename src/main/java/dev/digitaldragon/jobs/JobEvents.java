@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
+import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -39,10 +40,13 @@ public class JobEvents {
     public static void onJobSuccess(Job job) { //This method is called when a job succeeds.
         UpdatesWebsocket.sendLogMessageToClients(job, "SUCCESS");
 
-        IRCClient.sendMessage(job.getUserName(), "Success! Job " + job.getId() + " completed successfully.");
+        /*IRCClient.sendMessage(job.getUserName(), "Success! Job " + job.getId() + " completed successfully.");
         IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
         IRCClient.sendMessage("Explanation: " + job.getExplanation());
-        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());*/
+
+        JobSuccessEvent event = new JobSuccessEvent(job);
+        WikiBot.getBus().post(event);
 
         TextChannel successChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_success_channel"));
         if (successChannel != null)

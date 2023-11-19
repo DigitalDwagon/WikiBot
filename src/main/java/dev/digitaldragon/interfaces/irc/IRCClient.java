@@ -36,7 +36,7 @@ public class IRCClient {
 
     public static void enable() {
         enabled = true;
-        WikiBot.getBus().register(new IrcCommandListener());
+        WikiBot.getBus().register(new IRCJobListener());
         connect();
     }
 
