@@ -1,5 +1,6 @@
 package dev.digitaldragon.interfaces.irc;
 
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.irc.IrcCommandListener;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.kitteh.irc.client.library.feature.auth.GameSurge;
 @Getter
 public class IRCClient {
     private static Client client;
+    private static boolean enabled = false;
 
     /**
      * Sends a message to the IRC channel defined in the config.
@@ -19,6 +21,7 @@ public class IRCClient {
      * @param message the message to send to the IRC channel
      */
     public static void sendMessage(String message) {
+        if (!enabled) return;
         client.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), message);
     }
     /**
@@ -31,10 +34,16 @@ public class IRCClient {
         sendMessage(user + ": " + message);
     }
 
+    public static void enable() {
+        enabled = true;
+        connect();
+    }
+
     /**
      * Reconnects the IRC client by shutting it down and then reconnecting.
      */
     public static void reconnect() {
+        if (client == null) return;
         client.shutdown();
         // A bug in the IRC library causes the client connect function to not work properly.
         // To remedy this, we just rebuild the client from scratch.
@@ -45,6 +54,7 @@ public class IRCClient {
      * Connects the IRC client to the specified server, with the provided configurations.
      */
     public static void connect() {
+        if (!enabled) return;
         client = Client.builder()
                 .nick(EnvConfig.getConfigs().get("ircnick").trim())
                 .realName(EnvConfig.getConfigs().get("ircnick").trim())
