@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
+import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
@@ -18,9 +19,12 @@ public class JobEvents {
         UpdatesWebsocket.sendLogMessageToClients(job, "FAILED");
 
 
-        IRCClient.sendMessage(job.getUserName(), "Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".");
+        /*IRCClient.sendMessage(job.getUserName(), "Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".");
         IRCClient.sendMessage("Explanation: " + job.getExplanation());
-        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());*/
+
+        JobFailureEvent event = new JobFailureEvent(job);
+        WikiBot.getBus().post(event);
 
         TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
         if (failChannel != null)
