@@ -40,6 +40,10 @@ dependencies {
     // https://mvnrepository.com/artifact/com.beust/jcommander
     implementation("com.beust:jcommander:1.82")
 
+    //https://github.com/Badbird5907/Lightning
+    //totally non-biased event bus choice and it definitely isn't my friend's
+    implementation("net.badbird5907:Lightning:1.1.3-REL")
+
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }
