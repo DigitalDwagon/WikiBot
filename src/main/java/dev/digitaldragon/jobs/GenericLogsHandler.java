@@ -1,7 +1,7 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.web.DashboardWebsocket;
+import dev.digitaldragon.interfaces.api.LogWebsocket;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 
@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * A StringLogHandler that writes logs to log.txt and a Discord channel.
+ */
 public class GenericLogsHandler implements StringLogHandler {
     private final Job job;
     private ThreadChannel threadChannel;
@@ -49,7 +52,7 @@ public class GenericLogsHandler implements StringLogHandler {
 
     public void onMessage(String message) {
         try {
-            DashboardWebsocket.sendLogMessageToClients(job.getId(), message);
+            LogWebsocket.sendLogMessageToClients(job.getId(), message);
 
             System.out.println(message);
             writeLineToFile(new File(job.getDirectory(), "log.txt"), message);

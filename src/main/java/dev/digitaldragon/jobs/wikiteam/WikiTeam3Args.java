@@ -32,6 +32,10 @@ public class WikiTeam3Args {
     private boolean bypassCdnImageCompression;
     @Parameter(names = {"--disable-image-verify", "-V"})
     private boolean disableImageVerify;
+    @Parameter(names = {"--curonly", "-n"})
+    private boolean currentOnly;
+    @Parameter(names = {"--force", "-F"})
+    private boolean force;
     @Parameter(names = {"--warc-images", "-I"})
     private boolean warcImages;
     @Parameter(names = {"--warc-pages", "-P"})
@@ -98,6 +102,8 @@ public class WikiTeam3Args {
         parseBooleanOption(sb, images, "--images");
         parseBooleanOption(sb, bypassCdnImageCompression, "--bypass-cdn-image-compression");
         parseBooleanOption(sb, disableImageVerify, "--disable-image-verify");
+        parseBooleanOption(sb, currentOnly, "--curonly");
+        parseBooleanOption(sb, force, "--force");
         parseBooleanOption(sb, warcImages, "--warc-images");
         parseBooleanOption(sb, warcPages, "--warc-pages");
         parseBooleanOption(sb, warcPagesHistory, "--warc-pages-history");

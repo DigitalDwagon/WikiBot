@@ -23,6 +23,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
     implementation("org.kitteh.irc:client-lib:8.0.0")
     implementation("org.json:json:20230227")
+    implementation("com.google.code.gson:gson:2.10.1") //yes there are two json libraries, one for receiving and one for sending. it's stupid but i'm lazy
     // https://mvnrepository.com/artifact/commons-io/commons-io
     //implementation("commons-io:commons-io:2.13.0")
 
@@ -38,6 +39,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.beust/jcommander
     implementation("com.beust:jcommander:1.82")
+
+    //https://github.com/Badbird5907/Lightning
+    //totally non-biased event bus choice and it definitely isn't my friend's
+    implementation("net.badbird5907:Lightning:1.1.3-REL")
 
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")

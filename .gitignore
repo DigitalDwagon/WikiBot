@@ -48,6 +48,7 @@ dumps/*
 done.txt
 failed.txt
 todo.txt
+all_links.txt
 
 ### Gradle ###
 .gradle

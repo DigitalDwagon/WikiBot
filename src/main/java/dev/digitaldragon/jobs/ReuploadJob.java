@@ -9,6 +9,9 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Job to re-attempt an upload of a dump to archive.org.
+ */
 @Getter
 public class ReuploadJob implements Job {
     private final String id;

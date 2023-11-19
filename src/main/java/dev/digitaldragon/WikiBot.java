@@ -3,17 +3,17 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.interfaces.api.SparkAPI;
 import dev.digitaldragon.interfaces.discord.DiscordAdminListener;
 import dev.digitaldragon.interfaces.discord.DiscordDokuWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordMediaWikiListener;
 import dev.digitaldragon.interfaces.discord.DiscordReuploadListener;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.util.EnvConfig;
-import dev.digitaldragon.util.IRCClient;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
-import dev.digitaldragon.web.DashboardWebsocket;
 import lombok.Getter;
+import net.badbird5907.lightning.EventBus;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -23,9 +23,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import spark.Spark;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -35,13 +32,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static spark.Spark.*;
-
 public class WikiBot {
     @Getter
     public static JDA instance;
     @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(10);
+    @Getter
+    public static EventBus bus = new EventBus();
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
 
 
@@ -58,7 +55,7 @@ public class WikiBot {
                 .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener())
                 .build();
 
-        IRCClient.connect();
+        IRCClient.enable();
         instance.awaitReady();
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
@@ -117,7 +114,6 @@ public class WikiBot {
                     .addOption(OptionType.STRING, "url", "url for the wiki you want to archive", false);
 
 
-
             List<SubcommandData> mediaCommands = new ArrayList<SubcommandData>();
             mediaCommands.add(mediaSingle);
             mediaCommands.add(mediaBulk);
@@ -131,7 +127,7 @@ public class WikiBot {
                         .addOption(OptionType.BOOLEAN, "bypass_compression", "Bypass CDN image compression (eg Cloudflare Polish)", false)
                         .addOption(OptionType.BOOLEAN, "xml_api_export", "Export XML dump using API:revisions instead of Special:Export (requires current_only, default: off)", false)
                         .addOption(OptionType.BOOLEAN, "xml_revisions", "Export all revisions from API:Allrevisions. MW 1.27+ Only (no current_only, default: off)", false)
-                        .addOption(OptionType.INTEGER, "delay", "Delay between requests (0-200, default 5)", false)
+                        .addOption(OptionType.NUMBER, "delay", "Delay between requests (0-200, default 5)", false)
                         .addOption(OptionType.INTEGER, "retry", "Maximum number of retries (0-50, default 5)", false)
                         .addOption(OptionType.BOOLEAN, "current_only", "Only dump the latest revision, no history. (default off)", false)
                         .addOption(OptionType.INTEGER, "api_chunksize", "Chunk size for MediaWiki API requests (1-500, default 50)", false)
@@ -150,59 +146,8 @@ public class WikiBot {
                     .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
                     .queue();
         }
-        // WebSocket route definition (as mentioned in previous response).
-        webSocket("/api/logfirehose", DashboardWebsocket.class);
-        Spark.port(4567);
-        enableCORS("*", "*", "*");
-        // API endpoint to retrieve job information by ID.
-        get("/api/jobs/:id", (req, res) -> {
-            String jobId = req.params(":id");
-            Job job = JobManager.get(jobId);
-            if (job != null) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("jobId", jobId);
-                jsonObject.put("status", job.getStatus());
-                jsonObject.put("explanation", job.getExplanation());
-                jsonObject.put("user", job.getUserName());
-                jsonObject.put("started", job.getStartTime());
-                jsonObject.put("name", job.getName());
-                jsonObject.put("runningTask", job.getRunningTask());
-                //jsonObject.put("directory", job.getDirectory());
-                jsonObject.put("failedTaskCode", job.getFailedTaskCode());
-                jsonObject.put("threadChannel", job.getThreadChannel().getId());
-                jsonObject.put("archiveUrl", job.getArchiveUrl());
-                jsonObject.put("type", job.getType());
-                jsonObject.put("isRunning", job.isRunning());
-                jsonObject.put("allTasks", job.getAllTasks());
-                jsonObject.put("logsUrl", job.getLogsUrl());
 
-
-                res.status(200);
-                return jsonObject.toString();
-            } else {
-                res.status(404);
-                return "Job not found";
-            }
-        });
-
-        get("/api/jobs", (req, res) -> {
-            JSONObject jsonObject = new JSONObject();
-            JSONArray runningJobs = new JSONArray();
-            for (Job job : JobManager.getActiveJobs()) {
-                runningJobs.put(job.getId());
-            }
-            jsonObject.put("running", runningJobs);
-
-            JSONArray queuedJobs = new JSONArray();
-            for (Job job : JobManager.getQueuedJobs()) {
-                queuedJobs.put(job.getId());
-            }
-            jsonObject.put("queued", queuedJobs);
-            res.status(200);
-            return jsonObject.toString();
-        });
-
-
+        SparkAPI.register();
     }
 
     public static TextChannel getLogsChannel() {
@@ -214,28 +159,11 @@ public class WikiBot {
         return channel;
     }
 
-
-    private static void enableCORS(final String origin, final String methods, final String headers) {
-        options("/*", (request, response) -> {
-            String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-            if (accessControlRequestHeaders != null) {
-                response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
-            }
-
-            String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
-            if (accessControlRequestMethod != null) {
-                response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
-            }
-
-            return "OK";
-        });
-
-        before((request, response) -> {
-            response.header("Access-Control-Allow-Origin", origin);
-            response.header("Access-Control-Request-Method", methods);
-            response.header("Access-Control-Allow-Headers", headers);
-            response.type("application/json");
-        });
+    public static TextChannel getLogsChannelSafely() throws UserErrorException {
+        TextChannel discordChannel = WikiBot.getLogsChannel();
+        if (discordChannel == null) {
+            throw new UserErrorException("Something went wrong.");
+        }
+        return discordChannel;
     }
-
 }

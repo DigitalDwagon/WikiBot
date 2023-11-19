@@ -9,6 +9,10 @@ import java.io.File;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Represents a WikiTeam3 job, which implements the Job interface.
+ * This class provides functionality for running and managing WikiTeam3 jobs.
+ */
 @Getter
 public class WikiTeam3Job implements Job {
     private String id = null;

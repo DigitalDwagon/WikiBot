@@ -1,5 +1,7 @@
-package dev.digitaldragon.web;
+package dev.digitaldragon.interfaces.api;
 
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobManager;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -10,8 +12,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 @WebSocket
-public class DashboardWebsocket {
+public class UpdatesWebsocket {
     private static final Map<Session, String> connectedClients = new ConcurrentHashMap<>();
 
     @OnWebSocketConnect
@@ -31,11 +34,12 @@ public class DashboardWebsocket {
         // Handle incoming WebSocket messages (if needed).
     }
 
-    // Method to send a log message to all connected clients.
-    public static void sendLogMessageToClients(String jobId, String logLine) {
+    // Method to send a job event message to all connected clients.
+    public static void sendLogMessageToClients(Job job, String event) {
         JSONObject json = new JSONObject();
-        json.put("jobId", jobId);
-        json.put("logLine", logLine);
+        json.put("jobId", job.getId());
+        json.put("event", event);
+        json.put("info", JobManager.getJsonForJob(job));
 
         for (Session session : connectedClients.keySet()) {
             try {

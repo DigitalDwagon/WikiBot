@@ -2,29 +2,18 @@ package dev.digitaldragon.interfaces.irc;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.archive.DokuWikiDumperPlugin;
-import dev.digitaldragon.archive.Uploader;
-import dev.digitaldragon.archive.WikiTeam3Plugin;
+import com.google.common.primitives.Chars;
 import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.jobs.*;
-import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
+import dev.digitaldragon.interfaces.generic.*;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
-import dev.digitaldragon.parser.CommandLineParser;
-import dev.digitaldragon.util.BulkArchiveParser;
 import dev.digitaldragon.util.EnvConfig;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 public class IrcCommandListener {
@@ -60,20 +49,18 @@ public class IrcCommandListener {
             channel.sendMessage(nick + ": Not enough arguments!");
             return;
         }
-        String opts = parts[1];
 
-        TextChannel discordChannel;
+        String opts = parts[1];
         try {
-            discordChannel = getLogsChannel();
             checkUserPermissions(channel, event.getActor());
-        } catch (UserErrorException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
+
+            handleDokuCommands(event, nick, opts);
+            handleMediaWikiCommands(event, nick, opts);
+            handleReuploadCommands(event, channel, nick, opts);
+        } catch (UserErrorException exception) {
+            channel.sendMessage(nick + ": " + exception.getMessage());
         }
 
-        handleDokuCommands(event, channel, discordChannel, nick, opts);
-        handleMediaWikiCommands(event, channel, discordChannel, nick, opts);
-        handleReuploadCommands(event, channel, discordChannel, nick, opts);
     }
 
     private void checkUserPermissions(Channel channel, User user) throws UserErrorException {
@@ -90,133 +77,37 @@ public class IrcCommandListener {
         }
     }
 
-    private TextChannel getLogsChannel() throws UserErrorException {
-        TextChannel discordChannel = WikiBot.getLogsChannel();
-        if (discordChannel == null) {
-            throw new UserErrorException("Something went wrong.");
-        }
-        return discordChannel;
-    }
-
-    private void handleDokuCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) { //todo this method is long and kind of messy
+    private void handleDokuCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
         if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!dw"))
             return;
 
-        CommandLineParser parser = DokuWikiDumperPlugin.getCommandLineParser();
-        parser.addBooleanOption("old-backend");
-        try {
-            parser.parse(opts.split(" "));
-        } catch (IllegalArgumentException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        }
-
-        if (parser.getOption("url") == null) {
-            channel.sendMessage(nick + ": URL is required! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
-            return;
-        }
-        String url = parser.getOption("url").toString();
-
-        if (event.getMessage().startsWith("!dokusingle ") || event.getMessage().startsWith("!dw ")) {
-            if (parser.getOption("explain") == null) {
-                channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
-                return;
-            }
-            String explain = parser.getOption("explain").toString();
-
-
-            if (parser.getOption("old-backend") == Boolean.TRUE) {
-                DokuWikiDumperPlugin.startJob(discordChannel, url, explain, nick, nick, DokuWikiDumperPlugin.parserToOptions(parser));
-            } else {
-                Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), url, DokuWikiDumperPlugin.parserToOptions(parser), explain);
-                JobManager.submit(job);
-            }
-        }
-        if (event.getMessage().startsWith("!dokubulk ")) {
-            String options = DokuWikiDumperPlugin.parserToOptions(parser);
-
-            Map<String, String> tasks;
-            try {
-                tasks = BulkArchiveParser.parse(url);
-            } catch (Exception e) {
-                channel.sendMessage(nick + ": " + e.getMessage());
-                return;
-            }
-            for (Map.Entry<String, String> entry : tasks.entrySet()) {
-                String jobUrl = entry.getKey();
-                String note = entry.getValue();
-
-                if (parser.getOption("old-backend") == Boolean.TRUE) {
-                    DokuWikiDumperPlugin.startJob(discordChannel, jobUrl, note, nick, nick, options);
-                } else {
-                    Job job = new DokuWikiDumperJob(nick, UUID.randomUUID().toString(), jobUrl, WikiTeam3Plugin.parserToOptions(parser), note);
-                    JobManager.submit(job);
-                }
-            }
-            channel.sendMessage(nick + ": Launched " + tasks.size() + " jobs!");
-        }
+        String message = DokuWikiDumperHelper.beginJob(opts, nick);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
     }
 
-    private void handleMediaWikiCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) { //todo this method is long and kind of messy
+    private void handleMediaWikiCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
         if (!event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!mw"))
             return;
 
-        CommandLineParser parser = WikiTeam3Plugin.getCommandLineParser();
-        parser.addBooleanOption("old-backend");
-        try {
-            parser.parse(opts.split(" "));
-        } catch (IllegalArgumentException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        }
+        String message = WikiTeam3Helper.beginJob(opts, nick);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
 
-        if (parser.getOption("url") == null && parser.getOption("api") == null && parser.getOption("index") == null) {
-            channel.sendMessage(nick + ": You need to specify --url, --api, or --index! Note: A new bot update now requires URLs in the form of an option, eg \"--url https://wikipedia.org\"");
-            return;
-        }
-
-        String jobName = parser.getOption("url") == null ? null : parser.getOption("url").toString();
-        if (jobName == null)
-            jobName = parser.getOption("api") == null ? null : parser.getOption("api").toString();
-        if (jobName == null)
-            jobName = parser.getOption("index") == null ? null : parser.getOption("index").toString();
-
-
-        if (event.getMessage().startsWith("!mediawikisingle ") || event.getMessage().startsWith("!mw ")) {
-            if (parser.getOption("explain") == null) {
-                channel.sendMessage(nick + ": Explanation is required! Note: A new bot update now requires explanations in the form of an option, eg \"--explain Closing soon\"");
-                return;
-            }
-            String explain = parser.getOption("explain").toString();
-
-            if (parser.getOption("old-backend") == Boolean.TRUE) {
-                WikiTeam3Plugin.startJob(discordChannel, explain, nick, nick, WikiTeam3Plugin.parserToOptions(parser));
-            } else {
-                Job job = new WikiTeam3Job(nick, UUID.randomUUID().toString(), jobName, WikiTeam3Plugin.parserToOptions(parser), explain);
-                JobManager.submit(job);
-            }
-        }
     }
 
-    private void handleReuploadCommands(ChannelMessageEvent event, Channel channel, TextChannel discordChannel, String nick, String opts) {
+    private void handleReuploadCommands(ChannelMessageEvent event, Channel channel, String nick, String opts) throws UserErrorException {
         if (!event.getMessage().startsWith("!reupload"))
             return;
 
-        boolean oldbackend = false;
-        if (opts.endsWith(" oldbackend")) {
-            oldbackend = true;
-            opts = opts.replace(" oldbackend", "");
-        }
         if (opts.contains(" ")) {
             channel.sendMessage(nick + ": Too many arguments!");
             return;
         }
-        if (oldbackend) {
-            Uploader.reupload(opts, nick, nick, discordChannel);
-        } else {
-            Job job = new ReuploadJob(nick, UUID.randomUUID().toString(), opts);
-            JobManager.submit(job);
-        }
+
+        String message = ReuploadHelper.beginJob(opts, nick);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
     }
 
     @Handler
@@ -238,52 +129,32 @@ public class IrcCommandListener {
             return;
         }
         String jobId = event.getMessage().split(" ")[1];
-        if (JobManager.abort(jobId)) {
-            channel.sendMessage(nick + ": Aborted job " + jobId + "!");
-        } else {
-            channel.sendMessage(nick + ": Failed to abort job " + jobId + "! It might not exist, be in a task that can't be aborted, or have already finished.");
-        }
+
+        String message = AbortHelper.abortJob(jobId);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
     }
 
     @Handler
     public void statusCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!status"))
+        boolean garbled = event.getMessage().startsWith("!s") && !event.getMessage().startsWith("!status");
+        if (!event.getMessage().startsWith("!status") && !garbled)
             return;
 
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
+        String jobId;
         if (event.getMessage().split(" ").length < 2) {
-            channel.sendMessage(nick + ": " + JobManager.getActiveJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.");
-            return;
-        }
-        String jobId = event.getMessage().split(" ")[1];
-        Job job = JobManager.get(jobId);
-        if (job == null) {
-            channel.sendMessage(nick + ": Job " + jobId + " does not exist!");
-            return;
-        }
-        StringBuilder message = new StringBuilder();
-        message.append(nick).append(": Job ").append(jobId).append(" (").append(job.getType()).append(")").append(" is ");
-        if (job.isRunning()) {
-            message.append("running");
+            jobId = null;
         } else {
-            message.append("not running");
+            jobId = event.getMessage().split(" ")[1];
         }
 
-        if (job.getRunningTask() != null) {
-            message.append(" (task ").append(job.getRunningTask()).append("). ");
-        } else {
-            message.append(". ");
+        String message = StatusHelper.getStatus(jobId);
+        if (message != null) {
+            if (garbled) {
+
+            }
+            event.getChannel().sendMessage(event.getActor().getNick() + ": " + message);
         }
-
-        message.append("Status: ");
-        message.append(job.getStatus().toString());
-        message.append(". Started: ");
-        message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
-        message.append("\"").append(job.getExplanation()).append("\"");
-
-
-        channel.sendMessage(message.toString());
     }
 
 
@@ -367,5 +238,56 @@ public class IrcCommandListener {
             }
         }
         return false;
+    }
+
+    public static String getFunnyMessage(String username, String message) {
+        List<Character> chars = Chars.asList(message.toCharArray());
+        Collections.shuffle(chars);
+        message = new String(Chars.toArray(chars));
+
+        //10% chance:
+        if (Math.random() < 0.1) {
+            List<String> easterEggMessages = new ArrayList<>();
+            easterEggMessages.add("I'm sorry," + username +  ". I'm afraid I can't do that."); // HAL 9000
+            easterEggMessages.add("Who do you think you are, fireonlive?"); // joke about fireonlive's sutats spam
+            easterEggMessages.add("It's time to stop."); // original
+            easterEggMessages.add("The command is a lie."); // portal "The cake is a lie"
+            //easterEggMessages.add("wikibot - the less cool archivebot since 2023"); // original
+            easterEggMessages.add("All your wiki are belong to us."); // internet "All your base are belong to us"
+            easterEggMessages.add("You're a wizard, " + username + "."); // harry potter "You're a wizard, Harry."
+            easterEggMessages.add("It's dangerous to archive alone. Take this!"); // zelda "It's dangerous to go alone. Take this!"
+            easterEggMessages.add("This statement is false."); // paradox (portal)
+            easterEggMessages.add("I'll be back."); // original
+            easterEggMessages.add("There's no crying in archiving!"); // a league of their own "There's no crying in baseball!"
+            //10
+            easterEggMessages.add("I'm not locked in here with you. You're locked in here with me!"); // watchmen
+            easterEggMessages.add("It's a trap!"); // star wars
+            easterEggMessages.add("The first rule of Archive Club is to always talk about Archive Club."); // fight club "The first rule of Fight Club is: You do not talk about Fight Club."
+            easterEggMessages.add("Show me the data!"); // jerry maguire "Show me the money!"
+            easterEggMessages.add("This is the way."); // the mandalorian
+            easterEggMessages.add("I'm not a robot, you're a robot!"); // original
+            easterEggMessages.add("That's a bold strategy," + username +". Let's see if it pays off."); // dodgeball "That's a bold strategy, Cotton. Let's see if it pays off for 'em."
+            easterEggMessages.add("I've got a jar of dirt! I've got a jar of dirt!"); // pirates of the caribbean
+            easterEggMessages.add("I can haz status?"); // lolcats "I can haz cheezburger?"
+            //20
+            easterEggMessages.add("Press Alt + F4 for a surprise!"); // "original"
+            easterEggMessages.add("As seen on TV!"); // makes fun of the "as seen on TV" ads, minecraft splash text
+            easterEggMessages.add("That's no moon..."); // star wars
+            easterEggMessages.add("Now bug-free!"); // original based on Minecraft splash text
+            easterEggMessages.add("Yes sir, Mister " + username + "!"); // portal "Yes sir, Mister Johnson!"
+            easterEggMessages.add("No step on snek."); // meme
+            easterEggMessages.add("Dead links. Dead links everywhere. https://irc.digitaldragon.dev/uploads/344bd7146de4b822/image.png"); // meme
+            easterEggMessages.add("Nobody expects the ArchiveTeam inquisition!"); // original
+            easterEggMessages.add("I like trains."); // asdfmovie
+            easterEggMessages.add("https://irc.digitaldragon.dev/uploads/2f2619de2036ae3f/image.png"); // meme
+            //30
+            easterEggMessages.add("This is my swamp!"); // shrek
+
+            //pick a random message from the list
+            Random random = new Random();
+            message = easterEggMessages.get(random.nextInt(easterEggMessages.size()));
+
+        }
+        return message;
     }
 }
