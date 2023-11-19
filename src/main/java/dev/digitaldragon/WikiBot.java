@@ -13,6 +13,7 @@ import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
+import net.badbird5907.lightning.EventBus;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -36,6 +37,8 @@ public class WikiBot {
     public static JDA instance;
     @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(10);
+    @Getter
+    public static EventBus bus = new EventBus();
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
 
 
@@ -52,7 +55,7 @@ public class WikiBot {
                 .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener())
                 .build();
 
-        IRCClient.connect();
+        IRCClient.enable();
         instance.awaitReady();
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
