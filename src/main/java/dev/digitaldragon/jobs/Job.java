@@ -49,6 +49,16 @@ public interface Job {
      */
     public String getUserName();
     /**
+     * Gets the user's platform (IRC, Telegram, Discord, etc.)
+     *
+     */
+    //public String getUserPlatform();
+    /**
+     * Gets the user's ID from their platform (ie Discord User ID, IRC NickServ account name, etc.)
+     *
+     */
+    //public String getUserPlatformId();
+    /**
      * Returns the user's explanation for starting a job.
      *
      * @return the explanation of the job as a string.

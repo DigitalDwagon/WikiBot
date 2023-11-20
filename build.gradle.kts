@@ -44,6 +44,11 @@ dependencies {
     //totally non-biased event bus choice and it definitely isn't my friend's
     implementation("net.badbird5907:Lightning:1.1.3-REL")
 
+    // telegram bot api
+    //https://github.com/rubenlagus/TelegramBots
+    implementation("org.telegram:telegrambots:6.8.0")
+    implementation("org.telegram:telegrambots-abilities:6.8.0")
+
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }

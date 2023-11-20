@@ -7,19 +7,21 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class TelegramClient {
     @Getter
-    public static boolean enabled = false;
+    private static boolean enabled = false;
+    @Getter
+    private static TelegramCommandsBot bot;
 
     public static void enable() {
         enabled = true;
         connect();
-        WikiBot.getBus().register(new TelegramCommandsBot());
+        WikiBot.getBus().register(new TelegramJobListener());
     }
 
     public static void connect() {
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(new TelegramCommandsBot());
-            //botsApi.registerBot(new TelegramNotifyBot());
+            bot = new TelegramCommandsBot();
+            botsApi.registerBot(bot);
         } catch (Exception e) {
             e.printStackTrace();
         }

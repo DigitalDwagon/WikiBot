@@ -8,9 +8,24 @@ import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WikiTeam3Helper {
+    public static String[] splitCommandLine(String commandLine) {
+        List<String> parts = new ArrayList<>();
+        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(commandLine);
+
+        while (m.find()) {
+            parts.add(m.group(1).replace("\"", ""));
+        }
+
+        return parts.toArray(new String[0]);
+    }
+
     /**
      * Begins a job with the given unparsed arguments and username.
      *
@@ -21,6 +36,9 @@ public class WikiTeam3Helper {
      */ //TODO switch to the new Args class-type parser here to enable compatibility with more platforms and modules.
     public static String beginJob(String unparsedArgs, String userName) throws UserErrorException {
         WikiTeam3Args args = new WikiTeam3Args();
+        if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
+            unparsedArgs = unparsedArgs.replace("'", "\"");
+
         try {
             JCommander.newBuilder()
                     .addObject(args)

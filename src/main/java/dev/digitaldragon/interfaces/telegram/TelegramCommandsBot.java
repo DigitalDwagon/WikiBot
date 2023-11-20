@@ -28,7 +28,7 @@ public class TelegramCommandsBot extends AbilityBot {
         return string.trim();
     }
 
-    private void tryToExecute(SendMessage sendMessage) {
+    public void tryToExecute(SendMessage sendMessage) {
         try {
             execute(sendMessage);
         } catch (Exception e) {
@@ -169,49 +169,4 @@ public class TelegramCommandsBot extends AbilityBot {
                 .setStatsEnabled(true)
                 .build();
     }
-
-    @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
-        Job job = event.getJob();
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(EnvConfig.getConfigs().get("telegram_chat_id"));
-        sendMessage.setText(String.format("@%s Success! Job for %s completed.%n", job.getUserName(), job.getName()) +
-                "ID: " + job.getId() + "\n" +
-                "Archive URL: " + job.getArchiveUrl() + "\n" +
-                "Explanation: " + job.getExplanation() + "\n" +
-                "Logs: " + job.getLogsUrl());
-        tryToExecute(sendMessage);
-    }
-
-    @EventHandler
-    public void onJobFailure(JobFailureEvent event) {
-        Job job = event.getJob();
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(EnvConfig.getConfigs().get("telegram_chat_id"));
-        sendMessage.setText(String.format("@%s Job for %s failed with exit code %s.%n", job.getUserName(), job.getName(), job.getFailedTaskCode()) +
-                "ID: " + job.getId() + "\n" +
-                "Archive URL: " + job.getArchiveUrl() + "\n" +
-                "Explanation: " + job.getExplanation() + "\n" +
-                "Logs: " + job.getLogsUrl());
-        tryToExecute(sendMessage);
-    }
-
-    @EventHandler
-    public void onJobAbort(JobAbortEvent event) {
-        UpdatesWebsocket.sendLogMessageToClients(event.getJob(), "ABORTED");
-
-    }
-
-    @EventHandler
-    public void onJobQueued(JobQueuedEvent event) {
-        Job job = event.getJob();
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(EnvConfig.getConfigs().get("telegram_chat_id"));
-        //        IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
-
-        sendMessage.setText(String.format("@%s Job for %s queued!%nYou will be notified when it finishes. Use !status %s for details.", job.getUserName(), job.getName(), job.getId()));
-        tryToExecute(sendMessage);
-    }
-
-
 }
