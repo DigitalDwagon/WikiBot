@@ -4,6 +4,7 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
@@ -87,6 +88,8 @@ public class JobEvents {
      */
     public static void onJobQueued(Job job) { //This method is called when a job is queued, but before it starts running.
         UpdatesWebsocket.sendLogMessageToClients(job, "QUEUED");
-        IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
+        //IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
+        JobQueuedEvent event = new JobQueuedEvent(job);
+        WikiBot.getBus().post(event);
     }
 }
