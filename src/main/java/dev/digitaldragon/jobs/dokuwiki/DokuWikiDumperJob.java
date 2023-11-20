@@ -1,6 +1,10 @@
 package dev.digitaldragon.jobs.dokuwiki;
 
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
+import dev.digitaldragon.jobs.events.JobAbortEvent;
+import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;
@@ -62,9 +66,9 @@ public class DokuWikiDumperJob implements Job {
         failedTaskCode = code;
         if (runningTask.equals("AbortTask")) {
             status = JobStatus.ABORTED;
-            JobEvents.onJobAbort(this);
+            WikiBot.getBus().post(new JobAbortEvent(this));
         } else {
-            JobEvents.onJobFailure(this);
+            WikiBot.getBus().post(new JobFailureEvent(this));
         }
     }
 
@@ -83,7 +87,7 @@ public class DokuWikiDumperJob implements Job {
         status = JobStatus.COMPLETED;
         runningTask = null;
         handler.end();
-        JobEvents.onJobSuccess(this);
+        WikiBot.getBus().post(new JobSuccessEvent(this));
     }
 
     private int runDownload() {
