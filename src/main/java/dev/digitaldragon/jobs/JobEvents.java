@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
+import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import dev.digitaldragon.util.EnvConfig;
@@ -68,8 +69,11 @@ public class JobEvents {
      */
     public static void onJobAbort(Job job) { //This method is called when a job fails because it was aborted while running.
         UpdatesWebsocket.sendLogMessageToClients(job, "ABORTED");
-        IRCClient.sendMessage(job.getUserName(), "Your job " + job.getId() + " was aborted.");
-        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+        /*IRCClient.sendMessage(job.getUserName(), "Your job " + job.getId() + " was aborted.");
+        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());*/
+
+        JobAbortEvent event = new JobAbortEvent(job);
+        WikiBot.getBus().post(event);
 
         TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
         if (failChannel != null)
