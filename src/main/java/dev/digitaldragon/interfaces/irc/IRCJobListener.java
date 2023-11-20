@@ -1,7 +1,9 @@
 package dev.digitaldragon.interfaces.irc;
 
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 
@@ -19,7 +21,21 @@ public class IRCJobListener {
     public void onJobFailure(JobFailureEvent event) {
         Job job = event.getJob();
         IRCClient.sendMessage(String.format("%s%s: Job for %s%s %s(%s)%s failed with exit code %s.", IRCFormat.RED, job.getUserName(), IRCFormat.RESET, job.getName(), IRCFormat.GREY, job.getId(), IRCFormat.RED, job.getFailedTaskCode()));
-        IRCClient.sendMessage(IRCFormat.RED + "Explanation: " + IRCFormat.RESET + job.getExplanation());
-        IRCClient.sendMessage(IRCFormat.RED + "Logs URL: " + IRCFormat.RESET + job.getLogsUrl());
+        IRCClient.sendMessage("Explanation: " + job.getExplanation());
+        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+    }
+
+    @EventHandler
+    public void onJobAbort(JobAbortEvent event) {
+        Job job = event.getJob();
+        IRCClient.sendMessage(job.getUserName(), String.format("Your job for %s %s(%s)%s was %saborted.", job.getName(), IRCFormat.GREY, job.getId(), IRCFormat.RESET, IRCFormat.ORANGE));
+        IRCClient.sendMessage("Explanation: " + job.getExplanation());
+        IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+    }
+
+    @EventHandler
+    public void onJobQueued(JobQueuedEvent event) {
+        Job job = event.getJob();
+        IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
     }
 }
