@@ -1,5 +1,8 @@
 package dev.digitaldragon.jobs;
 
+import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 import org.json.JSONObject;
 
@@ -22,7 +25,7 @@ public class JobManager {
      */
     public static void submit(Job job) {
         jobs.put(job.getId(), job);
-        JobEvents.onJobQueued(job);
+        WikiBot.getBus().post(new JobQueuedEvent(job));
         executorService.submit(job::run);
     }
 
