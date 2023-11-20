@@ -1,6 +1,7 @@
 package dev.digitaldragon.interfaces.api;
 
 import com.google.gson.Gson;
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
@@ -34,6 +35,7 @@ public class SparkAPI {
         runCommand(); //POST /api/command
         createJob(); //POST /api/jobs
 
+        WikiBot.getBus().register(new APIJobListener());
     }
 
     private static void enableCORS(final String origin, final String methods, final String headers) {

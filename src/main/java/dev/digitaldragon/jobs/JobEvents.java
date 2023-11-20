@@ -18,7 +18,7 @@ public class JobEvents {
      * @param job The job that has failed.
      */
     public static void onJobFailure(Job job) { //This method is called when a job fails (due to an improper task exit code, etc, as dictated by the job). The runningTask is the task that failed
-        UpdatesWebsocket.sendLogMessageToClients(job, "FAILED");
+        //UpdatesWebsocket.sendLogMessageToClients(job, "FAILED");
 
 
         /*IRCClient.sendMessage(job.getUserName(), "Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".");
@@ -44,7 +44,7 @@ public class JobEvents {
      * @param job The job that has succeeded.
      */
     public static void onJobSuccess(Job job) { //This method is called when a job succeeds.
-        UpdatesWebsocket.sendLogMessageToClients(job, "SUCCESS");
+        //UpdatesWebsocket.sendLogMessageToClients(job, "SUCCESS");
 
         /*IRCClient.sendMessage(job.getUserName(), "Success! Job " + job.getId() + " completed successfully.");
         IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
@@ -69,7 +69,7 @@ public class JobEvents {
      * @param job The job that was aborted.
      */
     public static void onJobAbort(Job job) { //This method is called when a job fails because it was aborted while running.
-        UpdatesWebsocket.sendLogMessageToClients(job, "ABORTED");
+        //UpdatesWebsocket.sendLogMessageToClients(job, "ABORTED");
         /*IRCClient.sendMessage(job.getUserName(), "Your job " + job.getId() + " was aborted.");
         IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());*/
 
@@ -87,7 +87,7 @@ public class JobEvents {
      * @param job The job that was queued.
      */
     public static void onJobQueued(Job job) { //This method is called when a job is queued, but before it starts running.
-        UpdatesWebsocket.sendLogMessageToClients(job, "QUEUED");
+        //UpdatesWebsocket.sendLogMessageToClients(job, "QUEUED");
         //IRCClient.sendMessage(job.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
         JobQueuedEvent event = new JobQueuedEvent(job);
         WikiBot.getBus().post(event);
