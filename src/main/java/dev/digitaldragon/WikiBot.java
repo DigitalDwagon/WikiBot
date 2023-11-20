@@ -5,10 +5,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.api.SparkAPI;
-import dev.digitaldragon.interfaces.discord.DiscordAdminListener;
-import dev.digitaldragon.interfaces.discord.DiscordDokuWikiListener;
-import dev.digitaldragon.interfaces.discord.DiscordMediaWikiListener;
-import dev.digitaldragon.interfaces.discord.DiscordReuploadListener;
+import dev.digitaldragon.interfaces.discord.*;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
@@ -57,6 +54,7 @@ public class WikiBot {
 
         IRCClient.enable();
         instance.awaitReady();
+        DiscordClient.enable();
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
