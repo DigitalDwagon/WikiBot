@@ -1,0 +1,978 @@
+ttwiki;https://tt.wikipedia.org;Tatar Wikipedia;Tatar;Tatarça / Татарча
+hiwiki;https://hi.wikipedia.org;Hindi Wikipedia;Hindi;हिन्दी
+idwiktionary;https://id.wiktionary.org;Indonesian Wiktionary;Indonesian;Bahasa Indonesia
+skrwiki;https://skr.wikipedia.org;Saraiki Wikipedia;Saraiki;سرائیکی
+wawikisource;https://wa.wikisource.org;Walloon Wikisource;Walloon;Walon
+tawikisource;https://ta.wikisource.org;Tamil Wikisource;Tamil;தமிழ்
+ltwikiquote;https://lt.wikiquote.org;Lithuanian Wikiquote;Lithuanian;Lietuvių
+dgawiki;https://dga.wikipedia.org;Dagaare Wikipedia;Dagaare;Dagaaba
+pa_uswikimedia;https://pa-us.wikimedia.org;Wikimedia Pennsylvania;English;English
+novwiki;https://nov.wikipedia.org;Novial Wikipedia;Novial;Novial
+skwiki;https://sk.wikipedia.org;Slovak Wikipedia;Slovak;Slovenčina
+hiwiktionary;https://hi.wiktionary.org;Hindi Wiktionary;Hindi;हिन्दी
+akwikibooks;https://ak.wikibooks.org;Akan Wikibooks;Akan;Akana
+iewikibooks;https://ie.wikibooks.org;Interlingue Wikibooks;Interlingue;Interlingue
+chrwiktionary;https://chr.wiktionary.org;Cherokee Wiktionary;Cherokee;ᏣᎳᎩ
+arwikiquote;https://ar.wikiquote.org;Arabic Wikiquote;Arabic;العربية
+aswikisource;https://as.wikisource.org;Assamese Wikisource;Assamese;অসমীয়া
+arcwiki;https://arc.wikipedia.org;Aramaic Wikipedia;Aramaic;ܐܪܡܝܐ
+hiwikimedia;https://hi.wikimedia.org;Hindi Wikimedia;Hindi;हिन्दी
+pcdwiki;https://pcd.wikipedia.org;Picard Wikipedia;Picard;Picard
+biwiktionary;https://bi.wiktionary.org;Bislama Wiktionary;Bislama;Bislama
+tiwiktionary;https://ti.wiktionary.org;Tigrinya Wiktionary;Tigrinya;ትግርኛ
+eowikiquote;https://eo.wikiquote.org;Esperanto Wikiquote;Esperanto;Esperanto
+wikimania2008wiki;https://wikimania2008.wikimedia.org;Wikimania 2008 Wiki;English;English
+hifwiki;https://hif.wikipedia.org;Fiji Hindi Wikipedia;Fiji Hindi;Fiji Hindi
+bnwikisource;https://bn.wikisource.org;Bengali Wikisource;Bengali;বাংলা
+idwikibooks;https://id.wikibooks.org;Indonesian Wikibooks;Indonesian;Bahasa Indonesia
+mlwiktionary;https://ml.wiktionary.org;Malayalam Wiktionary;Malayalam;മലയാളം
+anwiktionary;https://an.wiktionary.org;Aragonese Wiktionary;Aragonese;Aragonés
+aywiki;https://ay.wikipedia.org;Aymara Wikipedia;Aymara;Aymar
+enwikisource;https://en.wikisource.org;English Wikisource;English;English
+plwiktionary;https://pl.wiktionary.org;Polish Wiktionary;Polish;Polski
+zghwiki;https://zgh.wikipedia.org;Moroccan Amazigh Wikipedia;Moroccan Amazigh;ⵜⴰⵎⴰⵣⵉⵖⵜ
+bgwikiquote;https://bg.wikiquote.org;Bulgarian Wikiquote;Bulgarian;Български
+gpewiki;https://gpe.wikipedia.org;Ghanaian Pidgin Wikipedia;Ghanaian Pidgin;Kroo brofo
+aswikiquote;https://as.wikiquote.org;Assamese Wikiquote;Assamese;অসমীয়া
+knwikisource;https://kn.wikisource.org;Kannada Wikisource;Kannada;ಕನ್ನಡ
+srwikibooks;https://sr.wikibooks.org;Serbian Wikibooks;Serbian;Српски / Srpski
+glwiktionary;https://gl.wiktionary.org;Galician Wiktionary;Galician;Galego
+ruwiki;https://ru.wikipedia.org;Russian Wikipedia;Russian;Русский
+bmwiki;https://bm.wikipedia.org;Bambara Wikipedia;Bambara;Bamanankan
+jawikiquote;https://ja.wikiquote.org;Japanese Wikiquote;Japanese;日本語
+dewikiversity;https://de.wikiversity.org;German Wikiversity;German;Deutsch
+slwiktionary;https://sl.wiktionary.org;Slovenian Wiktionary;Slovenian;Slovenščina
+ptwikinews;https://pt.wikinews.org;Portuguese Wikinews;Portuguese;Português
+wikimania2009wiki;https://wikimania2009.wikimedia.org;Wikimania 2009 Wiki;English;English
+euwiki;https://eu.wikipedia.org;Basque Wikipedia;Basque;Euskara
+ndswiki;https://nds.wikipedia.org;Low Saxon Wikipedia;Low Saxon;Plattdüütsch
+dawiktionary;https://da.wiktionary.org;Danish Wiktionary;Danish;Dansk
+gawiktionary;https://ga.wiktionary.org;Irish Wiktionary;Irish;Gaeilge
+aawiktionary;https://aa.wiktionary.org;Afar Wiktionary;Afar;Afar
+jawiktionary;https://ja.wiktionary.org;Japanese Wiktionary;Japanese;日本語
+sqwikibooks;https://sq.wikibooks.org;Albanian Wikibooks;Albanian;Shqip
+jbowiki;https://jbo.wikipedia.org;Lojban Wikipedia;Lojban;Lojban
+shiwiki;https://shi.wikipedia.org;Tachelhit Wikipedia;Tachelhit;Taclhit
+bnwiki;https://bn.wikipedia.org;Bengali Wikipedia;Bengali;বাংলা
+pawiktionary;https://pa.wiktionary.org;Panjabi Wiktionary;Panjabi;ਪੰਜਾਬੀ
+ruwikimedia;https://ru.wikimedia.org;Russian Wikimedia;Russian;Русский
+rowikiquote;https://ro.wikiquote.org;Romanian Wikiquote;Romanian;Română
+astwiktionary;https://ast.wiktionary.org;Asturian Wiktionary;Asturian;Asturianu
+vecwiki;https://vec.wikipedia.org;Venetian Wikipedia;Venetian;Vèneto
+guwiki;https://gu.wikipedia.org;Gujarati Wikipedia;Gujarati;ગુજરાતી
+mnwiki;https://mn.wikipedia.org;Mongolian Wikipedia;Mongolian;Монгол
+yuewiktionary;https://yue.wiktionary.org;Cantonese Wiktionary;Cantonese;粵語
+bgwiktionary;https://bg.wiktionary.org;Bulgarian Wiktionary;Bulgarian;Български
+wikimania2007wiki;https://wikimania2007.wikimedia.org;Wikimania 2007 Wiki;English;English
+eswikiversity;https://es.wikiversity.org;Spanish Wikiversity;Spanish;Español
+chywiki;https://chy.wikipedia.org;Cheyenne Wikipedia;Cheyenne;Tsetsêhestâhese
+roa_tarawiki;https://roa-tara.wikipedia.org;Tarantino Wikipedia;Tarantino;Tarandíne
+tewikibooks;https://te.wikibooks.org;Telugu Wikibooks;Telugu;తెలుగు
+cswiktionary;https://cs.wiktionary.org;Czech Wiktionary;Czech;Čeština
+krwiki;https://kr.wikipedia.org;Kanuri Wikipedia;Kanuri;Kanuri
+shnwiktionary;https://shn.wiktionary.org;Shan Wiktionary;Shan;ၵႂၢမ်းတႆးလူင်
+iswiktionary;https://is.wiktionary.org;Icelandic Wiktionary;Icelandic;Íslenska
+enwikiquote;https://en.wikiquote.org;English Wikiquote;English;English
+madwiki;https://mad.wikipedia.org;Madurese Wikipedia;Madurese;Madhurâ
+ruewiki;https://rue.wikipedia.org;Rusyn Wikipedia;Rusyn;русиньскый язык
+lgwiki;https://lg.wikipedia.org;Luganda Wikipedia;Luganda;Luganda
+gagwiki;https://gag.wikipedia.org;Gagauz Wikipedia;Gagauz;Gagauz
+dagwiki;https://dag.wikipedia.org;Dagbani Wikipedia;Dagbani;Dagbanli
+astwikibooks;https://ast.wikibooks.org;Asturian Wikibooks;Asturian;Asturianu
+fiwikiversity;https://fi.wikiversity.org;Finnish Wikiversity;Finnish;Suomi
+pagwiki;https://pag.wikipedia.org;Pangasinan Wikipedia;Pangasinan;Pangasinan
+tgwiktionary;https://tg.wiktionary.org;Tajik Wiktionary;Tajik;Тоҷикӣ
+lawikiquote;https://la.wikiquote.org;Latin Wikiquote;Latin;Latina
+bbcwiki;https://bbc.wikipedia.org;Toba Batak Wikipedia;Toba Batak;ᯅᯖᯂ᯲ ᯖᯬᯅ / Batak Toba
+nlwikibooks;https://nl.wikibooks.org;Dutch Wikibooks;Dutch;Nederlands
+frwikiversity;https://fr.wikiversity.org;French Wikiversity;French;Français
+zawikibooks;https://za.wikibooks.org;Zhuang Wikibooks;Zhuang;Cuengh
+skrwiktionary;https://skr.wiktionary.org;Saraiki Wiktionary;Saraiki;سرائیکی
+gawiki;https://ga.wikipedia.org;Irish Wikipedia;Irish;Gaeilge
+fiwiki;https://fi.wikipedia.org;Finnish Wikipedia;Finnish;Suomi
+bclwiki;https://bcl.wikipedia.org;Central Bicolano Wikipedia;Central Bicolano;Bikol
+tgwikibooks;https://tg.wikibooks.org;Tajik Wikibooks;Tajik;Тоҷикӣ
+cowiktionary;https://co.wiktionary.org;Corsican Wiktionary;Corsican;Corsu
+fowiktionary;https://fo.wiktionary.org;Faroese Wiktionary;Faroese;Føroyskt
+iowiktionary;https://io.wiktionary.org;Ido Wiktionary;Ido;Ido
+afwiki;https://af.wikipedia.org;Afrikaans Wikipedia;Afrikaans;Afrikaans
+fjwiki;https://fj.wikipedia.org;Fijian Wikipedia;Fijian;Na Vosa Vakaviti
+fiwikimedia;https://fi.wikimedia.org;Finnish Wikiversity;Finnish;Suomi
+vecwiktionary;https://vec.wiktionary.org;Venetian Wiktionary;Venetian;Vèneto
+kawikibooks;https://ka.wikibooks.org;Georgian Wikibooks;Georgian;ქართული
+gotwikibooks;https://got.wikibooks.org;Gothic Wikibooks;Gothic;𐌲𐌿𐍄𐌹𐍃𐌺
+zhwikinews;https://zh.wikinews.org;Chinese Wikinews;Chinese;中文
+pflwiki;https://pfl.wikipedia.org;Palatinate German Wikipedia;Palatinate German;Pfälzisch
+lmowiktionary;https://lmo.wiktionary.org;Lombard Wiktionary;Lombard;Lumbaart
+zuwikibooks;https://zu.wikibooks.org;Zulu Wikibooks;Zulu;isiZulu
+wikimania2006wiki;https://wikimania2006.wikimedia.org;Wikimania 2006 Wiki;English;English
+kswiki;https://ks.wikipedia.org;Kashmiri Wikipedia;Kashmiri;कश्मीरी / كشميري
+thwikibooks;https://th.wikibooks.org;Thai Wikibooks;Thai;ไทย
+rowiktionary;https://ro.wiktionary.org;Romanian Wiktionary;Romanian;Română
+avwiki;https://av.wikipedia.org;Avar Wikipedia;Avar;Авар
+ukwikisource;https://uk.wikisource.org;Ukrainian Wikisource;Ukrainian;Українська
+kkwikiquote;https://kk.wikiquote.org;Kazakh Wikiquote;Kazakh;қазақша
+lowiktionary;https://lo.wiktionary.org;Lao Wiktionary;Lao;ລາວ
+frwikivoyage;https://fr.wikivoyage.org;French Wikivoyage;French;Français
+kbdwiktionary;https://kbd.wiktionary.org;Kabardian Circassian Wiktionary;Kabardian Circassian;Адыгэбзэ (Adighabze)
+guwwiktionary;https://guw.wiktionary.org;Gun Wiktionary;Gun;Gungbè
+map_bmswiki;https://map-bms.wikipedia.org;Banyumasan Wikipedia;Banyumasan;Basa Banyumasan
+dawikibooks;https://da.wikibooks.org;Danish Wikibooks;Danish;Dansk
+nvwiki;https://nv.wikipedia.org;Navajo Wikipedia;Navajo;Diné bizaad
+svwikinews;https://sv.wikinews.org;Swedish Wikinews;Swedish;Svenska
+kbdwiki;https://kbd.wikipedia.org;Kabardian Circassian Wikipedia;Kabardian Circassian;Адыгэбзэ (Adighabze)
+eswiki;https://es.wikipedia.org;Spanish Wikipedia;Spanish;Español
+shnwikibooks;https://shn.wikibooks.org;Shan Wikibooks;Shan;ၵႂၢမ်းတႆးလူင်
+smwiki;https://sm.wikipedia.org;Samoan Wikipedia;Samoan;Gagana Samoa
+shwiki;https://sh.wikipedia.org;Serbo-Croatian Wikipedia;Serbo-Croatian;Srpskohrvatski / Српскохрватски
+yowikibooks;https://yo.wikibooks.org;Yoruba Wikibooks;Yoruba;Yorùbá
+abwiki;https://ab.wikipedia.org;Abkhazian Wikipedia;Abkhazian;Аҧсуа
+lijwiki;https://lij.wikipedia.org;Ligurian Wikipedia;Ligurian;Líguru
+iawiki;https://ia.wikipedia.org;Interlingua Wikipedia;Interlingua;Interlingua
+ptwikiquote;https://pt.wikiquote.org;Portuguese Wikiquote;Portuguese;Português
+iuwiktionary;https://iu.wiktionary.org;Inuktitut Wiktionary;Inuktitut;ᐃᓄᒃᑎᑐᑦ
+mrwiki;https://mr.wikipedia.org;Marathi Wikipedia;Marathi;मराठी
+ruwiktionary;https://ru.wiktionary.org;Russian Wiktionary;Russian;Русский
+arzwiki;https://arz.wikipedia.org;Egyptian Arabic Wikipedia;Egyptian Arabic;مصرى (Maṣrī)
+diqwiki;https://diq.wikipedia.org;Zazaki Wikipedia;Zazaki;Zazaki
+shywiktionary;https://shy.wiktionary.org;Shawiya Wiktionary;Shawiya;Tacawit
+ngwikimedia;https://ng.wikimedia.org;Ndonga Wikimedia;Ndonga;Oshiwambo
+sahwiki;https://sah.wikipedia.org;Sakha Wikipedia;Sakha;Саха тыла (Saxa Tyla)
+lijwikisource;https://lij.wikisource.org;Ligurian Wikisource;Ligurian;Líguru
+huwikiquote;https://hu.wikiquote.org;Hungarian Wikiquote;Hungarian;Magyar
+vowikiquote;https://vo.wikiquote.org;Volapük Wikiquote;Volapük;Volapük
+elwikivoyage;https://el.wikivoyage.org;Greek Wikivoyage;Greek;Ελληνικά
+lbewiki;https://lbe.wikipedia.org;Lak Wikipedia;Lak;Лакку
+mywikibooks;https://my.wikibooks.org;Burmese Wikibooks;Burmese;Myanmasa
+roa_rupwiktionary;https://roa-rup.wiktionary.org;Aromanian Wiktionary;Aromanian;Armãneashce
+mwlwiki;https://mwl.wikipedia.org;Mirandese Wikipedia;Mirandese;Mirandés
+hewikinews;https://he.wikinews.org;Hebrew Wikinews;Hebrew;עברית
+glwikiquote;https://gl.wikiquote.org;Galician Wikiquote;Galician;Galego
+rswikimedia;https://rs.wikimedia.org;Wikimedia Serbia;Serbian;Српски / Srpski
+advisorywiki;https://advisory.wikimedia.org;Wikimedia Advisory;English;English
+arywiki;https://ary.wikipedia.org;Moroccan Arabic Wikipedia;Moroccan Arabic;اللهجة المغربية
+lbwikiquote;https://lb.wikiquote.org;Luxembourgish Wikiquote;Luxembourgish;Lëtzebuergesch
+kowiki;https://ko.wikipedia.org;Korean Wikipedia;Korean;한국어
+liwiki;https://li.wikipedia.org;Limburgish Wikipedia;Limburgish;Limburgs
+aawiki;https://aa.wikipedia.org;Afar Wikipedia;Afar;Afar
+liwikibooks;https://li.wikibooks.org;Limburgian Wikibooks;Limburgian;Limburgs
+gvwiki;https://gv.wikipedia.org;Manx Wikipedia;Manx;Gaelg
+azwiki;https://az.wikipedia.org;Azerbaijani Wikipedia;Azerbaijani;Azərbaycanca
+gorwiki;https://gor.wikipedia.org;Gorontalo Wikipedia;Gorontalo;Hulontalo
+urwikibooks;https://ur.wikibooks.org;Urdu Wikibooks;Urdu;اردو
+elwikiquote;https://el.wikiquote.org;Greek Wikiquote;Greek;Ελληνικά
+niawiktionary;https://nia.wiktionary.org;Nias Wiktionary;Nias;Li Niha
+scwiktionary;https://sc.wiktionary.org;Sardinian Wiktionary;Sardinian;Sardu
+twwiki;https://tw.wikipedia.org;Twi Wikipedia;Twi;Twi
+ptwikimedia;https://pt.wikimedia.org;Portuguese Wikimedia;Portuguese;Português
+siwiki;https://si.wikipedia.org;Sinhalese Wikipedia;Sinhalese;සිංහල
+fawikivoyage;https://fa.wikivoyage.org;Persian Wikivoyage;Persian;فارسی
+svwikivoyage;https://sv.wikivoyage.org;Swedish Wikivoyage;Swedish;Svenska
+cawiki;https://ca.wikipedia.org;Catalan Wikipedia;Catalan;Català
+knwiki;https://kn.wikipedia.org;Kannada Wikipedia;Kannada;ಕನ್ನಡ
+hzwiki;https://hz.wikipedia.org;Herero Wikipedia;Herero;Otsiherero
+etwiki;https://et.wikipedia.org;Estonian Wikipedia;Estonian;Eesti
+labswiki;https://wikitech.wikimedia.org;Wikitech;English;English
+testcommonswiki;https://test-commons.wikimedia.org;Wikimedia Commons Test Wiki;All;All
+mrwikibooks;https://mr.wikibooks.org;Marathi Wikibooks;Marathi;मराठी
+mswiki;https://ms.wikipedia.org;Malay Wikipedia;Malay;Bahasa Melayu
+slwiki;https://sl.wikipedia.org;Slovenian Wikipedia;Slovenian;Slovenščina
+chwikibooks;https://ch.wikibooks.org;Chamorro Wikibooks;Chamorro;Chamoru
+tawikinews;https://ta.wikinews.org;Tamil Wikinews;Tamil;தமிழ்
+diqwiktionary;https://diq.wiktionary.org;Zazaki Wiktionary;Zazaki;Zazaki
+bawikibooks;https://ba.wikibooks.org;Bashkir Wikibooks;Bashkir;Башҡорт
+zh_min_nanwikisource;https://zh-min-nan.wikisource.org;Min Nan Wikisource;Min Nan;Bân-lâm-gú
+brwikimedia;https://br.wikimedia.org;Breton Wikimedia;Breton;Brezhoneg
+angwiki;https://ang.wikipedia.org;Anglo-Saxon Wikipedia;Anglo-Saxon;Englisc
+kowikinews;https://ko.wikinews.org;Korean Wikinews;Korean;한국어
+aywiktionary;https://ay.wiktionary.org;Aymara Wiktionary;Aymara;Aymar
+zh_min_nanwikiquote;https://zh-min-nan.wikiquote.org;Min Nan Wikiquote;Min Nan;Bân-lâm-gú
+kmwiki;https://km.wikipedia.org;Khmer Wikipedia;Khmer;ភាសាខ្មែរ
+eswikivoyage;https://es.wikivoyage.org;Spanish Wikivoyage;Spanish;Español
+strategywiki;https://strategy.wikimedia.org;Wikimedia Strategy Wiki;All;All
+frwikibooks;https://fr.wikibooks.org;French Wikibooks;French;Français
+wuuwiki;https://wuu.wikipedia.org;Wu Wikipedia;Wu;吴语
+nowikiquote;https://no.wikiquote.org;Norwegian (Bokmål) Wikiquote;Norwegian (Bokmål);Norsk (Bokmål)
+iawikibooks;https://ia.wikibooks.org;Interlingua Wikibooks;Interlingua;Interlingua
+dewikiquote;https://de.wikiquote.org;German Wikiquote;German;Deutsch
+nlwikivoyage;https://nl.wikivoyage.org;Dutch Wikivoyage;Dutch;Nederlands
+uzwiki;https://uz.wikipedia.org;Uzbek Wikipedia;Uzbek;O‘zbek
+elwikibooks;https://el.wikibooks.org;Greek Wikibooks;Greek;Ελληνικά
+zhwikiquote;https://zh.wikiquote.org;Chinese Wikiquote;Chinese;中文
+pawiki;https://pa.wikipedia.org;Punjabi Wikipedia;Punjabi;ਪੰਜਾਬੀ
+rmwiktionary;https://rm.wiktionary.org;Raeto Romance Wiktionary;Raeto Romance;Rumantsch
+frrwiki;https://frr.wikipedia.org;North Frisian Wikipedia;North Frisian;Nordfriisk
+nowikinews;https://no.wikinews.org;Norwegian (Bokmål) Wikinews;Norwegian (Bokmål);Norsk (Bokmål)
+tkwikiquote;https://tk.wikiquote.org;Turkmen Wikiquote;Turkmen;تركمن / Туркмен
+omwiktionary;https://om.wiktionary.org;Oromo Wiktionary;Oromo;Oromoo
+fiwikivoyage;https://fi.wikivoyage.org;Finnish Wikivoyage;Finnish;Suomi
+foundationwiki;https://foundation.wikimedia.org;Wikimedia Foundation Wiki;All;All
+hywikiquote;https://hy.wikiquote.org;Armenian Wikiquote;Armenian;Հայերեն
+trwiki;https://tr.wikipedia.org;Turkish Wikipedia;Turkish;Türkçe
+blkwiki;https://blk.wikipedia.org;Pa'O Wikipedia;Pa'O;ပအိုဝ်ႏဘာႏသာႏ
+mniwiki;https://mni.wikipedia.org;Meitei Wikipedia;Meitei;ꯃꯤꯇꯩꯂꯣꯟ
+sowiki;https://so.wikipedia.org;Somali Wikipedia;Somali;Soomaaliga
+mywiktionary;https://my.wiktionary.org;Burmese Wiktionary;Burmese;မြန်မာဘာသာ
+zhwikisource;https://zh.wikisource.org;Chinese Wikisource;Chinese;中文
+yiwiki;https://yi.wikipedia.org;Yiddish Wikipedia;Yiddish;ייִדיש
+lnwikibooks;https://ln.wikibooks.org;Lingala Wikibooks;Lingala;Lingala
+mswikibooks;https://ms.wikibooks.org;Malay Wikibooks;Malay;Bahasa Melayu
+mtwiki;https://mt.wikipedia.org;Maltese Wikipedia;Maltese;Malti
+srwiktionary;https://sr.wiktionary.org;Serbian Wiktionary;Serbian;Српски / Srpski
+itwikisource;https://it.wikisource.org;Italian Wikisource;Italian;Italiano
+snwiki;https://sn.wikipedia.org;Shona Wikipedia;Shona;chiShona
+mlwikiquote;https://ml.wikiquote.org;Malayalam Wikiquote;Malayalam;മലയാളം
+cewiki;https://ce.wikipedia.org;Chechen Wikipedia;Chechen;Нохчийн
+dewikinews;https://de.wikinews.org;German Wikinews;German;Deutsch
+nywiki;https://ny.wikipedia.org;Chichewa Wikipedia;Chichewa;Chi-Chewa
+mrwiktionary;https://mr.wiktionary.org;Marathi Wiktionary;Marathi;मराठी
+tlwikiquote;https://tl.wikiquote.org;Tagalog Wikiquote;Tagalog;Tagalog
+arwiktionary;https://ar.wiktionary.org;Arabic Wiktionary;Arabic;العربية
+shnwiki;https://shn.wikipedia.org;Shan Wikipedia;Shan;ၵႂၢမ်းတႆးလူင်
+thwikisource;https://th.wikisource.org;Thai Wikisource;Thai;ไทย
+tswiki;https://ts.wikipedia.org;Tsonga Wikipedia;Tsonga;Xitsonga
+ltwikisource;https://lt.wikisource.org;Lithuanian Wikisource;Lithuanian;Lietuvių
+frpwiki;https://frp.wikipedia.org;Franco-Provençal/Arpitan Wikipedia;Franco-Provençal/Arpitan;Arpitan
+gomwiki;https://gom.wikipedia.org;Goan Konkani Wikipedia;Goan Konkani;गोंयची कोंकणी / Gõychi Konknni
+bowikibooks;https://bo.wikibooks.org;Tibetan Wikibooks;Tibetan;Bod skad
+azwikisource;https://az.wikisource.org;Azerbaijani Wikisource;Azerbaijani;Azərbaycanca
+extwiki;https://ext.wikipedia.org;Extremaduran Wikipedia;Extremaduran;Estremeñu
+rmwikibooks;https://rm.wikibooks.org;Romansh Wikibooks;Romansh;Rumantsch
+tywiki;https://ty.wikipedia.org;Tahitian Wikipedia;Tahitian;Reo Mā`ohi
+niawiki;https://nia.wikipedia.org;Nias Wikipedia;Nias;Li Niha
+simplewiktionary;https://simple.wiktionary.org;Simple English Wiktionary;Simple English;Simple English
+lmowiki;https://lmo.wikipedia.org;Lombard Wikipedia;Lombard;Lumbaart
+hrwikiquote;https://hr.wikiquote.org;Croatian Wikiquote;Croatian;Hrvatski
+wowiktionary;https://wo.wiktionary.org;Wolof Wiktionary;Wolof;Wollof
+gewikimedia;https://ge.wikimedia.org;Wikimedia Georgia;Georgian;ქართული
+slwikibooks;https://sl.wikibooks.org;Slovenian Wikibooks;Slovenian;Slovenščina
+bewikibooks;https://be.wikibooks.org;Belarusian Wikibooks;Belarusian;Беларуская
+itwikibooks;https://it.wikibooks.org;Italian Wikibooks;Italian;Italiano
+kowiktionary;https://ko.wiktionary.org;Korean Wiktionary;Korean;한국어
+pwnwiki;https://pwn.wikipedia.org;Paiwan Wikipedia;Paiwan;Pinayuanan
+eowiktionary;https://eo.wiktionary.org;Esperanto Wiktionary;Esperanto;Esperanto
+kvwiki;https://kv.wikipedia.org;Komi Wikipedia;Komi;Коми
+mlwikisource;https://ml.wikisource.org;Malayalam Wikisource;Malayalam;മലയാളം
+gomwiktionary;https://gom.wiktionary.org;Goan Konkani Wiktionary;Goan Konkani;गोंयची कोंकणी / Gõychi Konknni
+slwikisource;https://sl.wikisource.org;Slovenian Wikisource;Slovenian;Slovenščina
+tenwiki;https://ten.wikipedia.org;Wikipedia 10th Anniversary;All;All
+aswiki;https://as.wikipedia.org;Assamese Wikipedia;Assamese;অসমীয়া
+zh_classicalwiki;https://zh-classical.wikipedia.org;Classical Chinese Wikipedia;Classical Chinese;古文 / 文言文
+ruwikiquote;https://ru.wikiquote.org;Russian Wikiquote;Russian;Русский
+xhwikibooks;https://xh.wikibooks.org;Xhosan Wikibooks;Xhosan;isiXhosa
+mkwikimedia;https://mk.wikimedia.org;Macedonian Wiktionary;Macedonian;Македонски
+quwikiquote;https://qu.wikiquote.org;Quechua Wikiquote;Quechua;Runa Simi
+bmwikiquote;https://bm.wikiquote.org;Bambara Wikiquote;Bambara;Bamanankan
+oswiki;https://os.wikipedia.org;Ossetian Wikipedia;Ossetian;Иронау
+mgwikibooks;https://mg.wikibooks.org;Malagasy Wikibooks;Malagasy;Malagasy
+bgwikinews;https://bg.wikinews.org;Bulgarian Wikinews;Bulgarian;Български
+rmywiki;https://rmy.wikipedia.org;Romani Wikipedia;Romani;romani - रोमानी
+wawiktionary;https://wa.wiktionary.org;Walloon Wiktionary;Walloon;Walon
+afwiktionary;https://af.wiktionary.org;Afrikaans Wiktionary;Afrikaans;Afrikaans
+amwikiquote;https://am.wikiquote.org;Amharic Wikiquote;Amharic;አማርኛ
+klwiki;https://kl.wikipedia.org;Greenlandic Wikipedia;Greenlandic;Kalaallisut
+euwikisource;https://eu.wikisource.org;Basque Wikisource;Basque;Euskara
+donatewiki;https://donate.wikimedia.org;Wikimedia Donate Wiki;All;All
+rwwiktionary;https://rw.wiktionary.org;Rwandi Wiktionary;Rwandi;Kinyarwanda
+aswiktionary;https://as.wiktionary.org;Assamese Wiktionary;Assamese;অসমীয়া
+cywikibooks;https://cy.wikibooks.org;Welsh Wikibooks;Welsh;Cymraeg
+dinwiki;https://din.wikipedia.org;Dinka Wikipedia;Dinka;Thuɔŋjäŋ
+tlwikibooks;https://tl.wikibooks.org;Tagalog Wikibooks;Tagalog;Tagalog
+zawiki;https://za.wikipedia.org;Zhuang Wikipedia;Zhuang;Cuengh
+hiwikisource;https://hi.wikisource.org;Hindi Wikisource;Hindi;हिन्दी
+euwikiquote;https://eu.wikiquote.org;Basque Wikiquote;Basque;Euskara
+fywiktionary;https://fy.wiktionary.org;West Frisian Wiktionary;West Frisian;Frysk
+cawikiquote;https://ca.wikiquote.org;Catalan Wikiquote;Catalan;Català
+glwikibooks;https://gl.wikibooks.org;Galician Wikibooks;Galician;Galego
+pntwiki;https://pnt.wikipedia.org;Pontic Wikipedia;Pontic;Ποντιακά
+aywikibooks;https://ay.wikibooks.org;Aymara Wikibooks;Aymara;Aymar
+rowikinews;https://ro.wikinews.org;Romanian Wikinews;Romanian;Română
+ffwiki;https://ff.wikipedia.org;Fula Wikipedia;Fula;Fulfulde
+gdwiki;https://gd.wikipedia.org;Scottish Gaelic Wikipedia;Scottish Gaelic;Gàidhlig
+svwikiversity;https://sv.wikiversity.org;Swedish Wikiversity;Swedish;Svenska
+tnwiki;https://tn.wikipedia.org;Tswana Wikipedia;Tswana;Setswana
+bnwikivoyage;https://bn.wikivoyage.org;Bengali Wikivoyage;Bengali;বাংলা
+furwiki;https://fur.wikipedia.org;Friulian Wikipedia;Friulian;Furlan
+vewikimedia;https://ve.wikimedia.org;Venda Wikimedia;Venda;Tshivenda
+lawiki;https://la.wikipedia.org;Latin Wikipedia;Latin;Latina
+sqwikinews;https://sq.wikinews.org;Albanian Wikinews;Albanian;Shqip
+cswiki;https://cs.wikipedia.org;Czech Wikipedia;Czech;Čeština
+mswiktionary;https://ms.wiktionary.org;Malay Wiktionary;Malay;Bahasa Melayu
+skwikiquote;https://sk.wikiquote.org;Slovak Wikiquote;Slovak;Slovenčina
+sswiktionary;https://ss.wiktionary.org;Swati Wiktionary;Swati;SiSwati
+idwiki;https://id.wikipedia.org;Indonesian Wikipedia;Indonesian;Bahasa Indonesia
+elwikinews;https://el.wikinews.org;Greek Wikinews;Greek;Ελληνικά
+fywiki;https://fy.wikipedia.org;West Frisian Wikipedia;West Frisian;Frysk
+suwikibooks;https://su.wikibooks.org;Sundanese Wikibooks;Sundanese;Basa Sunda
+rowikisource;https://ro.wikisource.org;Romanian Wikisource;Romanian;Română
+astwikiquote;https://ast.wikiquote.org;Asturian Wikiquote;Asturian;Asturianu
+kcgwiki;https://kcg.wikipedia.org;Tyap Wikipedia;Tyap;Tyap
+napwiki;https://nap.wikipedia.org;Neapolitan Wikipedia;Neapolitan;Nnapulitano
+glkwiki;https://glk.wikipedia.org;Gilaki Wikipedia;Gilaki;گیلکی
+miwiki;https://mi.wikipedia.org;Maori Wikipedia;Maori;Māori
+sahwikisource;https://sah.wikisource.org;Sakha Wikisource;Sakha;Саха тыла (Saxa Tyla)
+metawiki;https://meta.wikimedia.org;Wikimedia Meta-Wiki;All;All
+qualitywiki;https://quality.wikimedia.org;Wikimedia Quality Wiki;All;All
+ltwiki;https://lt.wikipedia.org;Lithuanian Wikipedia;Lithuanian;Lietuvių
+outreachwiki;https://outreach.wikimedia.org;Wikimedia Outreach Wiki;All;All
+lvwiktionary;https://lv.wiktionary.org;Latvian Wiktionary;Latvian;Latviešu
+hsbwiktionary;https://hsb.wiktionary.org;Upper Sorbian Wiktionary;Upper Sorbian;Obersorbisch
+ruwikivoyage;https://ru.wikivoyage.org;Russian Wikivoyage;Russian;Русский
+piwiki;https://pi.wikipedia.org;Pali Wikipedia;Pali;पाऴि
+cswikiversity;https://cs.wikiversity.org;Czech Wikiversity;Czech;Čeština
+sawikisource;https://sa.wikisource.org;Sanskrit Wikisource;Sanskrit;संस्कृतम्
+rowiki;https://ro.wikipedia.org;Romanian Wikipedia;Romanian;Română
+tumwiki;https://tum.wikipedia.org;Tumbuka Wikipedia;Tumbuka;chiTumbuka
+testwikidatawiki;https://test.wikidata.org;Wikidata Testing;All;All
+etwikisource;https://et.wikisource.org;Estonian Wikisource;Estonian;Eesti
+liwikinews;https://li.wikinews.org;Limburgish Wikinews;Limburgish;Limburgs
+lvwiki;https://lv.wikipedia.org;Latvian Wikipedia;Latvian;Latviešu
+eswikiquote;https://es.wikiquote.org;Spanish Wikiquote;Spanish;Español
+gnwiki;https://gn.wikipedia.org;Guarani Wikipedia;Guarani;Avañe'ẽ
+euwikibooks;https://eu.wikibooks.org;Basque Wikibooks;Basque;Euskara
+fowikisource;https://fo.wikisource.org;Faroese Wikisource;Faroese;Føroyskt
+bgwiki;https://bg.wikipedia.org;Bulgarian Wikipedia;Bulgarian;Български
+gcrwiki;https://gcr.wikipedia.org;Guianan Creole Wikipedia;Guianan Creole;Kriyòl Gwiyannen
+kawiki;https://ka.wikipedia.org;Georgian Wikipedia;Georgian;ქართული
+barwiki;https://bar.wikipedia.org;Bavarian Wikipedia;Bavarian;Boarisch
+cowikibooks;https://co.wikibooks.org;Corsican Wikibooks;Corsican;Corsu
+frwikisource;https://fr.wikisource.org;French Wikisource;French;Français
+pmswikisource;https://pms.wikisource.org;Piedmontese Wikisource;Piedmontese;Piemontèis
+stwiktionary;https://st.wiktionary.org;Southern Sotho Wiktionary;Southern Sotho;seSotho
+bgwikibooks;https://bg.wikibooks.org;Bulgarian Wikibooks;Bulgarian;Български
+ocwikibooks;https://oc.wikibooks.org;Occitan Wikibooks;Occitan;Occitan
+sdwiki;https://sd.wikipedia.org;Sindhi Wikipedia;Sindhi;سنڌي، سندھی ، सिन्ध
+glwikisource;https://gl.wikisource.org;Galician Wikisource;Galician;Galego
+swwikibooks;https://sw.wikibooks.org;Swahili Wikibooks;Swahili;Kiswahili
+siwiktionary;https://si.wiktionary.org;Sinhalese Wiktionary;Sinhalese;සිංහල
+eowikinews;https://eo.wikinews.org;Esperanto Wikinews;Esperanto;Esperanto
+nowikibooks;https://no.wikibooks.org;Norwegian (Bokmål) Wikibooks;Norwegian (Bokmål);Norsk (Bokmål)
+trwikinews;https://tr.wikinews.org;Turkish Wikinews;Turkish;Türkçe
+miwiktionary;https://mi.wiktionary.org;Maori Wiktionary;Maori;Māori
+mtwiktionary;https://mt.wiktionary.org;Maltese Wiktionary;Maltese;bil-Malti
+ukwikivoyage;https://uk.wikivoyage.org;Ukrainian Wikivoyage;Ukrainian;Українська
+knwiktionary;https://kn.wiktionary.org;Kannada Wiktionary;Kannada;ಕನ್ನಡ
+enwiktionary;https://en.wiktionary.org;English Wiktionary;English;English
+mkwiki;https://mk.wikipedia.org;Macedonian Wikipedia;Macedonian;Македонски
+bclwiktionary;https://bcl.wiktionary.org;Central Bicolano Wiktionary;Central Bicolano;Bikol
+biwiki;https://bi.wikipedia.org;Bislama Wikipedia;Bislama;Bislama
+xhwiktionary;https://xh.wiktionary.org;Xhosan Wiktionary;Xhosan;isiXhosa
+trwikimedia;https://tr.wikimedia.org;Turkish Wikimedia;Turkish;Türkçe
+nawikiquote;https://na.wikiquote.org;Nauruan Wikiquote;Nauruan;dorerin Naoero
+fiwikinews;https://fi.wikinews.org;Finnish Wikinews;Finnish;Suomi
+simplewikiquote;https://simple.wikiquote.org;Simple English Wikiquote;Simple English;Simple English
+tewiktionary;https://te.wiktionary.org;Telugu Wiktionary;Telugu;తెలుగు
+hrwikibooks;https://hr.wikibooks.org;Croatian Wikibooks;Croatian;Hrvatski
+ngwiki;https://ng.wikipedia.org;Ndonga Wikipedia;Ndonga;Oshiwambo
+wikimania2010wiki;https://wikimania2010.wikimedia.org;Wikimania 2010 Wiki;English;English
+nostalgiawiki;https://nostalgia.wikipedia.org;English Wikipedia Nostalgia;English;English
+bewikiquote;https://be.wikiquote.org;Belarusian Wikiquote;Belarusian;Беларуская
+gurwiki;https://gur.wikipedia.org;Gurenɛ Wikipedia;Gurenɛ;Gurenɛ
+kywiktionary;https://ky.wiktionary.org;Kirghiz Wiktionary;Kirghiz;Kırgızca
+elwiktionary;https://el.wiktionary.org;Greek Wiktionary;Greek;Ελληνικά
+ckbwiktionary;https://ckb.wiktionary.org;Sorani Wiktionary;Sorani;Soranî / کوردی
+miwikibooks;https://mi.wikibooks.org;Maori Wikibooks;Maori;Māori
+yiwiktionary;https://yi.wiktionary.org;Yiddish Wiktionary;Yiddish;ייִדיש
+grwikimedia;https://gr.wikimedia.org;Wikimedia Greece;Greek;Ελληνικά
+bswiktionary;https://bs.wiktionary.org;Bosnian Wiktionary;Bosnian;Bosanski
+cawiktionary;https://ca.wiktionary.org;Catalan Wiktionary;Catalan;Català
+iawiktionary;https://ia.wiktionary.org;Interlingua Wiktionary;Interlingua;Interlingua
+mdfwiki;https://mdf.wikipedia.org;Moksha Wikipedia;Moksha;Мокшень (Mokshanj Kälj)
+mnwwiki;https://mnw.wikipedia.org;Mon Wikipedia;Mon;ဘာသာ မန်
+gnwikibooks;https://gn.wikibooks.org;Guarani Wikibooks;Guarani;Avañe'ẽ
+sqwikiquote;https://sq.wikiquote.org;Albanian Wikiquote;Albanian;Shqip
+hrwiktionary;https://hr.wiktionary.org;Croatian Wiktionary;Croatian;Hrvatski
+cswikiquote;https://cs.wikiquote.org;Czech Wikiquote;Czech;Česká
+cywiki;https://cy.wikipedia.org;Welsh Wikipedia;Welsh;Cymraeg
+trwiktionary;https://tr.wiktionary.org;Turkish Wiktionary;Turkish;Türkçe
+brwiktionary;https://br.wiktionary.org;Breton Wiktionary;Breton;Brezhoneg
+koiwiki;https://koi.wikipedia.org;Komi-Permyak Wikipedia;Komi-Permyak;Перем Коми (Perem Komi)
+viwikivoyage;https://vi.wikivoyage.org;Vietnamese Wikivoyage;Vietnamese;Tiếng Việt
+krwikiquote;https://kr.wikiquote.org;Kanuri Wikiquote;Kanuri;Kanuri
+btmwiktionary;https://btm.wiktionary.org;Mandailing Wiktionary;Mandailing;Saro Mandailing
+swwiktionary;https://sw.wiktionary.org;Swahili Wiktionary;Swahili;Kiswahili
+lawikisource;https://la.wikisource.org;Latin Wikisource;Latin;Latina
+knwikiquote;https://kn.wikiquote.org;Kannada Wikiquote;Kannada;ಕನ್ನಡ
+mgwiki;https://mg.wikipedia.org;Malagasy Wikipedia;Malagasy;Malagasy
+fawikisource;https://fa.wikisource.org;Persian Wikisource;Persian;فارسی
+nawiki;https://na.wikipedia.org;Nauruan Wikipedia;Nauruan;dorerin Naoero
+scnwiktionary;https://scn.wiktionary.org;Sicilian Wiktionary;Sicilian;Sicilianu
+kkwiktionary;https://kk.wiktionary.org;Kazakh Wiktionary;Kazakh;қазақша
+commonswiki;https://commons.wikimedia.org;Wikimedia Commons;All;All
+astwiki;https://ast.wikipedia.org;Asturian Wikipedia;Asturian;Asturianu
+banwiki;https://ban.wikipedia.org;Balinese Wikipedia;Balinese;Bali
+jvwikisource;https://jv.wikisource.org;Javanese Wikisource;Javanese;Basa Jawa
+rwwiki;https://rw.wikipedia.org;Kinyarwanda Wikipedia;Kinyarwanda;Ikinyarwanda
+frwikinews;https://fr.wikinews.org;French Wikinews;French;Français
+ruwikibooks;https://ru.wikibooks.org;Russian Wikibooks;Russian;Русский
+roa_rupwiki;https://roa-rup.wikipedia.org;Aromanian Wikipedia;Aromanian;Armãneashce
+dtywiki;https://dty.wikipedia.org;Doteli Wikipedia;Doteli;डोटेली
+incubatorwiki;https://incubator.wikimedia.org;Wikimedia Incubator;All;All
+bmwikibooks;https://bm.wikibooks.org;Bambara Wikibooks;Bambara;Bamanankan
+hywikisource;https://hy.wikisource.org;Armenian Wikisource;Armenian;Հայերեն
+wikimania2016wiki;https://wikimania2016.wikimedia.org;Wikimania 2016 Wiki;English;English
+glwiki;https://gl.wikipedia.org;Galician Wikipedia;Galician;Galego
+kmwiktionary;https://km.wiktionary.org;Cambodian Wiktionary;Cambodian;ភាសាខ្មែរ
+suwiktionary;https://su.wiktionary.org;Sundanese Wiktionary;Sundanese;Basa Sunda
+votewiki;https://vote.wikimedia.org;Wikimedia Vote;All;All
+amwiki;https://am.wikipedia.org;Amharic Wikipedia;Amharic;አማርኛ
+liwiktionary;https://li.wiktionary.org;Limburgish Wiktionary;Limburgish;Limburgs
+quwiki;https://qu.wikipedia.org;Quechua Wikipedia;Quechua;Runa Simi
+tlywiki;https://tly.wikipedia.org;Talysh Wikipedia;Talysh;Tolışə zıvon
+hywwiki;https://hyw.wikipedia.org;Western Armenian Wikipedia;Western Armenian;Արեւմտահայերէն
+srnwiki;https://srn.wikipedia.org;Sranan Wikipedia;Sranan;Sranantongo
+fiwiktionary;https://fi.wiktionary.org;Finnish Wiktionary;Finnish;Suomi
+suwikiquote;https://su.wikiquote.org;Sundanese Wikiquote;Sundanese;Basa Sunda
+ttwiktionary;https://tt.wiktionary.org;Tatar Wiktionary;Tatar;Tatarça / Татарча
+mhwiktionary;https://mh.wiktionary.org;Marshallese Wiktionary;Marshallese;Ebon
+guwiktionary;https://gu.wiktionary.org;Gujarati Wiktionary;Gujarati;ગુજરાતી
+shwiktionary;https://sh.wiktionary.org;Serbo-Croatian Wiktionary;Serbo-Croatian;Srpskohrvatski / Српскохрватски
+bowiki;https://bo.wikipedia.org;Tibetan Wikipedia;Tibetan;བོད་སྐད
+wikimania2014wiki;https://wikimania2014.wikimedia.org;Wikimania 2014 Wiki;English;English
+alswiki;https://als.wikipedia.org;Alemannic Wikipedia;Alemannic;Alemannisch
+angwikisource;https://ang.wikisource.org;Anglo-Saxon Wikisource;Anglo-Saxon;Englisc
+cbk_zamwiki;https://cbk-zam.wikipedia.org;Zamboanga Chavacano Wikipedia;Zamboanga Chavacano;Chavacano de Zamboanga
+mediawikiwiki;https://www.mediawiki.org;Mediawiki Wiki;All;All
+bswikibooks;https://bs.wikibooks.org;Bosnian Wikibooks;Bosnian;Bosanski
+itwiki;https://it.wikipedia.org;Italian Wikipedia;Italian;Italiano
+avwiktionary;https://av.wiktionary.org;Avar Wiktionary;Avar;Авар
+vowiktionary;https://vo.wiktionary.org;Volapük Wiktionary;Volapük;Volapük
+ocwiktionary;https://oc.wiktionary.org;Occitan Wiktionary;Occitan;Occitan
+cuwiki;https://cu.wikipedia.org;Old Church Slavonic Wikipedia;Old Church Slavonic;Словѣньскъ
+akwiki;https://ak.wikipedia.org;Akan Wikipedia;Akan;Akana
+pswiki;https://ps.wikipedia.org;Pashto Wikipedia;Pashto;پښتو
+tpiwiktionary;https://tpi.wiktionary.org;Tok Pisin Wiktionary;Tok Pisin;Tok Pisin
+tswiktionary;https://ts.wiktionary.org;Tsonga Wiktionary;Tsonga;Xitsonga
+nlwikisource;https://nl.wikisource.org;Dutch Wikisource;Dutch;Nederlands
+fjwiktionary;https://fj.wiktionary.org;Fijian Wiktionary;Fijian;Na Vosa Vakaviti
+jvwiki;https://jv.wikipedia.org;Javanese Wikipedia;Javanese;Basa Jawa
+sgwiktionary;https://sg.wiktionary.org;Sango Wiktionary;Sango;Sängö
+cawikinews;https://ca.wikinews.org;Catalan Wikinews;Catalan;Català
+gvwiktionary;https://gv.wiktionary.org;Manx Wiktionary;Manx;Gaelg
+mgwiktionary;https://mg.wiktionary.org;Malagasy Wiktionary;Malagasy;Malagasy
+newiki;https://ne.wikipedia.org;Nepali Wikipedia;Nepali;नेपाली
+svwiktionary;https://sv.wiktionary.org;Swedish Wiktionary;Swedish;Svenska
+nahwikibooks;https://nah.wikibooks.org;Nahuatl Wikibooks;Nahuatl;Nahuatl
+awawiki;https://awa.wikipedia.org;Awadhi Wikipedia;Awadhi;ქართული
+bclwikiquote;https://bcl.wikiquote.org;Central Bicolano Wikiquote;Central Bicolano;Bikol
+zhwikiversity;https://zh.wikiversity.org;Chinese Wikiversity;Chinese;中文
+simplewiki;https://simple.wikipedia.org;Simple English Wikipedia;Simple English;Simple English
+omwiki;https://om.wikipedia.org;Oromo Wikipedia;Oromo;Oromoo
+eswikisource;https://es.wikisource.org;Spanish Wikisource;Spanish;Español
+cowikiquote;https://co.wikiquote.org;Corsican Wikiquote;Corsican;Corsu
+bewiktionary;https://be.wiktionary.org;Belarusian Wiktionary;Belarusian;Беларуская
+testwiki;https://test.wikipedia.org;Wikipedia Test Wiki;All;All
+nahwiki;https://nah.wikipedia.org;Nahuatl Wikipedia;Nahuatl;Nāhuatl
+newikibooks;https://ne.wikibooks.org;Nepali Wikibooks;Nepali;नेपाली
+bswiki;https://bs.wikipedia.org;Bosnian Wikipedia;Bosnian;Bosanski
+klwiktionary;https://kl.wiktionary.org;Greenlandic Wiktionary;Greenlandic;Kalaallisut
+simplewikibooks;https://simple.wikibooks.org;Simple English Wikibooks;Simple English;Simple English
+wikimania2012wiki;https://wikimania2012.wikimedia.org;Wikimania 2012 Wiki;English;English
+hewiktionary;https://he.wiktionary.org;Hebrew Wiktionary;Hebrew;עברית
+newiktionary;https://ne.wiktionary.org;Nepali Wiktionary;Nepali;नेपाली
+quwikibooks;https://qu.wikibooks.org;Quechua Wikibooks;Quechua;Runa Simi
+sourceswiki;https://wikisource.org;Wikisource Meta;All;All
+mrjwiki;https://mrj.wikipedia.org;Hill Mari Wikipedia;Hill Mari;Кырык Мары (Kyryk Mary)
+trvwiki;https://trv.wikipedia.org;Seediq Wikipedia;Seediq;Kari Seediq
+nowikimedia;https://no.wikimedia.org;Wikimedia Norway (Norge);Norwegian;Norsk
+dsbwiki;https://dsb.wikipedia.org;Lower Sorbian Wikipedia;Lower Sorbian;Dolnoserbski
+bdwikimedia;https://bd.wikimedia.org;Wikimedia Bangladesh;Bengali;বাংলা
+dvwiki;https://dv.wikipedia.org;Divehi Wikipedia;Divehi;ދިވެހިބަސް
+amwiktionary;https://am.wiktionary.org;Amharic Wiktionary;Amharic;አማርኛ
+scnwiki;https://scn.wikipedia.org;Sicilian Wikipedia;Sicilian;Sicilianu
+kuwikiquote;https://ku.wikiquote.org;Kurdish Wikiquote;Kurdish;Kurdî / كوردی
+plwikivoyage;https://pl.wikivoyage.org;Polish Wikivoyage;Polish;Polski
+vowikibooks;https://vo.wikibooks.org;Volapük Wikibooks;Volapük;Volapük
+zhwiktionary;https://zh.wiktionary.org;Chinese Wiktionary;Chinese;中文
+eowikisource;https://eo.wikisource.org;Esperanto Wikisource;Esperanto;Esperanto
+wikifunctionswiki;https://www.wikifunctions.org;Wikifunctions;All;All
+smwiktionary;https://sm.wiktionary.org;Samoan Wiktionary;Samoan;Gagana Samoa
+bugwiki;https://bug.wikipedia.org;Buginese Wikipedia;Buginese;Basa Ugi
+anpwiki;https://anp.wikipedia.org;Angika Wikipedia;Angika;अंगिका
+itwikiversity;https://it.wikiversity.org;Italian Wikiversity;Italian;Italiano
+lezwiki;https://lez.wikipedia.org;Lezgian Wikipedia;Lezgian;Ð›ÐµÐ·Ð³Ð¸ Ñ‡Ð†Ð°Ð»
+cswikibooks;https://cs.wikibooks.org;Czech Wikibooks;Czech;Čeština
+jawikiversity;https://ja.wikiversity.org;Japanese Wikiversity;Japanese;日本語
+kgwiki;https://kg.wikipedia.org;Kongo Wikipedia;Kongo;KiKongo
+mlwikibooks;https://ml.wikibooks.org;Malayalam Wikibooks;Malayalam;മലയാളം
+brwikiquote;https://br.wikiquote.org;Breton Wikiquote;Breton;Brezhoneg
+kawikiquote;https://ka.wikiquote.org;Georgian Wikiquote;Georgian;ქართული
+suwiki;https://su.wikipedia.org;Sundanese Wikipedia;Sundanese;Basa Sunda
+uzwikibooks;https://uz.wikibooks.org;Uzbek Wikibooks;Uzbek;O‘zbek
+lbwikibooks;https://lb.wikibooks.org;Luxembourgish Wikibooks;Luxembourgish;Lëtzebuergesch
+thwiktionary;https://th.wiktionary.org;Thai Wiktionary;Thai;ไทย
+wikimania2018wiki;https://wikimania2018.wikimedia.org;Wikimania 2018 Wiki;English;English
+bhwiktionary;https://bh.wiktionary.org;Bihari Wiktionary;Bihari;भोजपुरी
+kabwiki;https://kab.wikipedia.org;Kabyle Wikipedia;Kabyle;Taqbaylit
+hewikibooks;https://he.wikibooks.org;Hebrew Wikibooks;Hebrew;עברית
+aawikibooks;https://aa.wikibooks.org;Afar Wikibooks;Afar;Afar
+hawwiki;https://haw.wikipedia.org;Hawaiian Wikipedia;Hawaiian;Hawai`i
+ckbwiki;https://ckb.wikipedia.org;Sorani Wikipedia;Sorani;Soranî / کوردی
+knwikibooks;https://kn.wikibooks.org;Kannada Wikibooks;Kannada;ಕನ್ನಡ
+pswikibooks;https://ps.wikibooks.org;Pashto Wikibooks;Pashto;پښتو
+stwiki;https://st.wikipedia.org;Sesotho Wikipedia;Sesotho;Sesotho
+ptwikisource;https://pt.wikisource.org;Portuguese Wikisource;Portuguese;Português
+wikimania2017wiki;https://wikimania2017.wikimedia.org;Wikimania 2017 Wiki;English;English
+shnwikivoyage;https://shn.wikivoyage.org;Shan Wikivoyage;Shan;ၵႂၢမ်းတႆးလူင်
+iewiktionary;https://ie.wiktionary.org;Interlingue Wiktionary;Interlingue;Interlingue
+crwiktionary;https://cr.wiktionary.org;Cree Wiktionary;Cree;Nehiyaw
+elwiki;https://el.wikipedia.org;Greek Wikipedia;Greek;Ελληνικά
+frwiktionary;https://fr.wiktionary.org;French Wiktionary;French;Français
+urwiktionary;https://ur.wiktionary.org;Urdu Wiktionary;Urdu;اردو
+orwiktionary;https://or.wiktionary.org;Oriya Wiktionary;Oriya;ଓଡ଼ିଆ
+azwiktionary;https://az.wiktionary.org;Azerbaijani Wiktionary;Azerbaijani;Azərbaycanca
+mywiki;https://my.wikipedia.org;Burmese Wikipedia;Burmese;မြန်မာဘာသာ
+hiwikivoyage;https://hi.wikivoyage.org;Hindi Wikivoyage;Hindi;हिन्दी
+plwiki;https://pl.wikipedia.org;Polish Wikipedia;Polish;Polski
+punjabiwikimedia;https://punjabi.wikimedia.org;Punjabi Wikimedia;Punjabi;ਪੰਜਾਬੀ
+zh_min_nanwiktionary;https://zh-min-nan.wiktionary.org;Min Nan Wiktionary;Min Nan;Bân-lâm-gú
+sawiki;https://sa.wikipedia.org;Sanskrit Wikipedia;Sanskrit;संस्कृतम्
+dzwiktionary;https://dz.wiktionary.org;Dzongkha Wiktionary;Dzongkha;ཇོང་ཁ
+xhwiki;https://xh.wikipedia.org;Xhosa Wikipedia;Xhosa;isiXhosa
+nawikibooks;https://na.wikibooks.org;Nauruan Wikibooks;Nauruan;Ekakairũ Naoero
+lfnwiki;https://lfn.wikipedia.org;Lingua Franca Nova 2 Wikipedia;Lingua Franca Nova 2;Lingua Franca Nova 2
+ptwikibooks;https://pt.wikibooks.org;Portuguese Wikibooks;Portuguese;Português
+bjnwiktionary;https://bjn.wiktionary.org;Banjar Wiktionary;Banjar;Bahasa Banjar
+kmwikibooks;https://km.wikibooks.org;Khmer Wikibooks;Khmer;ភាសាខ្មែរ
+betawikiversity;https://beta.wikiversity.org;Multilingual Wikiversity;Multilingual;
+eswikibooks;https://es.wikibooks.org;Spanish Wikibooks;Spanish;Español
+hywikibooks;https://hy.wikibooks.org;Armenian Wikibooks;Armenian;Հայերեն
+urwiki;https://ur.wikipedia.org;Urdu Wikipedia;Urdu;اردو
+yowiki;https://yo.wikipedia.org;Yoruba Wikipedia;Yoruba;Yorùbá
+minwiktionary;https://min.wiktionary.org;Minangkabau Wiktionary;Minangkabau;Baso Minangkabau
+svwiki;https://sv.wikipedia.org;Swedish Wikipedia;Swedish;Svenska
+ukwikinews;https://uk.wikinews.org;Ukrainian Wikinews;Ukrainian;Українська
+chowiki;https://cho.wikipedia.org;Choctaw Wikipedia;Choctaw;Choctaw
+igwiki;https://ig.wikipedia.org;Igbo Wikipedia;Igbo;Igbo
+atjwiki;https://atj.wikipedia.org;Atikamekw Wikipedia;Atikamekw;Atikamekw Nehiromowin
+inhwiki;https://inh.wikipedia.org;Ingush Wikipedia;Ingush;ГӀалгӀай
+gorwiktionary;https://gor.wiktionary.org;Gorontalo Wiktionary;Gorontalo;Hulontalo
+kaawiki;https://kaa.wikipedia.org;Karakalpak Wikipedia;Karakalpak;Qaraqalpaqsha
+lawikibooks;https://la.wikibooks.org;Latin Wikibooks;Latin;Latina
+bswikiquote;https://bs.wikiquote.org;Bosnian Wikiquote;Bosnian;Bosanski
+hrwiki;https://hr.wikipedia.org;Croatian Wikipedia;Croatian;Hrvatski
+tkwiki;https://tk.wikipedia.org;Turkmen Wikipedia;Turkmen;تركمن / Туркмен
+mrwikiquote;https://mr.wikiquote.org;Marathi Wikiquote;Marathi;मराठी
+cswikinews;https://cs.wikinews.org;Czech Wikinews;Czech;Čeština
+htwiki;https://ht.wikipedia.org;Haitian Wikipedia;Haitian;Krèyol ayisyen
+pcmwiki;https://pcm.wikipedia.org;Nigerian Pidgin Wikipedia;Nigerian Pidgin;Naija
+rowikivoyage;https://ro.wikivoyage.org;Romanian Wikivoyage;Romanian;Română
+cywikisource;https://cy.wikisource.org;Welsh Wikisource;Welsh;Cymraeg
+bewikimedia;https://be.wikimedia.org;Belarusian Wikimedia;Belarusian;Беларуская
+jawikivoyage;https://ja.wikivoyage.org;Japanese Wikivoyage;Japanese;日本語
+szywiki;https://szy.wikipedia.org;Sakizaya Wikipedia;Sakizaya;Sakizaya
+muswiki;https://mus.wikipedia.org;Muscogee Wikipedia;Muscogee;Muskogee
+idwikiquote;https://id.wikiquote.org;Indonesian Wikiquote;Indonesian;Bahasa Indonesia
+pihwiki;https://pih.wikipedia.org;Norfolk Wikipedia;Norfolk;Norfuk
+thankyouwiki;https://thankyou.wikipedia.org;Thank You Wiki;All;All
+aswikibooks;https://as.wikibooks.org;Assamese Wikibooks;Assamese;অসমীয়া
+tewikiquote;https://te.wikiquote.org;Telugu Wikiquote;Telugu;తెలుగు
+cowikimedia;https://co.wikimedia.org;Corsican Wikimedia;Corsican;Corsu
+huwiktionary;https://hu.wiktionary.org;Hungarian Wiktionary;Hungarian;Magyar
+thwiki;https://th.wikipedia.org;Thai Wikipedia;Thai;ไทย
+euwiktionary;https://eu.wiktionary.org;Basque Wiktionary;Basque;Euskara
+crhwiki;https://crh.wikipedia.org;Crimean Tatar Wikipedia;Crimean Tatar;Qırımtatarca
+kuwiktionary;https://ku.wiktionary.org;Kurdish Wiktionary;Kurdish;Kurdî / كوردی
+ocwiki;https://oc.wikipedia.org;Occitan Wikipedia;Occitan;Occitan
+lvwikibooks;https://lv.wikibooks.org;Latvian Wikibooks;Latvian;Latviešu
+nnwiki;https://nn.wikipedia.org;Norwegian (Nynorsk) Wikipedia;Norwegian (Nynorsk);Nynorsk
+huwiki;https://hu.wikipedia.org;Hungarian Wikipedia;Hungarian;Magyar
+nowiki;https://no.wikipedia.org;Norwegian (Bokmål) Wikipedia;Norwegian (Bokmål);Norsk (Bokmål)
+eswikinews;https://es.wikinews.org;Spanish Wikinews;Spanish;Español
+fiwikibooks;https://fi.wikibooks.org;Finnish Wikibooks;Finnish;Suomi
+cnwikimedia;https://cn.wikimedia.org;Wikimedia China;Chinese;中文
+fiu_vrowiki;https://fiu-vro.wikipedia.org;Võro Wikipedia;Võro;Võro
+mkwikibooks;https://mk.wikibooks.org;Macedonian Wikibooks;Macedonian;Македонски
+sewikibooks;https://se.wikibooks.org;Northern Sami Wikibooks;Northern Sami;Sámegiella
+tiwiki;https://ti.wikipedia.org;Tigrinya Wikipedia;Tigrinya;ትግርኛ
+zuwiktionary;https://zu.wiktionary.org;Zulu Wiktionary;Zulu;isiZulu
+biwikibooks;https://bi.wikibooks.org;Bislama Wikibooks;Bislama;Bislama
+dawiki;https://da.wikipedia.org;Danish Wikipedia;Danish;Dansk
+swwiki;https://sw.wikipedia.org;Swahili Wikipedia;Swahili;Kiswahili
+tetwiki;https://tet.wikipedia.org;Tetum Wikipedia;Tetum;Tetun
+abwiktionary;https://ab.wiktionary.org;Abkhazian Wiktionary;Abkhazian;Аҧсуа
+cowiki;https://co.wikipedia.org;Corsican Wikipedia;Corsican;Corsu
+scowiki;https://sco.wikipedia.org;Scots Wikipedia;Scots;Scots
+zeawiki;https://zea.wikipedia.org;Zeelandic Wikipedia;Zeelandic;Zeêuws
+iiwiki;https://ii.wikipedia.org;Sichuan Yi Wikipedia;Sichuan Yi;ꆇꉙ
+pdcwiki;https://pdc.wikipedia.org;Pennsylvania German Wikipedia;Pennsylvania German;Deitsch
+guwwikinews;https://guw.wikinews.org;Gun Wikinews;Gun;Gungbè
+dewikisource;https://de.wikisource.org;German Wikisource;German;Deutsch
+quwiktionary;https://qu.wiktionary.org;Quechua Wiktionary;Quechua;Runa Simi
+cywikiquote;https://cy.wikiquote.org;Welsh Wikiquote;Welsh;Cymraeg
+ruwikiversity;https://ru.wikiversity.org;Russian Wikiversity;Russian;Русский
+lnwiktionary;https://ln.wiktionary.org;Lingala Wiktionary;Lingala;Lingala
+ltwikibooks;https://lt.wikibooks.org;Lithuanian Wikibooks;Lithuanian;Lietuvių
+frwiki;https://fr.wikipedia.org;French Wikipedia;French;Français
+pamwiki;https://pam.wikipedia.org;Kapampangan Wikipedia;Kapampangan;Kapampangan
+azwikiquote;https://az.wikiquote.org;Azerbaijani Wikiquote;Azerbaijani;Azərbaycanca
+gucwiki;https://guc.wikipedia.org;Wayuu Wikipedia;Wayuu;wayuunaiki
+bawiki;https://ba.wikipedia.org;Bashkir Wikipedia;Bashkir;Башҡорт
+bswikinews;https://bs.wikinews.org;Bosnian Wikinews;Bosnian;Bosanski
+itwikiquote;https://it.wikiquote.org;Italian Wikiquote;Italian;Italiano
+jamwiki;https://jam.wikipedia.org;Jamaican Wikipedia;Jamaican;Patois
+viwikisource;https://vi.wikisource.org;Vietnamese Wikisource;Vietnamese;Tiếng Việt
+rnwiki;https://rn.wikipedia.org;Kirundi Wikipedia;Kirundi;Kirundi
+zhwiki;https://zh.wikipedia.org;Chinese Wikipedia;Chinese;中文
+zh_min_nanwiki;https://zh-min-nan.wikipedia.org;Min Nan Wikipedia;Min Nan;Bân-lâm-gú
+amiwiki;https://ami.wikipedia.org;Amis Wikipedia;Amis;Pangcah / 'Amis
+vecwikisource;https://vec.wikisource.org;Venetian Wikisource;Venetian;Vèneto
+wikidatawiki;https://www.wikidata.org;Wikidata;All;All
+rnwiktionary;https://rn.wiktionary.org;Kirundi Wiktionary;Kirundi;Kirundi
+etwikibooks;https://et.wikibooks.org;Estonian Wikibooks;Estonian;Eesti
+ukwikiquote;https://uk.wikiquote.org;Ukrainian Wikiquote;Ukrainian;Українська
+kkwikibooks;https://kk.wikibooks.org;Kazakh Wikibooks;Kazakh;қазақша
+jawikibooks;https://ja.wikibooks.org;Japanese Wikibooks;Japanese;日本語
+taywiki;https://tay.wikipedia.org;Atayal Wikipedia;Atayal;Tayal
+huwikinews;https://hu.wikinews.org;Hungarian Wikinews;Hungarian;Magyar
+enwiki;https://en.wikipedia.org;English Wikipedia;English;English
+guwikiquote;https://gu.wikiquote.org;Gujarati Wikiquote;Gujarati;ગુજરાતી
+yiwikisource;https://yi.wikisource.org;Yiddish Wikisource;Yiddish;ייִדיש
+ltwiktionary;https://lt.wiktionary.org;Lithuanian Wiktionary;Lithuanian;Lietuvių
+nlwikimedia;https://nl.wikimedia.org;Dutch Wikimedia;Dutch;Nederlands
+rowikibooks;https://ro.wikibooks.org;Romanian Wikibooks;Romanian;Română
+tlwiki;https://tl.wikipedia.org;Tagalog Wikipedia;Tagalog;Tagalog
+hawiki;https://ha.wikipedia.org;Hausa Wikipedia;Hausa;هَوُسَ
+thwikinews;https://th.wikinews.org;Thai Wikinews;Thai;ไทย
+itwiktionary;https://it.wiktionary.org;Italian Wiktionary;Italian;Italiano
+arwikimedia;https://ar.wikimedia.org;Wikimedia Argentina;Spanish;Español
+cdowiki;https://cdo.wikipedia.org;Min Dong Wikipedia;Min Dong;Mìng-dĕ̤ng-ngṳ̄
+kowikibooks;https://ko.wikibooks.org;Korean Wikibooks;Korean;한국어
+sswiki;https://ss.wikipedia.org;Swati Wikipedia;Swati;SiSwati
+angwikiquote;https://ang.wikiquote.org;Anglo-Saxon Wikiquote;Anglo-Saxon;Englisc
+ruwikisource;https://ru.wikisource.org;Russian Wikisource;Russian;Русский
+wawikibooks;https://wa.wikibooks.org;Walloon Wikibooks;Walloon;Walon
+siwikibooks;https://si.wikibooks.org;Sinhalese Wikibooks;Sinhalese;සිංහල
+dewiki;https://de.wikipedia.org;German Wikipedia;German;Deutsch
+iewiki;https://ie.wikipedia.org;Interlingue Wikipedia;Interlingue;Interlingue
+sqwiktionary;https://sq.wiktionary.org;Albanian Wiktionary;Albanian;Shqip
+pawikibooks;https://pa.wikibooks.org;Punjabi Wikibooks;Punjabi;ਪੰਜਾਬੀ
+fywikibooks;https://fy.wikibooks.org;West Frisian Wikibooks;West Frisian;Frysk
+hewikivoyage;https://he.wikivoyage.org;Hebrew Wikivoyage;Hebrew;עברית
+trwikivoyage;https://tr.wikivoyage.org;Turkish Wikivoyage;Turkish;Türkçe
+cawikibooks;https://ca.wikibooks.org;Catalan Wikibooks;Catalan;Català
+igwiktionary;https://ig.wiktionary.org;Igbo Wiktionary;Igbo;Igbo
+slwikiquote;https://sl.wikiquote.org;Slovenian Wikiquote;Slovenian;Slovenščina
+udmwiki;https://udm.wikipedia.org;Udmurt Wikipedia;Udmurt;Удмурт кыл
+zawikiquote;https://za.wikiquote.org;Zhuang Wikiquote;Zhuang;Cuengh
+dewikibooks;https://de.wikibooks.org;German Wikibooks;German;Deutsch
+bewiki;https://be.wikipedia.org;Belarusian Wikipedia;Belarusian;Беларуская
+nlwikiquote;https://nl.wikiquote.org;Dutch Wikiquote;Dutch;Nederlands
+enwikinews;https://en.wikinews.org;English Wikinews;English;English
+iswikisource;https://is.wikisource.org;Icelandic Wikisource;Icelandic;Íslenska
+rmwiki;https://rm.wikipedia.org;Romansh Wikipedia;Romansh;Rumantsch
+cswikisource;https://cs.wikisource.org;Czech Wikisource;Czech;Čeština
+srwiki;https://sr.wikipedia.org;Serbian Wikipedia;Serbian;Српски / Srpski
+usabilitywiki;https://usability.wikimedia.org;Wikimedia Usability Wiki;All;All
+adywiki;https://ady.wikipedia.org;Adyghe Wikipedia;Adyghe;адыгабзэ
+mnwikibooks;https://mn.wikibooks.org;Mongolian Wikibooks;Mongolian;Монгол
+mhrwiki;https://mhr.wikipedia.org;Meadow Mari Wikipedia;Meadow Mari;Олык Марий (Olyk Marij)
+frwikiquote;https://fr.wikiquote.org;French Wikiquote;French;Français
+ugwiktionary;https://ug.wiktionary.org;Uyghur Wiktionary;Uyghur;ئۇيغۇر تىلى
+hifwiktionary;https://hif.wiktionary.org;Fiji Hindi Wiktionary;Fiji Hindi;Fiji Hindi
+enwikibooks;https://en.wikibooks.org;English Wikibooks;English;English
+eowiki;https://eo.wikipedia.org;Esperanto Wikipedia;Esperanto;Esperanto
+emlwiki;https://eml.wikipedia.org;Emilian-Romagnol Wikipedia;Emilian-Romagnol;Emiliàn e rumagnòl
+skwiktionary;https://sk.wiktionary.org;Slovak Wiktionary;Slovak;Slovenčina
+sqwiki;https://sq.wikipedia.org;Albanian Wikipedia;Albanian;Shqip
+zh_min_nanwikibooks;https://zh-min-nan.wikibooks.org;Min Nan Wikibooks;Min Nan;Bân-lâm-gú
+skwikibooks;https://sk.wikibooks.org;Slovak Wikibooks;Slovak;Slovenčina
+twwiktionary;https://tw.wiktionary.org;Twi Wiktionary;Twi;Twi
+jawiki;https://ja.wikipedia.org;Japanese Wikipedia;Japanese;日本語
+avkwiki;https://avk.wikipedia.org;Kotava Wikipedia;Kotava;Kotava
+kowikiversity;https://ko.wikiversity.org;Korean Wikiversity;Korean;한국어
+thwikiquote;https://th.wikiquote.org;Thai Wikiquote;Thai;ไทย
+plwikimedia;https://pl.wikimedia.org;Polish Wikimedia;Polish;Polski
+krcwiki;https://krc.wikipedia.org;Karachay-Balkar Wikipedia;Karachay-Balkar;Къарачай-Малкъар (Qarachay-Malqar)
+uawikimedia;https://ua.wikimedia.org;Wikimedia Ukraine;Ukrainian;Українська
+sdwiktionary;https://sd.wiktionary.org;Sindhi Wiktionary;Sindhi;سنڌي، سندھی ، सिन्ध
+wawiki;https://wa.wikipedia.org;Walloon Wikipedia;Walloon;Walon
+nds_nlwiki;https://nds-nl.wikipedia.org;Dutch Low Saxon Wikipedia;Dutch Low Saxon;Nedersaksisch
+liwikiquote;https://li.wikiquote.org;Limburgish Wikiquote;Limburgish;Limburgs
+mkwikisource;https://mk.wikisource.org;Macedonian Wikisource;Macedonian;Македонски
+skwikisource;https://sk.wikisource.org;Slovak Wikisource;Slovak;Slovenčina
+mrwikisource;https://mr.wikisource.org;Marathi Wikisource;Marathi;मराठी
+ttwikibooks;https://tt.wikibooks.org;Tatar Wikibooks;Tatar;Tatarça
+arwikisource;https://ar.wikisource.org;Arabic Wikisource;Arabic;العربية
+kshwiki;https://ksh.wikipedia.org;Ripuarian Wikipedia;Ripuarian;Ripoarisch
+kawiktionary;https://ka.wiktionary.org;Georgian Wiktionary;Georgian;ქართული
+kcgwiktionary;https://kcg.wiktionary.org;Tyap Wiktionary;Tyap;Tyap
+nawiktionary;https://na.wiktionary.org;Nauruan Wiktionary;Nauruan;dorerin Naoero
+srwikisource;https://sr.wikisource.org;Serbian Wikisource;Serbian;Српски / Srpski
+hiwikiversity;https://hi.wikiversity.org;Hindi Wikiversity;Hindi;हिन्दी
+hawiktionary;https://ha.wiktionary.org;Hausa Wiktionary;Hausa;هَوُسَ
+lnwiki;https://ln.wikipedia.org;Lingala Wikipedia;Lingala;Lingala
+csbwiktionary;https://csb.wiktionary.org;Kashubian Wiktionary;Kashubian;Kaszëbsczi
+papwiki;https://pap.wikipedia.org;Papiamentu Wikipedia;Papiamentu;Papiamentu
+wikimaniawiki;https://wikimania.wikimedia.org;Wikimania Wiki;English;English
+kkwiki;https://kk.wikipedia.org;Kazakh Wikipedia;Kazakh;Қазақша
+amwikimedia;https://am.wikimedia.org;Amharic Wikimedia;Amharic;አማርኛ
+gdwiktionary;https://gd.wiktionary.org;Scottish Gaelic Wiktionary;Scottish Gaelic;Gàidhlig
+kwwiktionary;https://kw.wiktionary.org;Cornish Wiktionary;Cornish;Kernewek/Karnuack
+ndswiktionary;https://nds.wiktionary.org;Low Saxon Wiktionary;Low Saxon;Plattdüütsch
+nowikisource;https://no.wikisource.org;Norwegian (Bokmål) Wikisource;Norwegian (Bokmål);Norsk (Bokmål)
+kowikisource;https://ko.wikisource.org;Korean Wikisource;Korean;한국어
+lowiki;https://lo.wikipedia.org;Lao Wikipedia;Lao;ລາວ
+sahwikiquote;https://sah.wikiquote.org;Sakha Wikiquote;Sakha;Саха тыла (Saxa Tyla)
+akwiktionary;https://ak.wiktionary.org;Akan Wiktionary;Akan;Akana
+kiwiki;https://ki.wikipedia.org;Kikuyu Wikipedia;Kikuyu;Gĩkũyũ
+eowikibooks;https://eo.wikibooks.org;Esperanto Wikibooks;Esperanto;Esperanto
+ganwiki;https://gan.wikipedia.org;Gan Wikipedia;Gan;贛語
+kjwiki;https://kj.wikipedia.org;Kuanyama Wikipedia;Kuanyama;Kuanyama
+mkwiktionary;https://mk.wiktionary.org;Macedonian Wiktionary;Macedonian;Македонски
+specieswiki;https://species.wikimedia.org;Wikispecies;All;All
+elwikiversity;https://el.wikiversity.org;Greek Wikiversity;Greek;Ελληνικά
+trwikibooks;https://tr.wikibooks.org;Turkish Wikibooks;Turkish;Türkçe
+angwikibooks;https://ang.wikibooks.org;Anglo-Saxon Wikibooks;Anglo-Saxon;Englisc
+dawikiquote;https://da.wikiquote.org;Danish Wikiquote;Danish;Dansk
+ndswikiquote;https://nds.wikiquote.org;Low Saxon Wikiquote;Low Saxon;Plattdüütsch
+tewiki;https://te.wikipedia.org;Telugu Wikipedia;Telugu;తెలుగు
+be_x_oldwiki;https://be-tarask.wikipedia.org;Belarusian (Taraškievica) Wikipedia;Belarusian (Taraškievica);Беларуская (тарашкевіца)
+towiki;https://to.wikipedia.org;Tongan Wikipedia;Tongan;faka Tonga
+gawikibooks;https://ga.wikibooks.org;Irish Wikibooks;Irish;Gaeilge
+crwiki;https://cr.wikipedia.org;Cree Wikipedia;Cree;Nehiyaw
+ladwiki;https://lad.wikipedia.org;Ladino Wikipedia;Ladino;Dzhudezmo
+towiktionary;https://to.wiktionary.org;Tongan Wiktionary;Tongan;faka Tonga
+azbwiki;https://azb.wikipedia.org;South Azerbaijani Wikipedia;South Azerbaijani;تۆرکجه
+nowiktionary;https://no.wiktionary.org;Norwegian (Bokmål) Wiktionary;Norwegian (Bokmål);Norsk (Bokmål)
+bowiktionary;https://bo.wiktionary.org;Tibetan Wiktionary;Tibetan;Bod skad
+plwikisource;https://pl.wikisource.org;Polish Wikisource;Polish;Polski
+afwikibooks;https://af.wikibooks.org;Afrikaans Wikibooks;Afrikaans;Afrikaans
+idwikimedia;https://id.wikimedia.org;Indonesian Wikimedia;Indonesian;Bahasa Indonesia
+igwikiquote;https://ig.wikiquote.org;Igbo Wikiquote;Igbo;Igbo
+pswikivoyage;https://ps.wikivoyage.org;Pashto Wikivoyage;Pashto;پښتو
+ukwikibooks;https://uk.wikibooks.org;Ukrainian Wikibooks;Ukrainian;Українська
+chwiki;https://ch.wikipedia.org;Chamorro Wikipedia;Chamorro;Chamoru
+urwikiquote;https://ur.wikiquote.org;Urdu Wikiquote;Urdu;اردو
+zawiktionary;https://za.wiktionary.org;Zhuang Wiktionary;Zhuang;Cuengh
+ukwiktionary;https://uk.wiktionary.org;Ukrainian Wiktionary;Ukrainian;Українська
+etwikiquote;https://et.wikiquote.org;Estonian Wikiquote;Estonian;Eesti
+kbpwiki;https://kbp.wikipedia.org;Kabiye Wikipedia;Kabiye;Kabɩyɛ
+ikwiktionary;https://ik.wiktionary.org;Inupiak Wiktionary;Inupiak;Iñupiak
+nqowiki;https://nqo.wikipedia.org;N'Ko Wikipedia;N'Ko;ߒߞߏ
+gotwiki;https://got.wikipedia.org;Gothic Wikipedia;Gothic;𐌲𐌿𐍄𐌹𐍃𐌺
+tawiktionary;https://ta.wiktionary.org;Tamil Wiktionary;Tamil;தமிழ்
+olowiki;https://olo.wikipedia.org;Livvi-Karelian Wikipedia;Livvi-Karelian;livvin kieli
+plwikiquote;https://pl.wikiquote.org;Polish Wikiquote;Polish;Polski
+tkwikibooks;https://tk.wikibooks.org;Turkmen Wikibooks;Turkmen;تركمن / Туркмен
+szlwiki;https://szl.wikipedia.org;Silesian Wikipedia;Silesian;Ślůnski
+huwikisource;https://hu.wikisource.org;Hungarian Wikisource;Hungarian;Magyar
+banwikisource;https://ban.wikisource.org;Balinese Wikisource;Balinese;Basa Bali
+plwikinews;https://pl.wikinews.org;Polish Wikinews;Polish;Polski
+cywiktionary;https://cy.wiktionary.org;Welsh Wiktionary;Welsh;Cymraeg
+enwikiversity;https://en.wikiversity.org;English Wikiversity;English;English
+tcywiki;https://tcy.wikipedia.org;Tulu Wikipedia;Tulu;ತುಳು ಭಾಷೆ
+fiwikiquote;https://fi.wikiquote.org;Finnish Wikiquote;Finnish;Suomi
+fonwiki;https://fon.wikipedia.org;Fon Wikipedia;Fon;fɔ̀ngbè
+orwiki;https://or.wikipedia.org;Oriya Wikipedia;Oriya;ଓଡ଼ିଆ
+satwiki;https://sat.wikipedia.org;Santali Wikipedia;Santali;ᱥᱟᱱᱛᱟᱲᱤ
+myvwiki;https://myv.wikipedia.org;Erzya Wikipedia;Erzya;Эрзянь (Erzjanj Kelj)
+kowikiquote;https://ko.wikiquote.org;Korean Wikiquote;Korean;한국어
+nnwikiquote;https://nn.wikiquote.org;Norwegian (Nynorsk) Wikiquote;Norwegian (Nynorsk);Nynorsk
+fowiki;https://fo.wikipedia.org;Faroese Wikipedia;Faroese;Føroyskt
+hywiki;https://hy.wikipedia.org;Armenian Wikipedia;Armenian;Հայերեն
+bjnwikiquote;https://bjn.wikiquote.org;Banjar Wikiquote;Banjar;Bahasa Banjar
+kywikiquote;https://ky.wikiquote.org;Kirghiz Wikiquote;Kirghiz;Kırgızca
+hiwikiquote;https://hi.wikiquote.org;Hindi Wikiquote;Hindi;हिन्दी
+bgwikisource;https://bg.wikisource.org;Bulgarian Wikisource;Bulgarian;Български
+guwikibooks;https://gu.wikibooks.org;Gujarti Wikibooks;Gujarti;ગુજરાતી
+pswiktionary;https://ps.wiktionary.org;Pashto Wiktionary;Pashto;پښتو
+enwikivoyage;https://en.wikivoyage.org;English Wikivoyage;English;English
+azwikibooks;https://az.wikibooks.org;Azerbaijani Wikibooks;Azerbaijani;Azərbaycanca
+blkwiktionary;https://blk.wiktionary.org;Pa'O Wiktionary;Pa'O;ပအိုဝ်ႏဘာႏသာႏ
+test2wiki;https://test2.wikipedia.org;Wikipedia Test2 Wiki;All;All
+zhwikibooks;https://zh.wikibooks.org;Chinese Wikibooks;Chinese;中文
+minwiki;https://min.wikipedia.org;Minangkabau Wikipedia;Minangkabau;Baso Minangkabau
+kwwiki;https://kw.wikipedia.org;Cornish Wikipedia;Cornish;Kernewek/Karnuack
+dawikisource;https://da.wikisource.org;Danish Wikisource;Danish;Dansk
+ugwikiquote;https://ug.wikiquote.org;Uyghur Wikiquote;Uyghur;ئۇيغۇر تىلى
+eewiki;https://ee.wikipedia.org;Ewe Wikipedia;Ewe;Eʋegbe
+itwikinews;https://it.wikinews.org;Italian Wikinews;Italian;Italiano
+bpywiki;https://bpy.wikipedia.org;Bishnupriya Manipuri Wikipedia;Bishnupriya Manipuri;ইমার ঠার/বিষ্ণুপ্রিয়া মণিপুরী
+sewikimedia;https://se.wikimedia.org;Northern Sami Wikimedia;Northern Sami;Sámegiella
+sawikibooks;https://sa.wikibooks.org;Sanskrit Wikibooks;Sanskrit;संस्कृतम्
+ptwikivoyage;https://pt.wikivoyage.org;Portuguese Wikivoyage;Portuguese;Português
+hewiki;https://he.wikipedia.org;Hebrew Wikipedia;Hebrew;עברית
+lbwiki;https://lb.wikipedia.org;Luxembourgish Wikipedia;Luxembourgish;Lëtzebuergesch
+nsowiki;https://nso.wikipedia.org;Northern Sotho Wikipedia;Northern Sotho;Sesotho sa Leboa
+pnbwiki;https://pnb.wikipedia.org;Western Panjabi Wikipedia;Western Panjabi;شاہ مکھی پنجابی (Shāhmukhī Pañjābī)
+fawikiquote;https://fa.wikiquote.org;Persian Wikiquote;Persian;فارسی
+maiwiki;https://mai.wikipedia.org;Maithili Wikipedia;Maithili;मैथिली
+wbwikimedia;https://wb.wikimedia.org;West Bengal Wikimedia;Bengali;বাংলা
+newwiki;https://new.wikipedia.org;Newar / Nepal Bhasa Wikipedia;Newar / Nepal Bhasa;नेपाल भाषा
+sawikiquote;https://sa.wikiquote.org;Sanskrit Wikiquote;Sanskrit;संस्कृतम्
+apiportalwiki;https://api.wikimedia.org;Wikimedia API Portal;All;All
+vewiki;https://ve.wikipedia.org;Venda Wikipedia;Venda;Tshivenda
+hsbwiki;https://hsb.wikipedia.org;Upper Sorbian Wikipedia;Upper Sorbian;Hornjoserbsce
+htwikisource;https://ht.wikisource.org;Haitian Wikisource;Haitian;Krèyol ayisyen
+jawikinews;https://ja.wikinews.org;Japanese Wikinews;Japanese;日本語
+dewiktionary;https://de.wiktionary.org;German Wiktionary;German;Deutsch
+jawikisource;https://ja.wikisource.org;Japanese Wikisource;Japanese;日本語
+kuwiki;https://ku.wikipedia.org;Kurdish Wikipedia;Kurdish;Kurdî / كوردی
+trwikiquote;https://tr.wikiquote.org;Turkish Wikiquote;Turkish;Türkçe
+pawikisource;https://pa.wikisource.org;Punjabi Wikisource;Punjabi;ਪੰਜਾਬੀ
+sgwiki;https://sg.wikipedia.org;Sango Wikipedia;Sango;Sängö
+sewiki;https://se.wikipedia.org;Northern Sami Wikipedia;Northern Sami;Sámegiella
+ilowiki;https://ilo.wikipedia.org;Ilokano Wikipedia;Ilokano;Ilokano
+zh_yuewiki;https://zh-yue.wikipedia.org;Cantonese Wikipedia;Cantonese;粵語
+tnwiktionary;https://tn.wiktionary.org;Setswana Wiktionary;Setswana;Setswana
+romdwikimedia;https://romd.wikimedia.org;Wikimedia Romania and Moldova;Romanian;Română
+wikimania2005wiki;https://wikimania2005.wikimedia.org;Wikimania 2005 Wiki;English;English
+tawikiquote;https://ta.wikiquote.org;Tamil Wikiquote;Tamil;தமிழ்
+bhwiki;https://bh.wikipedia.org;Bihari Wikipedia;Bihari;भोजपुरी
+kswikibooks;https://ks.wikibooks.org;Kashmiri Wikibooks;Kashmiri;कश्मीरी - (كشميري
+uzwiktionary;https://uz.wiktionary.org;Uzbek Wiktionary;Uzbek;O‘zbek
+mlwiki;https://ml.wikipedia.org;Malayalam Wikipedia;Malayalam;മലയാളം
+zuwiki;https://zu.wikipedia.org;Zulu Wikipedia;Zulu;isiZulu
+orwikisource;https://or.wikisource.org;Oriya Wikisource;Oriya;ଓଡ଼ିଆ
+chwiktionary;https://ch.wiktionary.org;Chamorro Wiktionary;Chamorro;Chamoru
+idwikisource;https://id.wikisource.org;Indonesian Wikisource;Indonesian;Bahasa Indonesia
+ptwikiversity;https://pt.wikiversity.org;Portuguese Wikiversity;Portuguese;Português
+iswikiquote;https://is.wikiquote.org;Icelandic Wikiquote;Icelandic;Íslenska
+bat_smgwiki;https://bat-smg.wikipedia.org;Samogitian Wikipedia;Samogitian;Žemaitėška
+ttwikiquote;https://tt.wikiquote.org;Tatar Wikiquote;Tatar;Tatarça / Татарча
+viwiktionary;https://vi.wiktionary.org;Vietnamese Wiktionary;Vietnamese;Tiếng Việt
+piwiktionary;https://pi.wiktionary.org;Pali Wiktionary;Pali;पािऴ
+ptwiktionary;https://pt.wiktionary.org;Portuguese Wiktionary;Portuguese;Português
+bnwiktionary;https://bn.wiktionary.org;Bengali Wiktionary;Bengali;বাংলা
+warwiki;https://war.wikipedia.org;Waray-Waray Wikipedia;Waray-Waray;Winaray
+xalwiki;https://xal.wikipedia.org;Kalmyk Wikipedia;Kalmyk;Хальмг
+etwikimedia;https://ee.wikimedia.org;Wikimedia Estonia;Estonian;Eesti
+huwikibooks;https://hu.wikibooks.org;Hungarian Wikibooks;Hungarian;Magyar
+dewikivoyage;https://de.wikivoyage.org;German Wikivoyage;German;Deutsch
+nnwiktionary;https://nn.wiktionary.org;Norwegian (Nynorsk) Wiktionary;Norwegian (Nynorsk);Nynorsk
+arwikinews;https://ar.wikinews.org;Arabic Wikinews;Arabic;العربية
+uzwikiquote;https://uz.wikiquote.org;Uzbek Wikiquote;Uzbek;O‘zbek
+srwikinews;https://sr.wikinews.org;Serbian Wikinews;Serbian;Српски / Srpski
+svwikibooks;https://sv.wikibooks.org;Swedish Wikibooks;Swedish;Svenska
+nrmwiki;https://nrm.wikipedia.org;Norman Wikipedia;Norman;Nouormand/Normaund
+loginwiki;https://login.wikimedia.org;Wikimedia Login Wiki;All;All
+altwiki;https://alt.wikipedia.org;Altai Wikipedia;Altai;алтай тил
+hrwikisource;https://hr.wikisource.org;Croatian Wikisource;Croatian;Hrvatski
+nlwiki;https://nl.wikipedia.org;Dutch Wikipedia;Dutch;Nederlands
+pmswiki;https://pms.wikipedia.org;Piedmontese Wikipedia;Piedmontese;Piemontèis
+bewikisource;https://be.wikisource.org;Belarusian Wikisource;Belarusian;Беларуская
+plwikibooks;https://pl.wikibooks.org;Polish Wikibooks;Polish;Polski
+brwikisource;https://br.wikisource.org;Breton Wikisource;Breton;Brezhoneg
+itwikivoyage;https://it.wikivoyage.org;Italian Wikivoyage;Italian;Italiano
+kuwikibooks;https://ku.wikibooks.org;Kurdish Wikibooks;Kurdish;Kurdî / كوردی
+ndswikibooks;https://nds.wikibooks.org;Low Saxon Wikibooks;Low Saxon;Plattdüütsch
+wowiki;https://wo.wikipedia.org;Wolof Wikipedia;Wolof;Wolof
+fawiktionary;https://fa.wiktionary.org;Persian Wiktionary;Persian;فارسی
+iuwiki;https://iu.wikipedia.org;Inuktitut Wikipedia;Inuktitut;ᐃᓄᒃᑎᑐᑦ
+arwikibooks;https://ar.wikibooks.org;Arabic Wikibooks;Arabic;العربية
+lawiktionary;https://la.wiktionary.org;Latin Wiktionary;Latin;Latina
+ltgwiki;https://ltg.wikipedia.org;Latgalian Wikipedia;Latgalian;Latgaļu
+wikimania2015wiki;https://wikimania2015.wikimedia.org;Wikimania 2015 Wiki;English;English
+cawikimedia;https://ca.wikimedia.org;Wikimedia Canada;English;English
+mhwiki;https://mh.wikipedia.org;Marshallese Wikipedia;Marshallese;Ebon
+eswiktionary;https://es.wiktionary.org;Spanish Wiktionary;Spanish;Español
+ikwiki;https://ik.wikipedia.org;Inupiak Wikipedia;Inupiak;Iñupiak
+svwikiquote;https://sv.wikiquote.org;Swedish Wikiquote;Swedish;Svenska
+ruwikinews;https://ru.wikinews.org;Russian Wikinews;Russian;Русский
+tewikisource;https://te.wikisource.org;Telugu Wikisource;Telugu;తెలుగు
+tgwiki;https://tg.wikipedia.org;Tajik Wikipedia;Tajik;Тоҷикӣ
+hewikisource;https://he.wikisource.org;Hebrew Wikisource;Hebrew;עברית
+bxrwiki;https://bxr.wikipedia.org;Buryat (Russia) Wikipedia;Buryat (Russia);Буряад
+mnwwiktionary;https://mnw.wiktionary.org;Mon Wiktionary;Mon;ဘာသာမန်
+hywiktionary;https://hy.wiktionary.org;Armenian Wiktionary;Armenian;Հայերեն
+kwwikiquote;https://kw.wikiquote.org;Cornish Wikiquote;Cornish;Kernewek/Karnuack
+scwiki;https://sc.wikipedia.org;Sardinian Wikipedia;Sardinian;Sardu
+elwikisource;https://el.wikisource.org;Greek Wikisource;Greek;Ελληνικά
+arwikiversity;https://ar.wikiversity.org;Arabic Wikiversity;Arabic;العربية
+smnwiki;https://smn.wikipedia.org;Inari Sami Wikipedia;Inari Sami;Anarâškielâ
+guwwiki;https://guw.wikipedia.org;Gun Wikipedia;Gun;Gungbè
+fawikinews;https://fa.wikinews.org;Persian Wikinews;Persian;فارسی
+pnbwiktionary;https://pnb.wiktionary.org;Western Panjabi Wiktionary;Western Panjabi;شاہ مکھی پنجابی (Shāhmukhī Pañj
+vlswiki;https://vls.wikipedia.org;West Flemish Wikipedia;West Flemish;West-Vlams
+srwikiquote;https://sr.wikiquote.org;Serbian Wikiquote;Serbian;Српски / Srpski
+kywiki;https://ky.wikipedia.org;Kirghiz Wikipedia;Kirghiz;Кыргызча
+mxwikimedia;https://mx.wikimedia.org;Wikimedia Mexico;Spanish;Español
+yowiktionary;https://yo.wiktionary.org;Yoruba Wiktionary;Yoruba;Yorùbá
+guwwikiquote;https://guw.wikiquote.org;Gun Wikiquote;Gun;Gungbè
+slwikiversity;https://sl.wikiversity.org;Slovene Wikiversity;Slovene;Slovenščina
+ukwiki;https://uk.wikipedia.org;Ukrainian Wikipedia;Ukrainian;Українська
+wowikiquote;https://wo.wikiquote.org;Wolof Wikiquote;Wolof;Wollof
+maiwikimedia;https://mai.wikimedia.org;Maithili Wikimedia;Maithili;मैथिली
+tpiwiki;https://tpi.wikipedia.org;Tok Pisin Wikipedia;Tok Pisin;Tok Pisin
+cawikisource;https://ca.wikisource.org;Catalan Wikisource;Catalan;Català
+mniwiktionary;https://mni.wiktionary.org;Meitei Wiktionary;Meitei;ꯃꯤꯇꯩꯂꯣꯟ
+ptwiki;https://pt.wikipedia.org;Portuguese Wikipedia;Portuguese;Português
+tkwiktionary;https://tk.wiktionary.org;Turkmen Wiktionary;Turkmen;تركمن / Туркмен
+viwikiquote;https://vi.wikiquote.org;Vietnamese Wikiquote;Vietnamese;Tiếng Việt
+napwikisource;https://nap.wikisource.org;Neapolitan Wikisource;Neapolitan;Nnapulitano
+bjnwiki;https://bjn.wikipedia.org;Banjar Wikipedia;Banjar;Bahasa Banjar
+trwikisource;https://tr.wikisource.org;Turkish Wikisource;Turkish;Türkçe
+vowiki;https://vo.wikipedia.org;Volapük Wikipedia;Volapük;Volapük
+lrcwiki;https://lrc.wikipedia.org;Northern Luri Wikipedia;Northern Luri;لۊری شومالی
+svwikisource;https://sv.wikisource.org;Swedish Wikisource;Swedish;Svenska
+arwiki;https://ar.wikipedia.org;Arabic Wikipedia;Arabic;العربية
+bmwiktionary;https://bm.wiktionary.org;Bambara Wiktionary;Bambara;Bamanankan
+nlwikinews;https://nl.wikinews.org;Dutch Wikinews;Dutch;Nederlands
+hakwiki;https://hak.wikipedia.org;Hakka Wikipedia;Hakka;Hak-kâ-fa / 客家話
+angwiktionary;https://ang.wiktionary.org;Anglo-Saxon Wiktionary;Anglo-Saxon;Englisc
+nahwiktionary;https://nah.wiktionary.org;Nahuatl Wiktionary;Nahuatl;Nahuatl
+sawiktionary;https://sa.wiktionary.org;Sanskrit Wiktionary;Sanskrit;संस्कृतम्
+bnwikiquote;https://bn.wikiquote.org;Bengali Wikiquote;Bengali;বাংলা
+vepwiki;https://vep.wikipedia.org;Vepsian Wikipedia;Vepsian;VepsÃ¤n
+guwikisource;https://gu.wikisource.org;Gujarati Wikisource;Gujarati;ગુજરાતી
+etwiktionary;https://et.wiktionary.org;Estonian Wiktionary;Estonian;Eesti
+azwikimedia;https://az.wikimedia.org;Azerbaijani Wikimedia;Azerbaijani;Azərbaycanca
+bnwikibooks;https://bn.wikibooks.org;Bengali Wikibooks;Bengali;বাংলা
+fiwikisource;https://fi.wikisource.org;Finnish Wikisource;Finnish;Suomi
+howiki;https://ho.wikipedia.org;Hiri Motu Wikipedia;Hiri Motu;Hiri Motu
+nycwikimedia;https://nyc.wikimedia.org;Wikimedia New York City;English;English
+sdwikinews;https://sd.wikinews.org;Sindhi Wikinews;Sindhi;سنڌي، سندھی ، सिन्ध
+snwiktionary;https://sn.wiktionary.org;Shona Wiktionary;Shona;chiShona
+stqwiki;https://stq.wikipedia.org;Saterland Frisian Wikipedia;Saterland Frisian;Seeltersk
+nzwikimedia;https://nz.wikimedia.org;Wikimedia New Zealand;English;English
+lbwiktionary;https://lb.wiktionary.org;Luxembourgish Wiktionary;Luxembourgish;Lëtzebuergesch
+acewiki;https://ace.wikipedia.org;Acehnese Wikipedia;Acehnese;Bahsa Acèh
+kywikibooks;https://ky.wikibooks.org;Kirghiz Wikibooks;Kirghiz;Kırgızca
+xmfwiki;https://xmf.wikipedia.org;Mingrelian Wikipedia;Mingrelian;მარგალური (Margaluri)
+crwikiquote;https://cr.wikiquote.org;Cree Wikiquote;Cree;Nehiyaw
+sowiktionary;https://so.wiktionary.org;Somali Wiktionary;Somali;Soomaaliga
+cebwiki;https://ceb.wikipedia.org;Cebuano Wikipedia;Cebuano;Sinugboanong Binisaya
+dzwiki;https://dz.wikipedia.org;Dzongkha Wikipedia;Dzongkha;ཇོང་ཁ
+iswikibooks;https://is.wikibooks.org;Icelandic Wikibooks;Icelandic;Íslenska
+chrwiki;https://chr.wikipedia.org;Cherokee Wikipedia;Cherokee;ᏣᎳᎩ
+dvwiktionary;https://dv.wiktionary.org;Divehi Wiktionary;Divehi;ދިވެހިބަސް
+gnwiktionary;https://gn.wiktionary.org;Guarani Wiktionary;Guarani;Avañe'ẽ
+ugwikibooks;https://ug.wikibooks.org;Uyghur Wikibooks;Uyghur;Oyghurque
+iowiki;https://io.wikipedia.org;Ido Wikipedia;Ido;Ido
+hiwikibooks;https://hi.wikibooks.org;Hindi Wikibooks;Hindi;हिन्दी
+mnwiktionary;https://mn.wiktionary.org;Mongolian Wiktionary;Mongolian;Монгол
+dkwikimedia;https://dk.wikimedia.org;Wikimedia Denmark;Danish;Dansk
+bswikisource;https://bs.wikisource.org;Bosnian Wikisource;Bosnian;Bosanski
+viwiki;https://vi.wikipedia.org;Vietnamese Wikipedia;Vietnamese;Tiếng Việt
+fawiki;https://fa.wikipedia.org;Persian Wikipedia;Persian;فارسی
+jbowiktionary;https://jbo.wiktionary.org;Lojban Wiktionary;Lojban;Lojban
+kswikiquote;https://ks.wikiquote.org;Kashmiri Wikiquote;Kashmiri;कश्मीरी - (كشميري
+brwiki;https://br.wikipedia.org;Breton Wikipedia;Breton;Brezhoneg
+jvwiktionary;https://jv.wiktionary.org;Javanese Wiktionary;Javanese;Basa Jawa
+tyvwiki;https://tyv.wikipedia.org;Tuvan Wikipedia;Tuvan;тыва дыл
+kswiktionary;https://ks.wiktionary.org;Kashmiri Wiktionary;Kashmiri;कश्मीरी - (كشميري
+cvwiki;https://cv.wikipedia.org;Chuvash Wikipedia;Chuvash;Чăваш
+iswiki;https://is.wikipedia.org;Icelandic Wikipedia;Icelandic;Íslenska
+wikimania2013wiki;https://wikimania2013.wikimedia.org;Wikimania 2013 Wiki;English;English
+viwikibooks;https://vi.wikibooks.org;Vietnamese Wikibooks;Vietnamese;Tiếng Việt
+liwikisource;https://li.wikisource.org;Limburgish Wikisource;Limburgish;Limburgs
+ugwiki;https://ug.wikipedia.org;Uyghur Wikipedia;Uyghur;ئۇيغۇر تىلى
+csbwiki;https://csb.wikipedia.org;Kashubian Wikipedia;Kashubian;Kaszëbsczi
+tawikibooks;https://ta.wikibooks.org;Tamil Wikibooks;Tamil;தமிழ்
+tlwiktionary;https://tl.wiktionary.org;Tagalog Wiktionary;Tagalog;Tagalog
+gawikiquote;https://ga.wikiquote.org;Irish Wikiquote;Irish;Gaeilge
+suwikisource;https://su.wikisource.org;Sundanese Wikisource;Sundanese;Basa Sunda
+fawikibooks;https://fa.wikibooks.org;Persian Wikibooks;Persian;فارسی
+anwiki;https://an.wikipedia.org;Aragonese Wikipedia;Aragonese;Aragonés
+wikimania2011wiki;https://wikimania2011.wikimedia.org;Wikimania 2011 Wiki;English;English
+fatwiki;https://fat.wikipedia.org;Fante Wikipedia;Fante;Mfantse
+nlwiktionary;https://nl.wiktionary.org;Dutch Wiktionary;Dutch;Nederlands
+cvwikibooks;https://cv.wikibooks.org;Chuvash Wikibooks;Chuvash;Чӑваш - (Ĉăvaŝ)
+mznwiki;https://mzn.wikipedia.org;Mazandarani Wikipedia;Mazandarani;مَزِروني
+eowikivoyage;https://eo.wikivoyage.org;Esperanto Wikivoyage;Esperanto;Esperanto
+hewikiquote;https://he.wikiquote.org;Hebrew Wikiquote;Hebrew;עברית
+zhwikivoyage;https://zh.wikivoyage.org;Chinese Wikivoyage;Chinese;中文
+lldwiki;https://lld.wikipedia.org;Ladin Wikipedia;Ladin;Ladin
+afwikiquote;https://af.wikiquote.org;Afrikaans Wikiquote;Afrikaans;Afrikaans
+tawiki;https://ta.wikipedia.org;Tamil Wikipedia;Tamil;தமிழ்

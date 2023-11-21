@@ -5,6 +5,9 @@ import com.beust.jcommander.ParameterException;
 import com.google.common.primitives.Chars;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.wikimedia.DailyWikimediaDumpJob;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
 import dev.digitaldragon.util.EnvConfig;
 import net.engio.mbassy.listener.Handler;
@@ -165,6 +168,16 @@ public class IrcCommandListener {
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
         channel.sendMessage(nick + ": https://cdn.digitaldragon.dev/wikibot/help.html");
+    }
+
+    @Handler
+    public void mdumpCommand(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!wmdump"))
+            return;
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+        Job wmjob = new DailyWikimediaDumpJob(UUID.randomUUID().toString());
+        JobManager.submit(wmjob);
     }
 
     @Handler
