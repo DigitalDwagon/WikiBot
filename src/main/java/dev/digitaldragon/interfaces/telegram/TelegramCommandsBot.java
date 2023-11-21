@@ -19,6 +19,7 @@ import static org.telegram.abilitybots.api.objects.Privacy.PUBLIC;
 
 public class TelegramCommandsBot extends AbilityBot {
     private static final String THANKS_MESSAGE = "Thanks for your request! Your job has been queued. Watch our feed in https://t.me/usewikibot for updates about this job. If archiving is successful, you'll see an item pop up on https://archive.org/details/@digitaldragons";
+    private TelegramSilentReplySender reply_silent = new TelegramSilentReplySender(sender);
     private static String arrayToString(String[] array) {
         StringBuilder sb = new StringBuilder();
         for (String s : array) {
@@ -46,13 +47,15 @@ public class TelegramCommandsBot extends AbilityBot {
     }
 
     public Ability start() {
+        String startMessage = "Welcome to wikibot! Wikibot is a bot used to download MediaWiki and DokuWiki sites, and upload them to the Internet Archive for preservation. Learn about commands: https://cdn.digitaldragon.dev/wikibot/help.html";
+
         return Ability
                 .builder()
                 .name("start")
                 .info("Displays help information for wikibot")
                 .locality(ALL)
                 .privacy(PUBLIC)
-                .action(ctx -> silent.send("Welcome to wikibot! Wikibot is a bot used to download MediaWiki and DokuWiki sites, and upload them to the Internet Archive for preservation. Learn about commands: https://cdn.digitaldragon.dev/wikibot/help.html", ctx.chatId()))
+                .action(ctx -> reply_silent.sendReplyMessage(startMessage, ctx.chatId(), ctx.update().getMessage().getMessageId()))
                 .setStatsEnabled(true)
                 .build();
     }
@@ -73,9 +76,9 @@ public class TelegramCommandsBot extends AbilityBot {
                         message = e.getMessage();
                     }
                     if (message != null)
-                        silent.send(message, ctx.chatId());
+                        reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                     else
-                        silent.send(THANKS_MESSAGE, ctx.chatId());
+                        reply_silent.sendReplyMessage(THANKS_MESSAGE, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();
@@ -98,9 +101,9 @@ public class TelegramCommandsBot extends AbilityBot {
                     }
 
                     if (message != null)
-                        silent.send(message, ctx.chatId());
+                        reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                     else
-                        silent.send(THANKS_MESSAGE, ctx.chatId());
+                        reply_silent.sendReplyMessage(THANKS_MESSAGE, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();
@@ -120,7 +123,7 @@ public class TelegramCommandsBot extends AbilityBot {
                     } catch (Exception e) {
                         jobId = null;
                     }
-                    silent.send(StatusHelper.getStatus(jobId), ctx.chatId());
+                    reply_silent.sendReplyMessage(StatusHelper.getStatus(jobId), ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();
@@ -142,7 +145,7 @@ public class TelegramCommandsBot extends AbilityBot {
                     } catch (Exception e) {
                         message = "Please provide a job ID.";
                     }
-                    silent.send(message, ctx.chatId());
+                    reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();
@@ -164,7 +167,7 @@ public class TelegramCommandsBot extends AbilityBot {
                     } catch (Exception e) {
                         message = "Please provide a job ID.";
                     }
-                    silent.send(message, ctx.chatId());
+                    reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();
