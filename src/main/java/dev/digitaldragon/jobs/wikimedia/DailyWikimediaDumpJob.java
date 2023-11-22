@@ -1,6 +1,9 @@
 package dev.digitaldragon.jobs.wikimedia;
 
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
+import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;
@@ -13,17 +16,19 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Getter
 public class DailyWikimediaDumpJob implements Job {
-    private String id = null;
+    private String id ;
     private final String name = "Wikimedia Incremental Dump";
     private final String userName = "AutomaticDragon";
-    private JobStatus status = null;
+    private JobStatus status;
     private String runningTask = null;
     private Instant startTime = null;
-    private File directory = null;
+    private File directory;
     private final String explanation = "This job is automatically created by the bot to download the Wikimedia incremental dumps every day.";
     @Setter
     private String archiveUrl = "https://archive.org/details/@DigitalDragons";
@@ -45,13 +50,22 @@ public class DailyWikimediaDumpJob implements Job {
         this.handler = new GenericLogsHandler(this);
     }
 
+    private void fail(String message) {
+        this.status = JobStatus.FAILED;
+        this.runningTask = null;
+        handler.onMessage(message);
+        handler.end();
+        WikiBot.getBus().post(new JobFailureEvent(this));
+    }
+
     public void run() {
         this.startTime = Instant.now();
         this.status = JobStatus.RUNNING;
         this.runningTask = "DOWNLOAD";
         System.out.println("go");
+        handler.onMessage("Parsing the wikis.txt file...");
         parseWikiNames();
-        System.out.println("done parsing wiki names");
+        handler.onMessage("Requesting the incremental dumps page from the Wikimedia servers...");
 
         String incrementalDumpUrl = "https://dumps.wikimedia.org/other/incr/";
         try {
@@ -60,7 +74,9 @@ public class DailyWikimediaDumpJob implements Job {
             e.printStackTrace();
         }
         System.out.println("done extracting wikis");
+        List<String> identifiers = new ArrayList<>();
         for (WikimediaWiki wiki : wikis) {
+            handler.onMessage("Fetching md5 sums for " + wiki.getId() + "...");
             try {
                 extracMD5sums(wiki.getMd5sumsUrl(), wiki);
                 Thread.sleep(1000);
@@ -74,7 +90,14 @@ public class DailyWikimediaDumpJob implements Job {
             addWikiName(wiki);
 
             try {
-                downloadAndVerifyFile(wiki.getStubsUrl(), wiki.getStubsMD5());
+                identifiers.add(getArchiveIndentifier(wiki));
+
+                downloadAndUpload(wiki.getStubsUrl(), wiki.getStubsMD5(), wiki);
+                downloadAndUpload(wiki.getPagesUrl(), wiki.getPagesMD5(), wiki);
+                downloadAndUpload(wiki.getMaxrevUrl(), wiki.getMaxrevMD5(), wiki);
+                downloadAndUpload(wiki.getMd5sumsUrl(), null, wiki);
+                handler.onMessage(wiki.getId() + " ---> " + "https://archive.org/details/" + getArchiveIndentifier(wiki));
+
                 System.out.println(wiki.getName());
                 Thread.sleep(5000);
             } catch (IOException | NoSuchAlgorithmException | InterruptedException e) {
@@ -84,7 +107,30 @@ public class DailyWikimediaDumpJob implements Job {
 
         }
 
+        handler.onMessage("Done processing all wikis!");
+        handler.onMessage("Items produced in this run:");
+        for (String identifier : identifiers) {
+            handler.onMessage(identifier);
+        }
 
+        logsUrl = CommonTasks.uploadLogs(this);
+
+        status = JobStatus.COMPLETED;
+        runningTask = null;
+        handler.end();
+        WikiBot.getBus().post(new JobSuccessEvent(this));
+    }
+
+
+    private void downloadAndUpload(String url, String md5, WikimediaWiki wiki) throws IOException, NoSuchAlgorithmException, InterruptedException {
+        File downloadedFile = downloadAndVerifyFile(url, md5);
+        RunCommand uploadCommand = new RunCommand(getFirstFileUploadCommand(downloadedFile, wiki), directory, handler);
+        int exitCode = CommonTasks.runAndVerify(uploadCommand, handler, "Upload " + downloadedFile.getName());
+        if (exitCode != 0) {
+            failedTaskCode = exitCode;
+            fail("Failed to upload " + downloadedFile.getName());
+        }
+        Thread.sleep(500);
     }
 
     @Override
@@ -109,12 +155,13 @@ public class DailyWikimediaDumpJob implements Job {
 
     private void extractWikis(String incrementalDumpUrl) throws IOException {
         Document doc = Jsoup.connect(incrementalDumpUrl).get();
-        System.out.println("got dumps page");
+        handler.onMessage("Got the incremental dumps page from the Wikimedia servers!");
+        handler.onMessage("Extracting the wikis...");
         //find the <li> blocks
         doc.select("li").forEach(li -> {
             WikimediaWiki wiki = new WikimediaWiki();
             //String date;
-            System.out.println(li);
+            //System.out.println(li);
             //the <strong> tag inside the <li> block contains the wiki ID
             if (!li.text().contains("(done:all)")) return;
 
@@ -124,15 +171,18 @@ public class DailyWikimediaDumpJob implements Job {
                 String href = a.attr("href");
                 if (href.contains("stubs")) {
                     wiki.setStubsUrl(incrementalDumpUrl + href);
-                    //wiki.setDumpDate(href.split("-")[1]);
+                    wiki.setDumpDate(href.split("-")[1]);
                 } else if (href.contains("pages")) {
                     wiki.setPagesUrl(incrementalDumpUrl + href);
-                    //if (!wiki.getDumpDate().equals(href.split("-")[1])) throw new RuntimeException("Dump date mismatch");
+                    System.out.println(href.split("-")[1]);
+                    //if (!wiki.getDumpDate().equals(href.split("-")[1])) handler.onMessage("Dump date mismatch! " + wiki.getId() + " found " + wiki.getDumpDate() + " but extracted " + href.split("-")[1]);;
                 } else if (href.contains("maxrev")) {
                     wiki.setMaxrevUrl(incrementalDumpUrl + href);
-                    //if (!wiki.getDumpDate().equals(href.split("-")[1])) throw new RuntimeException("Dump date mismatch");
+                    //do not extract the date, because its not included here
                 } else if (href.contains("md5sums")) {
                     wiki.setMd5sumsUrl(incrementalDumpUrl + href);
+                    System.out.println(href.split("-")[1]);
+                    //if (!wiki.getDumpDate().equals(href.split("-")[1])) handler.onMessage("Dump date mismatch! " + wiki.getId() + " found " + wiki.getDumpDate() + " but extracted " + href.split("-")[1]);;
                     //if (!wiki.getDumpDate().equals(href.split("-")[1])) throw new RuntimeException("Dump date mismatch");
                 }
             });
@@ -168,12 +218,12 @@ public class DailyWikimediaDumpJob implements Job {
 
     private void parseWikiNames() {
         //wikiid;url;name;language;locallanguage
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(this.getClass().getResourceAsStream("wikis.txt"))))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/wikis.txt")))) {
             String line;
             // Read each line from the BufferedReader and add it to the list
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
-                String[] split = line.split(";", 1);
+                String[] split = line.split(";", 2);
                 wikiInfo.put(split[0], split[1]);
             }
         } catch (IOException e) {
@@ -208,19 +258,48 @@ public class DailyWikimediaDumpJob implements Job {
             }
 
             // Verify MD5 checksum
+            if (expectedMd5 == null) return downloadLocation;
             String actualMd5 = calculateMd5Checksum(downloadLocation.getAbsolutePath());
+            System.out.println(expectedMd5);
+            System.out.println(actualMd5);
             if (expectedMd5.equals(actualMd5)) {
-                System.out.println("Downloaded " + fileUrl + " successfully!");
+                handler.onMessage("Downloaded " + fileUrl + " successfully with md5 " + expectedMd5);
             } else {
-                throw new RuntimeException("MD5 checksum mismatch " + fileUrl + " expected " + expectedMd5 + " got " + actualMd5);
+                handler.onMessage("Failed to download " + fileUrl + " with md5 mismatch!");
+                handler.onMessage("Expected " + expectedMd5 + " but got " + actualMd5);
+                failedTaskCode = 1;
+                fail("Failed to download " + fileUrl + " with md5 mismatch!");
                 //TODO automatic retry
             }
             return downloadLocation;
         }
     }
 
-    private void uploadFileToArchive(File file, WikimediaWiki wiki) throws IOException {
+    private String getArchiveIndentifier(WikimediaWiki wiki) {
+        return "test_incr-" + wiki.getId() + "-" + wiki.getDumpDate() + "_dd4";
+    }
+
+    private String getFirstFileUploadCommand(File file, WikimediaWiki wiki) throws IOException {
         String wikiName = wiki.getName();
+        DateTimeFormatter formatterInput = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate localDate = LocalDate.parse(wiki.getDumpDate(), formatterInput);
+        DateTimeFormatter formatterOutput = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+        String date = localDate.format(formatterOutput);
+        String identifier = getArchiveIndentifier(wiki);
+        String command = "ia upload " + identifier + " "
+                + file.getAbsolutePath() + " --metadata=\"mediatype:web\" --metadata=\"title:Wikimedia incremental dump files for " + wikiName + " on " + date + "\" "
+                + "--metadata=\"creator:Wikimedia projects editors\" --metadata=\"subject:wiki;incremental;dumps;" + wiki.getId() + ";" + wikiName + ";Wikimedia\" "
+                + "--metadata=\"description:These are the incremental dump files for " + wikiName + " that were generated by the Wikimedia Foundation on " + date + ".\" "
+                + "--metadata=\"licenseurl:http://creativecommons.org/licenses/by-sa/3.0/\" --metadata=\"rights:Permission is granted under the Wikimedia Foundation's <a href=\\\"https://wikimediafoundation.org/wiki/Terms_of_Use\\\" rel=\\\"nofollow\\\">Terms of Use</a>. There is also additional <a href=\\\"https://archive.org/download/wikimediadownloads/legal.html\\\" rel=\\\"nofollow\\\">copyright information available</a>\" "
+                + "--metadata=\"date:" + wiki.getDumpDate() + "\" "
+                + "--retries 10";
+        return command;
+    }
+
+    private String getAltFileUploadCommand(File file, WikimediaWiki wiki) {
+        waitForIaItem(getArchiveIndentifier(wiki));
+        String command = "ia upload " + getArchiveIndentifier(wiki) + " " + file.getAbsolutePath();
+        return command;
     }
 
     private static String calculateMd5Checksum(String filePath) throws NoSuchAlgorithmException, IOException {
@@ -240,6 +319,19 @@ public class DailyWikimediaDumpJob implements Job {
         }
 
         return md5Checksum.toString();
+    }
+
+    private void waitForIaItem(String identifier) {
+        String url = "https://archive.org/metadata/" + identifier;
+        while (true) {
+            try {
+                if (!readTextFileFromUrl(url).contains("{\"error\":\"missing identifier\"}"))
+                    break;
+                Thread.sleep(10000);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static List<String> readTextFileFromUrl(String fileUrl) throws IOException {

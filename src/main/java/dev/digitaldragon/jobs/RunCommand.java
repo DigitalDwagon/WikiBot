@@ -92,7 +92,7 @@ public class RunCommand {
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("win")) { // For Windows
-            processBuilder = new ProcessBuilder("powershell.exe", "/c", command);
+            processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
         } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) { //For Unix-based
             processBuilder = new ProcessBuilder("/bin/bash", "-c", command);
         } else {
