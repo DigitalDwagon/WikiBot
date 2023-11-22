@@ -55,7 +55,7 @@ public class IrcCommandListener {
 
         String opts = parts[1];
         try {
-            checkUserPermissions(channel, event.getActor());
+            checkUserPermissions(channel, event.getActor(), true);
 
             handleDokuCommands(event, nick, opts);
             handleMediaWikiCommands(event, nick, opts);
@@ -66,12 +66,12 @@ public class IrcCommandListener {
 
     }
 
-    private void checkUserPermissions(Channel channel, User user) throws UserErrorException {
+    private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
         if (!isVoiced(channel, user) && !Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"))) {
             throw new UserErrorException("Requires (@) or (+).");
         }
 
-        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("pause_submissions"))) {
+        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("pause_submissions")) && shouldPause) {
             if (isOped(channel, user)) {
                 channel.sendMessage(user.getNick() + ": WARN - submissions are paused for a pending update. Please abort this job and try again later if it is non-urgent.");
             } else {
@@ -121,7 +121,7 @@ public class IrcCommandListener {
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
         try {
-            checkUserPermissions(channel, event.getActor());
+            checkUserPermissions(channel, event.getActor(), false);
         } catch (UserErrorException e) {
             channel.sendMessage(nick + ": " + e.getMessage());
             return;
@@ -174,8 +174,9 @@ public class IrcCommandListener {
     public void mdumpCommand(ChannelMessageEvent event) {
         if (!event.getMessage().startsWith("!wmdump"))
             return;
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
+        if (!isOped(event.getChannel(), event.getActor()))
+            return;
+
         Job wmjob = new DailyWikimediaDumpJob(UUID.randomUUID().toString());
         JobManager.submit(wmjob);
     }

@@ -59,6 +59,7 @@ public class DailyWikimediaDumpJob implements Job {
         CommonTasks.uploadLogs(this);
         handler.end();
         WikiBot.getBus().post(new JobFailureEvent(this));
+        throw new RuntimeException(message);
     }
 
     public void run() {
@@ -80,28 +81,40 @@ public class DailyWikimediaDumpJob implements Job {
         }
 
         List<String> identifiers = new ArrayList<>();
+        int i = 0;
         for (WikimediaWiki wiki : wikis) {
+            i++;
             try {
+                handler.onMessage("");
+                handler.onMessage("");
+                handler.onMessage("Processing " + wiki.getId() + "...");
                 handler.onMessage("Fetching md5 sums for " + wiki.getId() + "...");
                 File md5 = downloadFile(wiki.getMd5sumsUrl());
                 extractMD5sums(md5, wiki);
                 Thread.sleep(1000);
 
-                identifiers.add(getArchiveIndentifier(wiki));
 
-                downloadAndUpload(wiki.getStubsUrl(), wiki.getStubsMD5(), wiki, true);
-                downloadAndUpload(wiki.getPagesUrl(), wiki.getPagesMD5(), wiki, false);
-                downloadAndUpload(wiki.getMaxrevUrl(), wiki.getMaxrevMD5(), wiki, false);
-                downloadAndUpload(wiki.getMd5sumsUrl(), null, wiki, false);
-                handler.onMessage(wiki.getId() + " ---> " + "https://archive.org/details/" + getArchiveIndentifier(wiki));
+                md5Matches(downloadFile(wiki.getStubsUrl()), wiki.getStubsMD5());
+                md5Matches(downloadFile(wiki.getPagesUrl()), wiki.getPagesMD5());
+                md5Matches(downloadFile(wiki.getMaxrevUrl()), wiki.getMaxrevMD5());
+                handler.onMessage("");
+
+                String identifier = uploadInflightFiles(wiki);
+                handler.onMessage(wiki.getId() + " ---> " + "https://archive.org/details/" + identifier);
+                identifiers.add(identifier);
+                cleanupInflightFiles();
+                handler.onMessage("Finished processing " + wiki.getId() + "!");
+                handler.onMessage("Waiting before processing the next wiki...");
+
                 Thread.sleep(5000);
             } catch (IOException | NoSuchAlgorithmException | InterruptedException e) {
                 e.printStackTrace();
             }
-            break;
-
+            if (i >= 3) break;
         }
 
+        handler.onMessage("");
+        handler.onMessage("");
         handler.onMessage("Done processing all wikis!");
         handler.onMessage("Items produced in this run:");
         for (String identifier : identifiers) {
@@ -112,6 +125,7 @@ public class DailyWikimediaDumpJob implements Job {
 
         status = JobStatus.COMPLETED;
         runningTask = null;
+        archiveUrl = "https://archive.org/details/@digitaldragons";
         handler.end();
         WikiBot.getBus().post(new JobSuccessEvent(this));
     }
@@ -166,19 +180,11 @@ public class DailyWikimediaDumpJob implements Job {
         }
     }
 
-    private void downloadAndUpload(String url, String md5, WikimediaWiki wiki, boolean makeItem) throws IOException, NoSuchAlgorithmException, InterruptedException {
-        File downloadedFile = downloadAndVerifyFile(url, md5);
-        String command = makeItem ? getFirstFileUploadCommand(downloadedFile, wiki) : getAltFileUploadCommand(downloadedFile, wiki);
-        RunCommand uploadCommand = new RunCommand(command, directory, handler);
-        int exitCode = CommonTasks.runAndVerify(uploadCommand, handler, "Upload " + downloadedFile.getName());
-        if (exitCode != 0) {
-            failedTaskCode = exitCode;
-            fail("Failed to upload " + downloadedFile.getName());
-        }
-        Thread.sleep(500);
+    private String getArchiveIndentifier(WikimediaWiki wiki) {
+        return "incr-" + wiki.getId() + "-" + wiki.getDumpDate();
     }
 
-    private void uploadInflightFiles(WikimediaWiki wiki) {
+    private String uploadInflightFiles(WikimediaWiki wiki) {
         runningTask = "Upload " + wiki.getId();
         String wikiName = wiki.getName();
         DateTimeFormatter formatterInput = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -189,7 +195,7 @@ public class DailyWikimediaDumpJob implements Job {
         String files = inflightFiles.stream().map(File::getAbsolutePath).collect(Collectors.joining(" "));
         String command = "ia upload " + identifier
                 + " " + files
-                + " --metadata=\"mediatype:web\""
+                + " --metadata=\"mediatype:data\""
                 + " --metadata=\"title:Wikimedia incremental dump files for " + wikiName + " on " + date + "\""
                 + " --metadata=\"creator:Wikimedia projects editors\""
                 + " --metadata=\"subject:wiki;incremental;dumps;" + wiki.getId() + ";" + wikiName + ";Wikimedia\""
@@ -205,8 +211,9 @@ public class DailyWikimediaDumpJob implements Job {
         if (exitCode != 0) {
             failedTaskCode = exitCode;
             fail("Failed to upload " + files);
-            throw new RuntimeException("Failed to upload " + files);
         }
+
+        return identifier;
     }
 
     @Override
@@ -229,43 +236,8 @@ public class DailyWikimediaDumpJob implements Job {
         return null;
     }
 
-    private File downloadAndVerifyFile(String fileUrl, String expectedMd5) throws IOException, NoSuchAlgorithmException {
-        // Create a URL object
-        URL url = new URL(fileUrl);
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-        File downloadLocation = new File(directory.getAbsolutePath() + "/" + fileName);
-
-        // Open a connection to the URL
-        try (BufferedInputStream in = new BufferedInputStream(url.openStream())) {
-            // Get the file name from the URL
-
-            // Create a FileOutputStream to save the downloaded file
-            try (FileOutputStream fos = new FileOutputStream(downloadLocation)) {
-                byte[] data = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = in.read(data, 0, 1024)) != -1) {
-                    fos.write(data, 0, bytesRead);
-                }
-            }
-
-            // Verify MD5 checksum
-            if (expectedMd5 == null) return downloadLocation;
-            String actualMd5 = calculateMd5Checksum(downloadLocation.getAbsolutePath());
-            if (expectedMd5.equals(actualMd5)) {
-                handler.onMessage("Downloaded " + fileUrl + " successfully with md5 " + expectedMd5);
-            } else {
-                handler.onMessage("Failed to download " + fileUrl + " with md5 mismatch!");
-                handler.onMessage("Expected " + expectedMd5 + " but got " + actualMd5);
-                failedTaskCode = 1;
-                fail("Failed to download " + fileUrl + " with md5 mismatch!");
-                //TODO automatic retry
-            }
-            return downloadLocation;
-        }
-    }
-
-
     private File downloadFile(String fileUrl) throws MalformedURLException {
+        handler.onMessage("Downloading " + fileUrl + " ...");
         URL url = new URL(fileUrl);
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
         File downloadLocation = new File(directory.getAbsolutePath() + "/" + fileName);
@@ -287,78 +259,25 @@ public class DailyWikimediaDumpJob implements Job {
             failedTaskCode = 1;
             handler.onMessage(e.getMessage());
             fail("Failed to download " + fileUrl + " because of an IOException!");
-            throw new RuntimeException(e);
         }
         inflightFiles.add(downloadLocation);
         return downloadLocation;
     }
 
     private void cleanupInflightFiles() {
+        handler.onMessage("");
+        handler.onMessage("Cleaning up inflight files...");
         for (File file : inflightFiles) {
+            handler.onMessage("Deleting " + file.getName());
             file.delete();
         }
+        handler.onMessage("");
         inflightFiles.clear();
     }
 
     private boolean md5Matches(File file, String expectedMd5) throws NoSuchAlgorithmException, IOException {
         String actualMd5 = calculateMd5Checksum(file.getAbsolutePath());
         return expectedMd5.equals(actualMd5);
-    }
-
-    private String getArchiveIndentifier(WikimediaWiki wiki) {
-        return "test_incr-" + wiki.getId() + "-" + wiki.getDumpDate() + "_dd4";
-    }
-
-    private String getFirstFileUploadCommand(File file, WikimediaWiki wiki) throws IOException {
-        String wikiName = wiki.getName();
-        DateTimeFormatter formatterInput = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate localDate = LocalDate.parse(wiki.getDumpDate(), formatterInput);
-        DateTimeFormatter formatterOutput = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
-        String date = localDate.format(formatterOutput);
-        String identifier = getArchiveIndentifier(wiki);
-        String command = "ia upload " + identifier + " "
-                + file.getAbsolutePath() + " --metadata=\"mediatype:web\" --metadata=\"title:Wikimedia incremental dump files for " + wikiName + " on " + date + "\" "
-                + "--metadata=\"creator:Wikimedia projects editors\" --metadata=\"subject:wiki;incremental;dumps;" + wiki.getId() + ";" + wikiName + ";Wikimedia\" "
-                + "--metadata=\"description:These are the incremental dump files for " + wikiName + " that were generated by the Wikimedia Foundation on " + date + ".\" "
-                + "--metadata=\"licenseurl:http://creativecommons.org/licenses/by-sa/3.0/\" --metadata=\"rights:Permission is granted under the Wikimedia Foundation's <a href=\\\"https://wikimediafoundation.org/wiki/Terms_of_Use\\\" rel=\\\"nofollow\\\">Terms of Use</a>. There is also additional <a href=\\\"https://archive.org/download/wikimediadownloads/legal.html\\\" rel=\\\"nofollow\\\">copyright information available</a>\" "
-                + "--metadata=\"date:" + wiki.getDumpDate() + "\" "
-                + "--retries 10";
-        return command;
-    }
-
-    private String getAltFileUploadCommand(File file, WikimediaWiki wiki) {
-        waitForIaItem(getArchiveIndentifier(wiki));
-        String command = "ia upload " + getArchiveIndentifier(wiki) + " " + file.getAbsolutePath();
-        return command;
-    }
-
-    private void waitForIaItem(String identifier) {
-        String url = "https://archive.org/metadata/" + identifier;
-        while (true) {
-            try {
-                if (!readTextFileFromUrl(url).contains("{\"error\":\"missing identifier\"}"))
-                    break;
-                Thread.sleep(10000);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static List<String> readTextFileFromUrl(String fileUrl) throws IOException {
-        List<String> lines = new ArrayList<>();
-        URL url = new URL(fileUrl);
-
-        // Open a connection to the URL
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            String line;
-            // Read each line from the BufferedReader and add it to the list
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-        }
-
-        return lines;
     }
 
     private static String calculateMd5Checksum(String filePath) throws NoSuchAlgorithmException, IOException {
