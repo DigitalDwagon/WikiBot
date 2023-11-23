@@ -81,9 +81,7 @@ public class DailyWikimediaDumpJob implements Job {
         }
 
         List<String> identifiers = new ArrayList<>();
-        int i = 0;
         for (WikimediaWiki wiki : wikis) {
-            i++;
             try {
                 handler.onMessage("");
                 handler.onMessage("");
@@ -105,12 +103,9 @@ public class DailyWikimediaDumpJob implements Job {
                 cleanupInflightFiles();
                 handler.onMessage("Finished processing " + wiki.getId() + "!");
                 handler.onMessage("Waiting before processing the next wiki...");
-
-                Thread.sleep(5000);
             } catch (IOException | NoSuchAlgorithmException | InterruptedException e) {
                 e.printStackTrace();
             }
-            if (i >= 3) break;
         }
 
         handler.onMessage("");
