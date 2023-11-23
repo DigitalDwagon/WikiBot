@@ -132,9 +132,7 @@ public class WikiTeam3Args {
             return;
         }
 
-        if (option != 0) {
-            sb.append(longOption).append(" ").append(option).append(" ");
-        }
+        sb.append(longOption).append(" ").append(option).append(" ");
     }
 
     private void parseUrlOption(StringBuilder sb, String option, String longOption) {
