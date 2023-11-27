@@ -79,10 +79,22 @@ public class DailyWikimediaDumpJob implements Job {
             failedTaskCode = 1;
             fail("Failed to get the incremental dumps page from the Wikimedia servers!");
         }
+        handler.onMessage("");
+        handler.onMessage("");
+        for (WikimediaWiki wiki : wikis) {
+            handler.onMessage("---");
+            handler.onMessage(wiki.getId());
+            handler.onMessage(wiki.getStubsUrl());
+            handler.onMessage(wiki.getPagesUrl());
+            handler.onMessage(wiki.getMaxrevUrl());
+            handler.onMessage(wiki.getMd5sumsUrl());
+        }
+        handler.onMessage("");
+        handler.onMessage("");
 
         List<String> identifiers = new ArrayList<>();
         for (WikimediaWiki wiki : wikis) {
-            try {
+            try {//todo this definitely needs multithreading
                 handler.onMessage("");
                 handler.onMessage("");
                 handler.onMessage("Processing " + wiki.getId() + "...");
@@ -199,9 +211,9 @@ public class DailyWikimediaDumpJob implements Job {
                 + " --metadata=\"rights:Permission is granted under the Wikimedia Foundation's <a href=\\\"https://wikimediafoundation.org/wiki/Terms_of_Use\\\" rel=\\\"nofollow\\\">Terms of Use</a>. There is also additional <a href=\\\"https://archive.org/download/wikimediadownloads/legal.html\\\" rel=\\\"nofollow\\\">copyright information available</a>\""
                 + " --metadata=\"date:" + wiki.getDumpDate() + "\""
                 + " --metadata=\"creator:Wikimedia Foundation\""
-                + " --retries 10";
+                + " --retries 50";
 
-        RunCommand uploadCommand = new RunCommand(command, directory, handler);
+        RunCommand uploadCommand = new RunCommand(command, null, directory, handler);
         int exitCode = CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
         if (exitCode != 0) {
             failedTaskCode = exitCode;

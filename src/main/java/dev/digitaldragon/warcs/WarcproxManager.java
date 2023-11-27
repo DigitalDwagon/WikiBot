@@ -26,7 +26,7 @@ public class WarcproxManager {
             // -n wikibot-go: prefix for warcs
             // -s 16106127360: split size (15GB)
             // -z: compress warcs with gzip
-            warcprox = new RunCommand("warcprox -n wikibot-go -s 16106127360 -z", directory, new SimpleLogsHandler());
+            warcprox = new RunCommand("warcprox -n wikibot-go -s 16106127360 -z", null, directory, new SimpleLogsHandler());
             warcprox.run();
         });
 
@@ -87,7 +87,7 @@ public class WarcproxManager {
                 "--metadata=\"title:" + title + "\"";
 
         // upload the warc
-        RunCommand upload = new RunCommand(command, file.getParentFile(), new SimpleLogsHandler());
+        RunCommand upload = new RunCommand(command, null, file.getParentFile(), new SimpleLogsHandler());
         upload.run();
         try {
             int exitCode = upload.getProcess().waitFor();

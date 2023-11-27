@@ -50,7 +50,7 @@ public class GenericLogsHandler implements StringLogHandler {
         onMessage("----- Bot: Logs manager init -----");
     }
 
-    public void onMessage(String message) {
+    public synchronized void onMessage(String message) {
         try {
             LogWebsocket.sendLogMessageToClients(job.getId(), message);
 

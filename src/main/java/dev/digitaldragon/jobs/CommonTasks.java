@@ -45,10 +45,10 @@ public class CommonTasks {
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 if (type == JobType.WIKITEAM3) {
-                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", directory, handler);
+                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, directory, handler);
                 }
                 if (type == JobType.DOKUWIKIDUMPER) {
-                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), directory, handler);
+                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, handler);
                 }
                 break;
             }

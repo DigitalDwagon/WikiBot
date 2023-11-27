@@ -7,6 +7,10 @@ import lombok.Setter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -86,56 +90,58 @@ public class WikiTeam3Args {
      *
      * @return A string representation of the parsed arguments compatible with wikiteam3.
      */
-    public String get() {
+    public String[] get() {
         //parse the args into a string compatible with wikiteam3. Wikiteam3 only uses the long version of the args, so we have to convert the short versions to the long versions.
-        StringBuilder sb = new StringBuilder();
+        List<String> args = new ArrayList<>();
+        args.add("wikiteam3dumpgenerator");
 
-        parseDoubleOption(sb, delay, "--delay");
+        parseDoubleOption(args, delay, "--delay");
 
-        parseIntOption(sb, retries, "--retries");
-        parseIntOption(sb, apiChunkSize, "--api-chunksize");
-        parseIntOption(sb, indexCheckThreshold, "--index-check-threshold");
+        parseIntOption(args, retries, "--retries");
+        parseIntOption(args, apiChunkSize, "--api-chunksize");
+        parseIntOption(args, indexCheckThreshold, "--index-check-threshold");
 
-        parseBooleanOption(sb, xml, "--xml");
-        parseBooleanOption(sb, xmlApiExport, "--xmlapiexport");
-        parseBooleanOption(sb, xmlRevisions, "--xmlrevisions");
-        parseBooleanOption(sb, images, "--images");
-        parseBooleanOption(sb, bypassCdnImageCompression, "--bypass-cdn-image-compression");
-        parseBooleanOption(sb, disableImageVerify, "--disable-image-verify");
-        parseBooleanOption(sb, currentOnly, "--curonly");
-        parseBooleanOption(sb, force, "--force");
-        parseBooleanOption(sb, warcImages, "--warc-images");
-        parseBooleanOption(sb, warcPages, "--warc-pages");
-        parseBooleanOption(sb, warcPagesHistory, "--warc-pages-history");
+        parseBooleanOption(args, xml, "--xml");
+        parseBooleanOption(args, xmlApiExport, "--xmlapiexport");
+        parseBooleanOption(args, xmlRevisions, "--xmlrevisions");
+        parseBooleanOption(args, images, "--images");
+        parseBooleanOption(args, bypassCdnImageCompression, "--bypass-cdn-image-compression");
+        parseBooleanOption(args, disableImageVerify, "--disable-image-verify");
+        parseBooleanOption(args, currentOnly, "--curonly");
+        parseBooleanOption(args, force, "--force");
+        parseBooleanOption(args, warcImages, "--warc-images");
+        parseBooleanOption(args, warcPages, "--warc-pages");
+        parseBooleanOption(args, warcPagesHistory, "--warc-pages-history");
 
-        parseUrlOption(sb, api, "--api");
-        parseUrlOption(sb, index, "--index");
-        parseUrlOption(sb, url, "");
+        parseUrlOption(args, api, "--api");
+        parseUrlOption(args, index, "--index");
+        parseUrlOption(args, url, "");
 
-        return sb.toString();
+        return args.toArray(new String[0]);
     }
 
-    private void parseBooleanOption(StringBuilder sb, boolean option, String longOption) {
+    private void parseBooleanOption(List<String> args, boolean option, String longOption) {
         if (option) {
-            sb.append(longOption).append(" ");
+            args.add(longOption);
         }
     }
 
-    private void parseIntOption(StringBuilder sb, int option, String longOption) {
+    private void parseIntOption(List<String> args, int option, String longOption) {
         if (option != 0) {
-            sb.append(longOption).append(" ").append(option).append(" ");
+            args.add(longOption);
+            args.add(Integer.toString(option));
         }
     }
 
-    private void parseDoubleOption(StringBuilder sb, Double option, String longOption) {
+    private void parseDoubleOption(List<String> args, Double option, String longOption) {
         if (option == null) {
             return;
         }
-
-        sb.append(longOption).append(" ").append(option).append(" ");
+        args.add(longOption);
+        args.add(option.toString());
     }
 
-    private void parseUrlOption(StringBuilder sb, String option, String longOption) {
+    private void parseUrlOption(List<String> args, String option, String longOption) {
         if (option == null || option.isEmpty()) {
             return;
         }
@@ -146,6 +152,9 @@ public class WikiTeam3Args {
             throw new RuntimeException("Invalid URL in options at get time: " + option + ". Did you run the check() method after the user handed it in?");
         }
 
-        sb.append(longOption).append(!longOption.isEmpty() ? " " : "" ).append(option).append(" ");
+        if (!longOption.isEmpty()) {
+            args.add(longOption);
+        }
+        args.add(option);
     }
 }

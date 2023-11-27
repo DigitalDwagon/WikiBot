@@ -25,7 +25,7 @@ public class WikiTeam3Job implements Job {
     private JobStatus status = null;
     private String runningTask = null;
     private Instant startTime = null;
-    private String params = null;
+    private String[] params = null;
     private File directory = null;
     private RunCommand downloadCommand = null;
     private RunCommand uploadCommand = null;
@@ -41,7 +41,7 @@ public class WikiTeam3Job implements Job {
     private boolean aborted;
 
 
-    public WikiTeam3Job(String userName, String id, String name, String params, String explanation) {
+    public WikiTeam3Job(String userName, String id, String name, String[] params, String explanation) {
         System.out.println(name);
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -55,7 +55,7 @@ public class WikiTeam3Job implements Job {
         this.directory.mkdirs();
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand("wikiteam3dumpgenerator " + params, directory, handler);
+        this.downloadCommand = new RunCommand(null, params, directory, handler);
     }
 
     private void failure(int code) {
@@ -114,7 +114,7 @@ public class WikiTeam3Job implements Job {
 
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", directory, handler::onMessage);
+                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, directory, handler::onMessage);
                 break;
             }
         }

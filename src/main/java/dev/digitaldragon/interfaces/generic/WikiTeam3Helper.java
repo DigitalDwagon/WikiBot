@@ -38,6 +38,9 @@ public class WikiTeam3Helper {
         WikiTeam3Args args = new WikiTeam3Args();
         if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
             unparsedArgs = unparsedArgs.replace("'", "\"");
+        unparsedArgs = unparsedArgs.replace("”", "\"");
+        unparsedArgs = unparsedArgs.replace("“", "\"");
+
 
         try {
             JCommander.newBuilder()

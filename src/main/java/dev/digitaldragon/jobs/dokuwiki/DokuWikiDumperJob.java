@@ -29,7 +29,7 @@ public class DokuWikiDumperJob implements Job {
     private JobStatus status = null;
     private String runningTask = null;
     private Instant startTime = null;
-    private String params = null;
+    private String[] params = null;
     private File directory = null;
     private RunCommand downloadCommand = null;
     private RunCommand uploadCommand = null;
@@ -43,7 +43,7 @@ public class DokuWikiDumperJob implements Job {
     private GenericLogsHandler handler;
     private int failedTaskCode;
 
-    public DokuWikiDumperJob(String userName, String id, String name, String params, String explanation) {
+    public DokuWikiDumperJob(String userName, String id, String name, String[] params, String explanation) {
         System.out.println(name);
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -57,7 +57,7 @@ public class DokuWikiDumperJob implements Job {
         this.directory.mkdirs();
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand("dokuWikiDumper " + params, directory, handler);
+        this.downloadCommand = new RunCommand(null, params, directory, handler);
     }
 
     private void failure(int code) {
