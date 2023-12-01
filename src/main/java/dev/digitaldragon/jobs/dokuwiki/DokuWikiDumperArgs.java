@@ -67,6 +67,7 @@ public class DokuWikiDumperArgs {
         //parse the args into a string compatible with wikiteam3. Wikiteam3 only uses the long version of the args, so we have to convert the short versions to the long versions.
         List<String> args = new ArrayList<>();
         args.add("dokuWikiDumper");
+        args.add("--upload");
 
         parseUrlOption(args, url, "");
 
