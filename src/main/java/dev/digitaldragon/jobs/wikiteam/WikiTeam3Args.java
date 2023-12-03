@@ -23,7 +23,7 @@ public class WikiTeam3Args {
     @Parameter(names = {"--api_chunksize", "-C"})
     private int apiChunkSize;
     @Parameter(names = {"--index-check-threshold", "-T"})
-    private int indexCheckThreshold;
+    private double indexCheckThreshold;
     @Parameter(names = {"--xml", "-x"})
     private boolean xml;
     @Parameter(names = {"--xmlapiexport", "-a"})
@@ -96,10 +96,10 @@ public class WikiTeam3Args {
         args.add("wikiteam3dumpgenerator");
 
         parseDoubleOption(args, delay, "--delay");
+        parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
 
         parseIntOption(args, retries, "--retries");
         parseIntOption(args, apiChunkSize, "--api-chunksize");
-        parseIntOption(args, indexCheckThreshold, "--index-check-threshold");
 
         parseBooleanOption(args, xml, "--xml");
         parseBooleanOption(args, xmlApiExport, "--xmlapiexport");
