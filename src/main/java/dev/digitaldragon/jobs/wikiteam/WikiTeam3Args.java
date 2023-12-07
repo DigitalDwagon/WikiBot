@@ -99,7 +99,7 @@ public class WikiTeam3Args {
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
 
         parseIntOption(args, retries, "--retries");
-        parseIntOption(args, apiChunkSize, "--api-chunksize");
+        parseIntOption(args, apiChunkSize, "--api_chunksize");
 
         parseBooleanOption(args, xml, "--xml");
         parseBooleanOption(args, xmlApiExport, "--xmlapiexport");
