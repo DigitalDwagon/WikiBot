@@ -94,6 +94,8 @@ public class WikiTeam3Args {
         //parse the args into a string compatible with wikiteam3. Wikiteam3 only uses the long version of the args, so we have to convert the short versions to the long versions.
         List<String> args = new ArrayList<>();
         args.add("wikiteam3dumpgenerator");
+        args.add("--user-agent");
+        args.add("wikiteam3/4.1.4 Wikibot/1.1.2 (Wikibot: it archives wikis!; crawlyproject@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)");
 
         parseDoubleOption(args, delay, "--delay");
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
