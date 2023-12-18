@@ -95,7 +95,7 @@ public class WikiTeam3Args {
         List<String> args = new ArrayList<>();
         args.add("wikiteam3dumpgenerator");
         args.add("--user-agent");
-        args.add("wikiteam3/4.1.4 Wikibot/1.1.2 (Wikibot: it archives wikis!; crawlyproject@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)");
+        args.add("wikiteam3/latest Wikibot/1.1.2 - Wikibot: it archives wikis! (crawlyproject@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)");
 
         parseDoubleOption(args, delay, "--delay");
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
