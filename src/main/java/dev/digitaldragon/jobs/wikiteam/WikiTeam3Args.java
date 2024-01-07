@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs.wikiteam;
 
 import com.beust.jcommander.Parameter;
 import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,13 +18,13 @@ import java.util.List;
 public class WikiTeam3Args {
     //Description field omitted here because the JCommander help is never shown anywhere.
     @Parameter(names = {"--delay", "-d"})
-    private Double delay;
+    private Double delay = 1.5;
     @Parameter(names = {"--retries", "-R"})
     private int retries;
     @Parameter(names = {"--api_chunksize", "-C"})
     private int apiChunkSize;
     @Parameter(names = {"--index-check-threshold", "-T"})
-    private double indexCheckThreshold;
+    private double indexCheckThreshold = 1.0;
     @Parameter(names = {"--xml", "-x"})
     private boolean xml;
     @Parameter(names = {"--xmlapiexport", "-a"})
@@ -38,6 +39,8 @@ public class WikiTeam3Args {
     private boolean disableImageVerify;
     @Parameter(names = {"--curonly", "-n"})
     private boolean currentOnly;
+    @Parameter(names = {"--insecure", "-k"})
+    private boolean insecure;
     @Parameter(names = {"--force", "-F"})
     private boolean force;
     @Parameter(names = {"--warc-images", "-I"})
@@ -95,7 +98,7 @@ public class WikiTeam3Args {
         List<String> args = new ArrayList<>();
         args.add("wikiteam3dumpgenerator");
         args.add("--user-agent");
-        args.add("wikiteam3/4.1.4 Wikibot/1.1.2 (Wikibot: it archives wikis!; crawlyproject@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)");
+        args.add(EnvConfig.getConfigs().get("user_agent"));
 
         parseDoubleOption(args, delay, "--delay");
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
@@ -110,6 +113,7 @@ public class WikiTeam3Args {
         parseBooleanOption(args, bypassCdnImageCompression, "--bypass-cdn-image-compression");
         parseBooleanOption(args, disableImageVerify, "--disable-image-verify");
         parseBooleanOption(args, currentOnly, "--curonly");
+        parseBooleanOption(args, insecure, "--insecure");
         parseBooleanOption(args, force, "--force");
         parseBooleanOption(args, warcImages, "--warc-images");
         parseBooleanOption(args, warcPages, "--warc-pages");

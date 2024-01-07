@@ -36,6 +36,8 @@ public class DokuWikiDumperArgs {
     private boolean insecure;
     @Parameter(names = {"--current-only"})
     private boolean currentOnly;
+    @Parameter(names = {"--force"})
+    private boolean force;
     @Parameter(names = {"--content"})
     private boolean content;
     @Parameter(names = {"--media"})
@@ -81,6 +83,7 @@ public class DokuWikiDumperArgs {
         parseBooleanOption(args, ignoreActionDisabledEdit, "--ignore-action-disabled-edit");
         parseBooleanOption(args, ignoreDispositionHeaderMissing, "--ignore-disposition-header-missing");
         parseBooleanOption(args, insecure, "--insecure");
+        parseBooleanOption(args, force, "--force");
         parseBooleanOption(args, currentOnly, "--current-only");
         parseBooleanOption(args, content, "--content");
         parseBooleanOption(args, media, "--media");
