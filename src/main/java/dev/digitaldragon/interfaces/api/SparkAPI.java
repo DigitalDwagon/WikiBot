@@ -29,6 +29,7 @@ public class SparkAPI {
         enableCORS("*", "*", "*");
         postValidation(); //validate all POST requests
 
+        Dashboard.register();
         //register routes
         getAllJobs(); //GET /api/jobs
         getJob(); //GET /api/jobs/:id
