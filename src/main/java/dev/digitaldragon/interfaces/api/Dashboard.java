@@ -97,7 +97,7 @@ public class Dashboard {
                     	<noscript> <p>Some features of this dashboard require JavaScript (like showing logs and fetching new jobs.)</p><br/><br/><p>(hi JAA.)</p></noscript>
                     	<script>
                     	   const jobCards = [];
-                           const logSocket = new WebSocket('ws://localhost:4567/api/logfirehose');
+                           const logSocket = new WebSocket('wss://wikibot.digitaldragon.dev/api/logfirehose');
                            
                            logSocket.addEventListener('message', async (event) => {
                                const data = JSON.parse(event.data);
@@ -111,7 +111,7 @@ public class Dashboard {
                                logBox.scrollTop = logBox.scrollHeight; // Auto-scroll to the bottom
                            });
                            
-                            const jobSocket = new WebSocket('ws://localhost:4567/api/jobevents');
+                            const jobSocket = new WebSocket('wss://wikibot.digitaldragon.dev/api/jobevents');
                             jobSocket.addEventListener('message', async (event) => {
                                 const data = JSON.parse(event.data);
                                 const jobId = data.jobId;
