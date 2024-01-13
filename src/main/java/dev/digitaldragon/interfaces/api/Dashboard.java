@@ -86,10 +86,11 @@ public class Dashboard {
                     		overscroll-behavior-y: contain;
                     		scroll-snap-type: y proximity;
                     	}
-                    	@media screen and (max-width: 800px) {
+                    	@media screen and (max-width: 1300px) {
                     		.wikibot-intro {
                     			width: 80vw;
                     		}
+                    		.job-container 80vw;
                     	}
                     </style>
                     </head>
@@ -141,7 +142,7 @@ public class Dashboard {
                     					<p> Based on <a href="https://github.com/saveweb/wikiteam3">a fork</a> of the original <a href="https://github.com/wikiteam/wikiteam">WikiTeam</a> software,
                     					and the <a href="https://github.com/saveweb/dokuwiki-dumper">DokuWikiDumper</a> project, Wikibot makes static dumps of wikis to be uploaded to the
                     					<a href="https://archive.org/">Internet Archive</a> for preservation.<br/></p>
-                    					<p>To use it, stop by <a href="irc://irc.hackint.org/wikibot">#wikibot</a> on irc.hackint.org <a href="https://webirc.hackint.org/#irc://irc.hackint.org/wikibot">(click for webirc)</a>. 
+                    					<p>To use it, stop by <a href="ircs://irc.hackint.org:6697/wikibot">#wikibot</a> on irc.hackint.org <a href="https://webirc.hackint.org/#irc://irc.hackint.org/wikibot">(click for webirc)</a>. 
                     					More information: <a href="https://wiki.archiveteam.org/index.php/Archiveteam:IRC">ArchiveTeam's IRC</a>.
                     				    Use the !mw and !dw commands to start a job. For full information, see <a href="https://cdn.digitaldragon.dev/wikibot/help.html">the help page</a>.</p>
                     					
