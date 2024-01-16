@@ -2,8 +2,9 @@ package dev.digitaldragon.interfaces.api;
 
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import io.javalin.Javalin;
 
-import static spark.Spark.*;
+import static dev.digitaldragon.interfaces.api.JavalinAPI.app;
 
 public class Dashboard {
     public static void register() {
@@ -13,8 +14,8 @@ public class Dashboard {
 
 
     private static void index() {
-        get("/", (request, response) -> {
-            response.type("text/html");
+        app.get("/", (ctx) -> {
+            ctx.res().setContentType("text/html");
             StringBuilder sb = new StringBuilder();
             //Did someone say HTML in Java? :D
             sb.append("""
@@ -131,46 +132,46 @@ public class Dashboard {
                     	<div>
                     	<h1 style="text-align: center;">Wikibot Dashboard</h1>
                     """);
-                    sb.append(String.format("<h3 style=\"text-align: center;\">Tracking %s running and %s queued jobs.</h3>", JobManager.getActiveJobs().size(), JobManager.getQueuedJobs().size()));
-                    sb.append("""
-                    		<div class="wikibot-intro">
-                    			<details>
-                    				<summary style="font-size: 20px; text-align: center;">What is Wikibot?</summary>
-                    				<span>
-                    					<h3>Wikibot archives wikis, from Wikipedia to the smallest wikis.</h2>
-                    					<p> Based on <a href="https://github.com/saveweb/wikiteam3">a fork</a> of the original <a href="https://github.com/wikiteam/wikiteam">WikiTeam</a> software,
-                    					and the <a href="https://github.com/saveweb/dokuwiki-dumper">DokuWikiDumper</a> project, Wikibot makes static dumps of wikis to be uploaded to the
-                    					<a href="https://archive.org/">Internet Archive</a> for preservation.<br/></p>
-                    					<p>To use it, stop by <a href="irc://irc.hackint.org/wikibot">#wikibot</a> on irc.hackint.org <a href="https://webirc.hackint.org/#irc://irc.hackint.org/wikibot">(click for webirc)</a>. 
-                    					More information: <a href="https://wiki.archiveteam.org/index.php/Archiveteam:IRC">ArchiveTeam's IRC</a>.
-                    				    Use the !mw and !dw commands to start a job. For full information, see <a href="https://cdn.digitaldragon.dev/wikibot/help.html">the help page</a>.</p>
-                    					
-                    					<p>Wikibot is operated by DigitalDragon. Site operators that need to contact us can join our IRC channel, or reach out directly via email: wikibot (at) digitaldragon (dot) dev</p>
-                    				</span>
-                    			</details>
-                    		</div>
+            sb.append(String.format("<h3 style=\"text-align: center;\">Tracking %s running and %s queued jobs.</h3>", JobManager.getActiveJobs().size(), JobManager.getQueuedJobs().size()));
+            sb.append("""
+                    	<div class="wikibot-intro">
+                    		<details>
+                    			<summary style="font-size: 20px; text-align: center;">What is Wikibot?</summary>
+                    			<span>
+                    				<h3>Wikibot archives wikis, from Wikipedia to the smallest wikis.</h2>
+                    				<p> Based on <a href="https://github.com/saveweb/wikiteam3">a fork</a> of the original <a href="https://github.com/wikiteam/wikiteam">WikiTeam</a> software,
+                    				and the <a href="https://github.com/saveweb/dokuwiki-dumper">DokuWikiDumper</a> project, Wikibot makes static dumps of wikis to be uploaded to the
+                    				<a href="https://archive.org/">Internet Archive</a> for preservation.<br/></p>
+                    				<p>To use it, stop by <a href="irc://irc.hackint.org/wikibot">#wikibot</a> on irc.hackint.org <a href="https://webirc.hackint.org/#irc://irc.hackint.org/wikibot">(click for webirc)</a>. 
+                    				More information: <a href="https://wiki.archiveteam.org/index.php/Archiveteam:IRC">ArchiveTeam's IRC</a>.
+                    			    Use the !mw and !dw commands to start a job. For full information, see <a href="https://cdn.digitaldragon.dev/wikibot/help.html">the help page</a>.</p>
+                    				
+                    				<p>Wikibot is operated by DigitalDragon. Site operators that need to contact us can join our IRC channel, or reach out directly via email: wikibot (at) digitaldragon (dot) dev</p>
+                    			</span>
+                    		</details>
                     	</div>
-                    	<div class="jobs">
-                    	""");
-                for (Job job : JobManager.getActiveJobs()) {
-                    sb.append(getCard(job));
-                }
+                    </div>
+                    <div class="jobs">
+                    """);
+            for (Job job : JobManager.getActiveJobs()) {
+                sb.append(getCard(job));
+            }
 
             sb.append("</div></body>");
-            return sb.toString();
+            ctx.result(sb.toString());
         });
 
     }
 
     private static void cards() {
-        get("/cards/*", (request, response) -> {
-            response.type("text/html");
-            String id = request.splat()[0];
+        app.get("/cards/{id}", (ctx) -> {
+            ctx.res().setContentType("text/html");
+            String id = ctx.pathParam("id");
             Job job = JobManager.get(id);
             if (job == null) {
-                return "Job not found!";
+                ctx.result("Job not found!");
             }
-            return getCard(job);
+            ctx.result(getCard(job));
         });
     }
 
