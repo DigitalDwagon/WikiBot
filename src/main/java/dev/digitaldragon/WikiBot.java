@@ -4,7 +4,7 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.interfaces.api.SparkAPI;
+import dev.digitaldragon.interfaces.api.JavalinAPI;
 import dev.digitaldragon.interfaces.discord.*;
 import dev.digitaldragon.interfaces.telegram.TelegramClient;
 import dev.digitaldragon.util.EnvConfig;
@@ -147,7 +147,7 @@ public class WikiBot {
                     .queue();
         }
 
-        SparkAPI.register();
+        JavalinAPI.register();
     }
 
     public static TextChannel getLogsChannel() {

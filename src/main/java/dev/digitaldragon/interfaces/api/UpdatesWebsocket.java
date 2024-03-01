@@ -2,6 +2,7 @@ package dev.digitaldragon.interfaces.api;
 
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import io.javalin.websocket.WsConfig;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -12,27 +13,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 @WebSocket
-public class UpdatesWebsocket {
+public class UpdatesWebsocket implements Consumer<WsConfig> {
     private static final Map<Session, String> connectedClients = new ConcurrentHashMap<>();
-
-    @OnWebSocketConnect
-    public void onConnect(Session userSession) throws Exception {
-        // Handle WebSocket connection.
-        connectedClients.put(userSession, userSession.getRemoteAddress().toString());
-    }
-
-    @OnWebSocketClose
-    public void onClose(Session userSession, int statusCode, String reason) {
-        // Handle WebSocket closure.
-        connectedClients.remove(userSession);
-    }
-
-    @OnWebSocketMessage
-    public void onMessage(Session userSession, String message) {
-        // Handle incoming WebSocket messages (if needed).
-    }
 
     // Method to send a job event message to all connected clients.
     public static void sendLogMessageToClients(Job job, String event) {
@@ -48,5 +33,12 @@ public class UpdatesWebsocket {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void accept(WsConfig wsConfig) {
+        wsConfig.onConnect(ctx -> connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString()));
+        wsConfig.onClose(ctx -> connectedClients.remove(ctx.session));
+        wsConfig.onMessage(ctx -> {});
     }
 }
