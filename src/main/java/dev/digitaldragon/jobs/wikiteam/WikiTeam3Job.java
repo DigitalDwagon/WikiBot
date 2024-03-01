@@ -27,6 +27,7 @@ public class WikiTeam3Job implements Job {
     private Instant startTime = null;
     private String[] params = null;
     private File directory = null;
+    private File runDir = null;
     private RunCommand downloadCommand = null;
     private RunCommand uploadCommand = null;
     private String explanation = null;
@@ -41,7 +42,7 @@ public class WikiTeam3Job implements Job {
     private boolean aborted;
 
 
-    public WikiTeam3Job(String userName, String id, String name, String[] params, String explanation) {
+    public WikiTeam3Job(String userName, String id, String name, String[] params, WikiTeam3Args args, String explanation) {
         System.out.println(name);
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -55,7 +56,9 @@ public class WikiTeam3Job implements Job {
         this.directory.mkdirs();
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand(null, params, directory, handler);
+        this.runDir =  args.getResumeDir() != null ? args.getResumeDir().getParentFile() : directory;
+        //handler.onMessage(runDir.getAbsolutePath());
+        this.downloadCommand = new RunCommand(null, params, runDir, handler);
     }
 
     private void failure(int code) {
@@ -108,13 +111,13 @@ public class WikiTeam3Job implements Job {
     private int runUpload() {
         runningTask = "UploadMediaWiki";
         handler.onMessage("----- Bot: Task " + runningTask + " started -----");
-        if (directory.listFiles() == null) {
+        if (runDir.listFiles() == null) {
             return 999;
         }
 
-        for (File file : directory.listFiles()) {
+        for (File file : runDir.listFiles()) {
             if (file.isDirectory()) {
-                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, directory, handler::onMessage);
+                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, runDir, handler::onMessage);
                 break;
             }
         }
