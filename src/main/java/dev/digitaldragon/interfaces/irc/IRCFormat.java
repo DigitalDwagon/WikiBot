@@ -25,7 +25,7 @@ public enum IRCFormat {
     GREY("\u000314"),
     LIGHT_GREY("\u000315");
 
-    String controlCode;
+    final String controlCode;
     IRCFormat(String controlCode) {
         this.controlCode = controlCode;
     }

@@ -76,7 +76,7 @@ public class WikiTeam3Helper {
 
         String explain = args.getExplain();
 
-        Job job = new WikiTeam3Job(userName, jobId, jobName, args.get(), explain);
+        Job job = new WikiTeam3Job(userName, jobId, jobName, args.get(), args, explain);
         JobManager.submit(job);
         return null;
     }

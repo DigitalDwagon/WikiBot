@@ -7,6 +7,8 @@ import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.MediaWiki;
+import dev.digitaldragon.jobs.Wiki;
 import dev.digitaldragon.jobs.wikimedia.DailyWikimediaDumpJob;
 import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
 import dev.digitaldragon.util.EnvConfig;
@@ -154,11 +156,83 @@ public class IrcCommandListener {
         String message = StatusHelper.getStatus(jobId);
         if (message != null) {
             if (garbled) {
-
+                message = getFunnyMessage(event.getActor().getNick(), message);
             }
             event.getChannel().sendMessage(event.getActor().getNick() + ": " + message);
         }
     }
+
+    @Handler
+    public void wikiDetection(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!a "))
+            return;
+
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+
+        String[] parts = event.getMessage().split(" ", 3);
+        if (parts.length < 3) {
+            channel.sendMessage(nick + ": Not enough arguments!");
+            return;
+        }
+        String url = parts[1];
+
+        try {
+            Wiki wiki = Wiki.detectWiki(url);
+            wiki.run(url, nick, parts[2]);
+        } catch (UserErrorException e) {
+            channel.sendMessage(nick + ": " + e.getMessage());
+        }
+
+
+        /*MediaWiki wiki = new MediaWiki(url);
+        boolean success = wiki.findInfo();
+        if (!success) {
+            channel.sendMessage(nick + ": Something went wrong...");
+            return;
+        }
+        channel.sendMessage(nick + ": API: " + wiki.getApiUrl() + " Index: " + wiki.getIndexUrl());
+        channel.sendMessage(nick + ": " + wiki.getTotalRevisions()  + " revisions");
+        channel.sendMessage(nick + ": " + wiki.getTotalMediaSize() + " media bytes");
+        try {
+            wiki.run(nick, parts[2]);
+        } catch (UserErrorException e) {
+            channel.sendMessage(nick + ": " + e.getMessage());
+        }*/
+
+    }
+
+
+    /*@Handler
+    public void resumeJobsCommand(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!rdump"))
+            return;
+        if (!isOped(event.getChannel(), event.getActor()))
+            return;
+
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+
+        for (Job job : JobManager.getJobs()) {
+            if (job instanceof WikiTeam3Job) {
+                DokuWikiDumperJob dokuJob = (DokuWikiDumperJob) job;
+                if (dokuJob.isPaused()) {
+                    dokuJob.setPaused(false);
+                    channel.sendMessage(nick + ": Resumed job " + dokuJob.getJobId());
+                }
+            }
+        }
+
+        if (event.getMessage().split(" ").length < 2) {
+            channel.sendMessage(nick + ": Not enough arguments!");
+            return;
+        }
+        String jobId = event.getMessage().split(" ")[1];
+
+        String message = AbortHelper.abortJob(jobId);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
+    }*/
 
 
     @Handler
@@ -269,10 +343,10 @@ public class IrcCommandListener {
             //easterEggMessages.add("wikibot - the less cool archivebot since 2023"); // original
             easterEggMessages.add("All your wiki are belong to us."); // internet "All your base are belong to us"
             easterEggMessages.add("You're a wizard, " + username + "."); // harry potter "You're a wizard, Harry."
-            easterEggMessages.add("It's dangerous to archive alone. Take this!"); // zelda "It's dangerous to go alone. Take this!"
+            //easterEggMessages.add("It's dangerous to archive alone. Take this!"); // zelda "It's dangerous to go alone. Take this!"
             easterEggMessages.add("This statement is false."); // paradox (portal)
             easterEggMessages.add("I'll be back."); // original
-            easterEggMessages.add("There's no crying in archiving!"); // a league of their own "There's no crying in baseball!"
+            //easterEggMessages.add("There's no crying in archiving!"); // a league of their own "There's no crying in baseball!"
             //10
             easterEggMessages.add("I'm not locked in here with you. You're locked in here with me!"); // watchmen
             easterEggMessages.add("It's a trap!"); // star wars
@@ -284,18 +358,19 @@ public class IrcCommandListener {
             easterEggMessages.add("I've got a jar of dirt! I've got a jar of dirt!"); // pirates of the caribbean
             easterEggMessages.add("I can haz status?"); // lolcats "I can haz cheezburger?"
             //20
-            easterEggMessages.add("Press Alt + F4 for a surprise!"); // "original"
+            easterEggMessages.add("Press Alt + F4 for a surprise! (Users of penguin-themed operating systems should instead open a terminal and enter ':(){ :|:& };:')"); // "original"
             easterEggMessages.add("As seen on TV!"); // makes fun of the "as seen on TV" ads, minecraft splash text
             easterEggMessages.add("That's no moon..."); // star wars
             easterEggMessages.add("Now bug-free!"); // original based on Minecraft splash text
             easterEggMessages.add("Yes sir, Mister " + username + "!"); // portal "Yes sir, Mister Johnson!"
             easterEggMessages.add("No step on snek."); // meme
-            easterEggMessages.add("Dead links. Dead links everywhere. https://irc.digitaldragon.dev/uploads/344bd7146de4b822/image.png"); // meme
-            easterEggMessages.add("Nobody expects the ArchiveTeam inquisition!"); // original
+            //easterEggMessages.add("Dead links. Dead links everywhere. https://irc.digitaldragon.dev/uploads/344bd7146de4b822/image.png"); // meme
+            //easterEggMessages.add("Nobody expects the ArchiveTeam inquisition!"); // original
             easterEggMessages.add("I like trains."); // asdfmovie
-            easterEggMessages.add("https://irc.digitaldragon.dev/uploads/2f2619de2036ae3f/image.png"); // meme
+            //easterEggMessages.add("https://irc.digitaldragon.dev/uploads/2f2619de2036ae3f/image.png"); // meme
             //30
             easterEggMessages.add("This is my swamp!"); // shrek
+            easterEggMessages.add("Built with Minecraft-compatible technology!");
 
             //pick a random message from the list
             Random random = new Random();

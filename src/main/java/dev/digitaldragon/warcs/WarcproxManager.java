@@ -3,6 +3,7 @@ package dev.digitaldragon.warcs;
 import dev.digitaldragon.jobs.RunCommand;
 import dev.digitaldragon.jobs.SimpleLogsHandler;
 
+import javax.ws.rs.DELETE;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +13,7 @@ import java.util.concurrent.Executors;
  * It provides methods to start and stop the service, and automatically uploads
  * generated WARCs to the Internet Archive.
  */
+@Deprecated
 public class WarcproxManager {
     private static final ExecutorService executor = Executors.newFixedThreadPool(2);
     private static RunCommand warcprox = null;

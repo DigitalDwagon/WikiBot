@@ -2,10 +2,12 @@ package dev.digitaldragon.jobs.wikiteam;
 
 import com.beust.jcommander.Parameter;
 import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.jobs.CommonTasks;
 import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -51,6 +53,10 @@ public class WikiTeam3Args {
     private boolean warcPagesHistory;
     @Parameter(names = {"--explain", "-e"})
     private String explain;
+    @Parameter(names = {"--resume"})
+    private String resume;
+    private String resumeLocation;
+    private File resumeDir;
     @Parameter(names = {"--api", "-A"})
     private String api;
     @Parameter(names = {"--index", "-N"})
@@ -68,6 +74,9 @@ public class WikiTeam3Args {
         checkUrlOption(api);
         checkUrlOption(index);
         checkUrlOption(url);
+
+        parseResumeLocationFromJobId(true);
+
     }
 
     private void checkUrlOption(String option) throws UserErrorException {
@@ -123,6 +132,16 @@ public class WikiTeam3Args {
         parseUrlOption(args, index, "--index");
         parseUrlOption(args, url, "");
 
+
+        if (resumeLocation == null && resume != null) {
+            parseResumeLocationFromJobId();
+        }
+        if (resumeLocation != null && !resumeLocation.isEmpty()) {
+            args.add("--path");
+            args.add(resumeLocation);
+            args.add("--resume");
+        }
+
         return args.toArray(new String[0]);
     }
 
@@ -162,5 +181,27 @@ public class WikiTeam3Args {
             args.add(longOption);
         }
         args.add(option);
+    }
+
+    private void parseResumeLocationFromJobId(){
+        try {
+            parseResumeLocationFromJobId(false);
+        } catch (UserErrorException e) {
+            return;
+        }
+    }
+
+    private void parseResumeLocationFromJobId(boolean error) throws UserErrorException {
+        if (resume != null && !resume.isEmpty()) {
+            File dir = CommonTasks.findDumpDir(resume);
+            if (dir == null) {
+                if (error) throw new UserErrorException("Couldn't find a dump for " + resume);
+            } else {
+                resumeDir = dir;
+                resumeLocation = dir.getName();
+            }
+        }
+
+        //resumeLocation = new File("jobs/" + resume).getAbsolutePath();
     }
 }

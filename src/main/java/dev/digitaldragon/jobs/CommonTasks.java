@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.backfeed.LinkExtract;
 import dev.digitaldragon.util.UploadObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.Set;
@@ -57,6 +58,28 @@ public class CommonTasks {
             return 999;
         }
         return CommonTasks.runAndVerify(uploadCommand, handler, job.getRunningTask());
+    }
+
+    @Nullable
+    public static File findDumpDir(String jobId) {
+        File directory = new File("jobs/" + jobId);
+        return findDumpDir(directory);
+    }
+
+    @Nullable
+    public static File findDumpDir(File directory) {
+        if (!directory.exists()) {
+            return null;
+        }
+        if (directory.listFiles() == null) {
+            return null;
+        }
+        for (File file : directory.listFiles()) {
+            if (file.isDirectory()) {
+                return file;
+            }
+        }
+        return null;
     }
 
     public static void extractLinks(Job job) {
