@@ -5,8 +5,8 @@ import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 
 import java.util.ArrayList;
 import java.util.List;

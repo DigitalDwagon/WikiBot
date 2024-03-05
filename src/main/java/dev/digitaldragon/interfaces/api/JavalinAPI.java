@@ -9,7 +9,7 @@ import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.util.EnvConfig;
 import io.javalin.Javalin;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class JavalinAPI {
     public static Javalin app;
     public static void register() {
-        app = Javalin.create().start(4567);
+        app = Javalin.create().start(Integer.parseInt(EnvConfig.getConfigs().get("api_port")));
         app.ws("/api/logfirehose", new LogWebsocket());
         app.ws("/api/jobevents", new UpdatesWebsocket());
 

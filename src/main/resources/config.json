@@ -1,0 +1,30 @@
+{
+  "telegram": {
+    "enabled": true,
+    "token": "REQUIRED",
+    "channelId": "REQUIRED",
+    "creatorId": "REQUIRED",
+    "username": "REQUIRED"
+  },
+  "discord": {
+    "enabled": true,
+    "token": "REQUIRED",
+    "channelId": "REQUIRED",
+    "successChannel": "disabled",
+    "failureChannel": "disabled"
+  },
+  "irc": {
+    "enabled": true,
+    "server": "irc.hackint.org",
+    "port": 6697,
+    "channel": "#example",
+    "nick": "wikibot",
+    "realName": "wikibot"
+  },
+  "wikiteam3": {
+    "enabled": true,
+    "userAgent": "wikiteam3/4.1.7 Wikibot/1.2.0 (Wikibot preserves public wikis)",
+    "warcEnabled": true,
+    "autoWarc": false
+  }
+}

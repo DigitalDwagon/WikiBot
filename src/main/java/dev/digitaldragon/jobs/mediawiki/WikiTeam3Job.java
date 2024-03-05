@@ -1,4 +1,4 @@
-package dev.digitaldragon.jobs.wikiteam;
+package dev.digitaldragon.jobs.mediawiki;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
@@ -40,6 +40,7 @@ public class WikiTeam3Job implements Job {
     private GenericLogsHandler handler;
     private int failedTaskCode;
     private boolean aborted;
+    private WikiTeam3Args args;
 
 
     public WikiTeam3Job(String userName, String id, String name, String[] params, WikiTeam3Args args, String explanation) {
@@ -59,6 +60,7 @@ public class WikiTeam3Job implements Job {
         this.runDir =  args.getResumeDir() != null ? args.getResumeDir().getParentFile() : directory;
         //handler.onMessage(runDir.getAbsolutePath());
         this.downloadCommand = new RunCommand(null, params, runDir, handler);
+        this.args = args;
     }
 
     private void failure(int code) {
@@ -75,7 +77,7 @@ public class WikiTeam3Job implements Job {
     }
 
     public void run() {
-        if (aborted)
+        /*if (aborted)
             return;
         startTime = Instant.now();
         status = JobStatus.RUNNING;
@@ -89,6 +91,13 @@ public class WikiTeam3Job implements Job {
         if (runUpload != 0) {
             failure(runUpload);
             return;
+        }*/
+        if (args.isWarc()) {
+            runningTask = "Wget-AT";
+            File warcFile = new File(runDir, "output.warc");
+            File urlsFile = new File(runDir, "pages.txt");
+            MediaWikiWARCMachine warcMachine = new MediaWikiWARCMachine(args.getApi(), handler, directory, warcFile, urlsFile);
+            warcMachine.run();
         }
 
         logsUrl = CommonTasks.uploadLogs(this);
@@ -153,6 +162,6 @@ public class WikiTeam3Job implements Job {
     }
 
     public List<String> getAllTasks() {
-        return List.of("DownloadMediaWiki", "UploadMediaWiki", "LinkExtract");
+        return List.of("DownloadMediaWiki", "UploadMediaWiki", "Wget-AT", "LinkExtract");
     }
 }

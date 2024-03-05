@@ -7,6 +7,7 @@ import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.api.JavalinAPI;
 import dev.digitaldragon.interfaces.discord.*;
 import dev.digitaldragon.interfaces.telegram.TelegramClient;
+import dev.digitaldragon.util.Config;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.warcs.WarcproxManager;
@@ -39,6 +40,9 @@ public class WikiBot {
     public static EventBus bus = new EventBus();
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
 
+    public static String getVersion() {
+        return "1.4.0";
+    }
 
     public static void main (String[] args) throws LoginException, InterruptedException, IOException {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

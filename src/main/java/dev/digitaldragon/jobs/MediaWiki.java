@@ -1,9 +1,10 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import lombok.Getter;
+import okhttp3.HttpUrl;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -28,6 +29,39 @@ public class MediaWiki extends Wiki {
 
     public MediaWiki(String givenUrl) {
         this.givenUrl = givenUrl;
+    }
+
+
+    @Override
+    public Optional<Job> getJob() {
+        return Optional.empty();
+    }
+
+    @Override
+    public String getUnsafeReason() {
+        if (getTotalMediaSize() > /* 300GiB */ 300L * 1024 * 1024 * 1024) {
+            return "Wiki media size is more than 300GiB. If you're sure, please start this job manually or with --suppress-safety-check.";
+        }
+
+        if (getTotalRevisions() > 300_000) {
+            return "Wiki has more than 300,000 revisions. If you're sure, please start this job manually or with --suppress-safety-check.";
+        }
+
+        return null;
+    }
+
+    @Override
+    public Optional<Job> run(String url, String username, String explain) throws UserErrorException {
+        try {
+            return run(Jsoup.connect(url).get(), username, explain);
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Job> run(Document document, String username, String explain) throws UserErrorException {
+        throw new UserErrorException("MediaWiki!");
     }
 
     public String run(String username, String explain) throws UserErrorException {
@@ -96,30 +130,6 @@ public class MediaWiki extends Wiki {
 
         args.check();
         return args;
-    }
-
-    @Override
-    public Optional<Job> getJob() {
-        return Optional.empty();
-    }
-
-    @Override
-    public boolean isSafe() {
-        return getTotalMediaSize() < /* 300GiB */ 300L * 1024 * 1024 * 1024 && getTotalRevisions() < 300_000;
-    }
-
-    @Override
-    public Optional<Job> run(String url, String username, String explain) throws UserErrorException {
-        try {
-            return run(Jsoup.connect(url).get(), username, explain);
-        } catch (IOException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public Optional<Job> run(Document document, String username, String explain) throws UserErrorException {
-        throw new UserErrorException("MediaWiki!");
     }
 
     public String getVersion() {
@@ -278,6 +288,7 @@ public class MediaWiki extends Wiki {
     }
 
     private boolean testApi(String apiUrl) {
+
         // test the api.php url
         // load basic info from ?action=query&meta=siteinfo
 

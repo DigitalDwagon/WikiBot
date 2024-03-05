@@ -37,9 +37,9 @@ public abstract class Wiki {
     public abstract Optional<Job> getJob();
 
     /**
-     * @return If the wiki is safe to run a job on automatically.
+     * @return null if the wiki is safe to run a job on, or a string explaining why it is not safe.
      */
-    public abstract boolean isSafe();
+    public abstract String getUnsafeReason();
 
     /**
      *

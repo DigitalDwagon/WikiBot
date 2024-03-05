@@ -2,16 +2,11 @@ package dev.digitaldragon.interfaces.generic;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.archive.DokuWikiDumperPlugin;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.parser.CommandLineParser;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.UUID;
 
