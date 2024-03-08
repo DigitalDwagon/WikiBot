@@ -9,7 +9,7 @@ import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 
-public class APIJobListener {
+public class APIJobListener {/*
     @EventHandler
     public void onJobSuccess(JobSuccessEvent event) {
         UpdatesWebsocket.sendLogMessageToClients(event.getJob(), "SUCCESS");
@@ -29,5 +29,5 @@ public class APIJobListener {
     @EventHandler
     public void onJobQueued(JobQueuedEvent event) {
         UpdatesWebsocket.sendLogMessageToClients(event.getJob(), "QUEUED");
-    }
+    }*/
 }

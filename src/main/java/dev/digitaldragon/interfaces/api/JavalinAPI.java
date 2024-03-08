@@ -24,8 +24,11 @@ public class JavalinAPI {
     public static Javalin app;
     public static void register() {
         app = Javalin.create().start(Integer.parseInt(EnvConfig.getConfigs().get("api_port")));
-        app.ws("/api/logfirehose", new LogWebsocket());
-        app.ws("/api/jobevents", new UpdatesWebsocket());
+        UpdatesWebsocket updatesWebsocket = new UpdatesWebsocket();
+        LogWebsocket logWebsocket = new LogWebsocket();
+
+        app.ws("/api/logfirehose", logWebsocket);
+        app.ws("/api/jobevents", updatesWebsocket);
 
         enableCORS("*", "*", "*");
         postValidation(); //validate all POST requests
@@ -37,7 +40,8 @@ public class JavalinAPI {
         runCommand(); //POST /api/command
         createJob(); //POST /api/jobs
 
-        WikiBot.getBus().register(new APIJobListener());
+        WikiBot.getBus().register(updatesWebsocket);
+        WikiBot.getBus().register(logWebsocket);
     }
 
     private static void enableCORS(final String origin, final String methods, final String headers) {

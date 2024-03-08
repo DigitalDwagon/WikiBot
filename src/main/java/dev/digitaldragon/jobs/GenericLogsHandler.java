@@ -26,9 +26,9 @@ public class GenericLogsHandler implements StringLogHandler {
     public synchronized void onMessage(String message) {
         WikiBot.getBus().post(new JobLogEvent(job, message));
         try {
-            LogWebsocket.sendLogMessageToClients(job.getId(), message);
+            //LogWebsocket.sendLogMessageToClients(job.getId(), message);
 
-            System.out.println(message);
+            //System.out.println(message);
             writeLineToFile(new File(job.getDirectory(), "log.txt"), message);
 
             if (message.contains("https://archive.org/details/") && message.contains(" ")) {
