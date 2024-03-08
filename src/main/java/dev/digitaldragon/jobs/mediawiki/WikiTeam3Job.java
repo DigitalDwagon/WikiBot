@@ -77,7 +77,7 @@ public class WikiTeam3Job implements Job {
     }
 
     public void run() {
-        /*if (aborted)
+        if (aborted)
             return;
         startTime = Instant.now();
         status = JobStatus.RUNNING;
@@ -91,7 +91,7 @@ public class WikiTeam3Job implements Job {
         if (runUpload != 0) {
             failure(runUpload);
             return;
-        }*/
+        }
         if (args.isWarc()) {
             runningTask = "Wget-AT";
             File warcFile = new File(runDir, "output.warc");

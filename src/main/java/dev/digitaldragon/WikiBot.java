@@ -35,8 +35,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class WikiBot {
-    @Getter
-    public static JDA instance;
+    //@Getter
+    //public static JDA instance;
     @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(10);
     @Getter
@@ -66,15 +66,15 @@ public class WikiBot {
 
 
         WarcproxManager.run();
-        instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
+        /*instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
                 .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener())
-                .build();
+                .build();*/
 
         IRCClient.enable();
-        instance.awaitReady();
+        //instance.awaitReady();
         DiscordClient.enable();
         TelegramClient.enable();
         bus.register(new SystemListener());
@@ -83,7 +83,7 @@ public class WikiBot {
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
         System.out.println(bucket.getName());
 
-        Guild testServer = instance.getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
+        /*Guild testServer = instance.getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
         if (testServer != null) {
 
             // ----------------------------- dokuwiki ----------------------------- //
@@ -166,12 +166,12 @@ public class WikiBot {
             testServer.upsertCommand("reupload", "Reupload a failed upload to the Internet Archive")
                     .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
                     .queue();
-        }
+        }*/
 
         JavalinAPI.register();
     }
 
-    public static TextChannel getLogsChannel() {
+    /*public static TextChannel getLogsChannel() {
         Guild testServer = WikiBot.getInstance().getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
         if (testServer == null) {
             return null;
@@ -186,5 +186,5 @@ public class WikiBot {
             throw new UserErrorException("Something went wrong.");
         }
         return discordChannel;
-    }
+    }*/
 }

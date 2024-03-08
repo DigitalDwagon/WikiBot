@@ -31,69 +31,16 @@ public class DiscordJobListener {
     @EventHandler
     public void onJobSuccess(JobSuccessEvent event) {
         onJobEnd(event.getJob());
-        //Job job = event.getJob();
-
-        /*TextChannel successChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_success_channel"));
-        if (successChannel != null)
-            successChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nArchive URL: %s\nExplanation: ```%s```", job.getName(), job.getUserName(), job.getThreadChannel(), job.getLogsUrl(), job.getId(), job.getArchiveUrl(), job.getExplanation())).queue();
-
-        job.getThreadChannel().sendMessage("Job ended.").queue();
-        job.getThreadChannel().sendMessage("Explanation: ```" + job.getExplanation() + "```").queue();
-        job.getThreadChannel().sendMessage("Logs are available at " + job.getLogsUrl()).queue();*/
-
-        /*sendLogs(jobLogs.getOrDefault(job.getId(), ""), job);
-        jobChannels.get(job.getId())
-                .sendMessage("Job ended.")
-                .setEmbeds(DiscordClient.getStatusEmbed(job).build())
-                .setActionRows(getJobActionRow(job))
-                .queue();
-
-        sendStatusToChannel(job, WikiBot.getConfig().getDiscordConfig().successChannel());*/
     }
 
     @EventHandler
     public void onJobFailure(JobFailureEvent event) {
         onJobEnd(event.getJob());
-        //Job job = event.getJob();
-
-        /*TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
-        if (failChannel != null)
-            failChannel.sendMessage(String.format("%s for %s:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nFailed Task: %s\nExit code: `%s`\nExplanation: ```%s```", job.getName(), job.getUserName(), job.getThreadChannel(), job.getLogsUrl(), job.getId(), job.getRunningTask(), job.getFailedTaskCode(), job.getExplanation())).queue();
-
-        job.getThreadChannel().sendMessage("Job " + job.getId() + " failed with exit code " + job.getFailedTaskCode() + ".").queue();
-        job.getThreadChannel().sendMessage("Explanation: ```" + job.getExplanation() + "```").queue();
-        job.getThreadChannel().sendMessage("Logs are available at " + job.getLogsUrl()).queue();
-        job.getThreadChannel().sendMessage("Task indicated as failed.").queue();*/
-
-        /*sendLogs(jobLogs.getOrDefault(job.getId(), ""), job);
-        jobChannels.get(job.getId())
-                .sendMessage("Job failed.")
-                .setEmbeds(DiscordClient.getStatusEmbed(job).build())
-                .setActionRows(getJobActionRow(job))
-                .queue();
-
-        sendStatusToChannel(job, WikiBot.getConfig().getDiscordConfig().failureChannel());*/
     }
 
     @EventHandler
     public void onJobAbort(JobAbortEvent event) {
         onJobEnd(event.getJob());
-
-        //Job job = event.getJob();
-
-        /*TextChannel failChannel = WikiBot.getInstance().getTextChannelById(EnvConfig.getConfigs().get("discord_failure_channel"));
-        if (failChannel != null)
-            failChannel.sendMessage(String.format("%s for %s was aborted:\n\nThread: %s\nLogs: %s\nJob ID: `%s`\nFailed Task: %s\nExit code: `%s`\nExplanation: ```%s```", job.getName(), job.getUserName(), job.getThreadChannel(), job.getLogsUrl(), job.getId(), job.getRunningTask(), job.getFailedTaskCode(), job.getExplanation())).queue();
-        */
-
-        /*sendLogs(jobLogs.getOrDefault(job.getId(), ""), job);
-        jobChannels.get(job.getId())
-                .sendMessage("Job aborted.")
-                .setEmbeds(DiscordClient.getStatusEmbed(job).build())
-                .setActionRows(getJobActionRow(job))
-                .queue();
-
-        sendStatusToChannel(job, WikiBot.getConfig().getDiscordConfig().failureChannel());*/
     }
 
     private void onJobEnd(Job job) {
