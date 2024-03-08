@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.LogWebsocket;
+import dev.digitaldragon.jobs.events.JobLogEvent;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 
@@ -51,6 +52,7 @@ public class GenericLogsHandler implements StringLogHandler {
     }
 
     public synchronized void onMessage(String message) {
+        WikiBot.getBus().post(new JobLogEvent(job, message));
         try {
             LogWebsocket.sendLogMessageToClients(job.getId(), message);
 

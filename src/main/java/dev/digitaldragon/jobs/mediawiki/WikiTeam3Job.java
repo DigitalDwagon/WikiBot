@@ -139,6 +139,9 @@ public class WikiTeam3Job implements Job {
 
 
     public boolean abort() {
+        if (runningTask == null) {
+            return false;
+        }
         if (runningTask.equals("DownloadMediaWiki")) {
             handler.onMessage("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);

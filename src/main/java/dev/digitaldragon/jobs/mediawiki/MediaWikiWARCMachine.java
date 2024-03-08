@@ -70,8 +70,8 @@ public class MediaWikiWARCMachine {
 
         String[] wgetArgs = new String[]{
                 "wget-at",
-                "-w", "0.5", //wait 0.5 seconds between requests
-                "--random-wait", // vary the wait time 0.5-1.5x to the wait time
+                "-w", "1", //wait 0.5 seconds between requests
+                //"--random-wait", // vary the wait time 0.5-1.5x to the wait time
                 "-U", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 (compatible; Wikibot/1.2.1; wikibot@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)",
                 "--host-lookups", "dns",
                 "--hosts-file", "/dev/null",

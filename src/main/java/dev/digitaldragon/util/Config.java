@@ -52,8 +52,8 @@ public class Config {
             JSONObject irc = json.getJSONObject("irc");
             JSONObject auth = irc.getJSONObject("auth");
             IRCAuthOptions ircAuthOptions = new IRCAuthOptions(
-                    irc.getBoolean("authEnabled"),
-                    irc.getString("password")
+                    auth.getBoolean("enabled"),
+                    auth.getString("password")
             );
             ircConfig = new IRCConfig(
                     irc.getBoolean("enabled"),

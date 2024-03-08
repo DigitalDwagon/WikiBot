@@ -10,6 +10,7 @@ import dev.digitaldragon.interfaces.telegram.TelegramClient;
 import dev.digitaldragon.util.Config;
 import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
+import dev.digitaldragon.util.SystemListener;
 import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
@@ -22,6 +23,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -39,7 +42,10 @@ public class WikiBot {
     @Getter
     public static EventBus bus = new EventBus();
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
-
+    @Getter
+    private static Config config = null;
+    @Getter
+    private static DiscordClient discordClient = null;
     public static String getVersion() {
         return "1.4.0";
     }
@@ -49,6 +55,16 @@ public class WikiBot {
             System.out.println("Shutting down...");
             WarcproxManager.stopCleanly();
         }));
+        Logger logger = LoggerFactory.getLogger(WikiBot.class);
+        try {
+            config = new Config("config.json");
+        } catch (IOException e) {
+            logger.error("Failed to load config", e);
+            System.exit(1);
+        }
+        discordClient = new DiscordClient();
+
+
         WarcproxManager.run();
         instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
                 .enableCache(CacheFlag.VOICE_STATE)
@@ -61,6 +77,7 @@ public class WikiBot {
         instance.awaitReady();
         DiscordClient.enable();
         TelegramClient.enable();
+        bus.register(new SystemListener());
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
