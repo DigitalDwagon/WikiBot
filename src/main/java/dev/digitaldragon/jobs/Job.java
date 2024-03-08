@@ -119,18 +119,6 @@ public interface Job {
      *
      * @return the thread channel associated with the current thread.
      */
-    public ThreadChannel getThreadChannel();
-    /**
-     * Sets the Discord thread channel associated with the job.
-     *
-     * @param channel the thread channel to associate with the current thread.
-     */
-    public void setThreadChannel(ThreadChannel channel);
-    /**
-     * Sets the archive.org URL for the job.
-     *
-     * @param url the URL to set as the archive URL.
-     */
     public void setArchiveUrl(String url);
     /**
      * Gets the code of the failed task, if any.

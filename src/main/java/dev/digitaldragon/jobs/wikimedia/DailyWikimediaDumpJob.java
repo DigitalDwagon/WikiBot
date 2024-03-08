@@ -36,8 +36,6 @@ public class DailyWikimediaDumpJob implements Job {
     private String archiveUrl = "https://archive.org/details/@DigitalDragons";
     @Setter
     private String logsUrl = null;
-    @Setter
-    private ThreadChannel threadChannel = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
     private boolean aborted;

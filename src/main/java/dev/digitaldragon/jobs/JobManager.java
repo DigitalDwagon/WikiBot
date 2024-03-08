@@ -82,9 +82,6 @@ public class JobManager {
         jsonObject.put("runningTask", job.getRunningTask());
         //jsonObject.put("directory", job.getDirectory());
         jsonObject.put("failedTaskCode", job.getFailedTaskCode());
-        ThreadChannel channel = job.getThreadChannel();
-        if (channel != null)
-            jsonObject.put("threadChannel", job.getThreadChannel().getId());
         jsonObject.put("archiveUrl", job.getArchiveUrl());
         jsonObject.put("type", job.getType());
         jsonObject.put("isRunning", job.isRunning());

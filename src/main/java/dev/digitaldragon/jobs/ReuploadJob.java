@@ -31,8 +31,6 @@ public class ReuploadJob implements Job {
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    @Setter
-    private ThreadChannel threadChannel = null;
     private final GenericLogsHandler handler;
     private int failedTaskCode;
     private final String uploadingFor;

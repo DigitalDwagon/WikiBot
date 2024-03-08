@@ -35,8 +35,6 @@ public class WikiTeam3Job implements Job {
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    @Setter
-    private ThreadChannel threadChannel = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
     private boolean aborted;
