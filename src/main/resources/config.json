@@ -19,12 +19,17 @@
     "port": 6697,
     "channel": "#example",
     "nick": "wikibot",
-    "realName": "wikibot"
+    "realName": "wikibot",
+    "auth":  {
+      "enabled": false,
+      "password": "a$$word"
+    }
   },
   "wikiteam3": {
     "enabled": true,
     "userAgent": "wikiteam3/4.1.7 Wikibot/1.2.0 (Wikibot preserves public wikis)",
     "warcEnabled": true,
-    "autoWarc": false
+    "autoWarc": false,
+    "binZstd": "zstd"
   }
 }

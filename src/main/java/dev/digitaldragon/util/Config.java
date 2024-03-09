@@ -75,10 +75,11 @@ public class Config {
                     wikiteam3.getBoolean("enabled"),
                     wikiteam3.getString("userAgent"),
                     wikiteam3.getBoolean("warcEnabled"),
-                    wikiteam3.getBoolean("autoWarc")
+                    wikiteam3.getBoolean("autoWarc"),
+                    wikiteam3.getString("binZstd")
             );
         } else {
-            wikiTeam3Config = new WikiTeam3Config(false, null, false, false);
+            wikiTeam3Config = new WikiTeam3Config(false, null, false, false, null);
         }
     }
 
@@ -88,5 +89,5 @@ public class Config {
     public record DiscordConfig(boolean isEnabled, String token, String channelId, Optional<String> successChannel, Optional<String> failureChannel) {}
     public record IRCConfig(boolean isEnabled, String server, int port, String channel, String nick, String realName, IRCAuthOptions authOptions) {}
     public record IRCAuthOptions(boolean isEnabled, String password) {}
-    public record WikiTeam3Config(boolean isEnabled, String userAgent, boolean warcEnabled, boolean autoWarc) {}
+    public record WikiTeam3Config(boolean isEnabled, String userAgent, boolean warcEnabled, boolean autoWarc, String binZstd) {}
 }

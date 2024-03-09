@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
-public class DailyWikimediaDumpJob implements Job {
+public class DailyWikimediaDumpJob extends Job {
     private String id ;
     private final String name = "Wikimedia Incremental Dump";
     private final String userName = "AutomaticDragon";

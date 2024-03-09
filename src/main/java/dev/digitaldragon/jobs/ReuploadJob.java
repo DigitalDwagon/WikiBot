@@ -17,7 +17,7 @@ import java.util.List;
  * Job to re-attempt an upload of a dump to archive.org.
  */
 @Getter
-public class ReuploadJob implements Job {
+public class ReuploadJob extends Job {
     private final String id;
     private final String name;
     private final String userName;

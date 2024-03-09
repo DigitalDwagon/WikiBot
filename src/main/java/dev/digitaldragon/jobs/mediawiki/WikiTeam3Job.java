@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
  * This class provides functionality for running and managing WikiTeam3 jobs.
  */
 @Getter
-public class WikiTeam3Job implements Job {
+public class WikiTeam3Job extends Job {
     private String id = null;
     private String name = "undefined";
     private String userName = "undefined";
@@ -84,10 +84,13 @@ public class WikiTeam3Job implements Job {
         if (aborted)
             return;
 
+
         WikiBot.getLogFiles().setLogFile(this, new File(runDir, "log.txt"));
         startTime = Instant.now();
         status = JobStatus.RUNNING;
+        log("wikibot v" + WikiBot.getVersion() + " job " + id + " starting now");
 
+        runningTask = "DownloadMediaWiki";
         log("Starting Task DownloadMediaWiki");
 
         downloadCommand = new RunCommand(null, params, runDir, message -> {
@@ -97,29 +100,47 @@ public class WikiTeam3Job implements Job {
         });
 
         downloadCommand.run();
-        if (downloadCommand.waitFor() != 0) {
-            failure(downloadCommand.waitFor());
+        int downloadExitCode = downloadCommand.waitFor();
+        if (downloadExitCode != 0) {
+            failure(downloadExitCode);
             return;
         }
 
         log("Finished task DownloadMediaWiki");
 
-        int runDownload = runDownload();
-        if (runDownload != 0) {
-            failure(runDownload);
+        runningTask = "UploadMediaWiki";
+        log("Starting Task UploadMediaWiki");
+
+        File dumpDir = CommonTasks.findDumpDir(runDir);
+        if (dumpDir == null) {
+            log("Failed to find the dump directory, aborting...");
+            failure(999);
             return;
         }
-        int runUpload = runUpload();
-        if (runUpload != 0) {
-            failure(runUpload);
+        String[] uploadParams = new String[] {"wikiteam3uploader", dumpDir.getName(), "--zstd-level", "22", "--parallel", "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd()};
+        uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
+            log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+        });
+
+        uploadCommand.run();
+        if (uploadCommand.waitFor() != 0) {
+            failure(uploadCommand.waitFor());
             return;
         }
+
+        log("Finished task UploadMediaWiki");
+
+
         if (args.isWarc()) {
+            log("Starting Task Wget-AT");
             runningTask = "Wget-AT";
             File warcFile = new File(runDir, "output.warc");
             File urlsFile = new File(runDir, "pages.txt");
             MediaWikiWARCMachine warcMachine = new MediaWikiWARCMachine(args.getApi(), handler, directory, warcFile, urlsFile);
             warcMachine.run();
+            log("Finished task Wget-AT");
         }
 
         logsUrl = WikiBot.getLogFiles().uploadLogs(this);
@@ -132,41 +153,6 @@ public class WikiTeam3Job implements Job {
         handler.end();
         WikiBot.getBus().post(new JobSuccessEvent(this));
     }
-
-    private int runDownload() {
-        runningTask = "DownloadMediaWiki";
-        log("----- Bot: Task " + runningTask + " started -----");
-        return CommonTasks.runAndVerify(downloadCommand, handler, runningTask);
-    }
-
-    private int runUpload() {
-        runningTask = "UploadMediaWiki";
-        log("----- Bot: Task " + runningTask + " started -----");
-        if (runDir.listFiles() == null) {
-            return 999;
-        }
-
-        for (File file : runDir.listFiles()) {
-            if (file.isDirectory()) {
-                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, runDir, message -> {
-                    log(message);
-                    CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
-
-                });
-                break;
-            }
-        }
-        if (uploadCommand == null) {
-            return 999;
-        }
-
-        System.out.println("Archive URL: " + archiveUrl);
-        return CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
-    }
-
-
-
-
 
     public boolean abort() {
         if (runningTask == null) {
@@ -198,7 +184,5 @@ public class WikiTeam3Job implements Job {
         return List.of("DownloadMediaWiki", "UploadMediaWiki", "Wget-AT", "LinkExtract");
     }
 
-    private void log(String message) {
-        WikiBot.getBus().post(new JobLogEvent(this, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now().atZone(ZoneOffset.UTC)) + " | " + message));
-    }
+
 }

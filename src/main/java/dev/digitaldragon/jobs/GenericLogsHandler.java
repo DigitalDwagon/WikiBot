@@ -20,7 +20,7 @@ public class GenericLogsHandler implements StringLogHandler {
     public GenericLogsHandler(Job job) {
         this.job = job;
 
-        onMessage("----- Bot: Logs manager init -----");
+        //onMessage("----- Bot: Logs manager init -----");
     }
 
     public synchronized void onMessage(String message) {

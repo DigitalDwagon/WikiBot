@@ -22,7 +22,7 @@ import java.util.List;
  * aborting a DokuWiki dump job.
  */
 @Getter
-public class DokuWikiDumperJob implements Job {
+public class DokuWikiDumperJob extends Job {
     private String id = null;
     private String name = "undefined";
     private String userName = "undefined";
