@@ -107,7 +107,7 @@ public class MediaWikiWARCMachine {
         };
 
 
-        RunCommand wgetAtCommand = new RunCommand(null, wgetArgs, jobDir, handler);
+        RunCommand wgetAtCommand = new RunCommand(null, wgetArgs, jobDir, handler::onMessage);
         handler.onMessage("----- Bot: Task Wget-AT started -----");
 
         CommonTasks.runAndVerify(wgetAtCommand, handler, "Wget-AT");

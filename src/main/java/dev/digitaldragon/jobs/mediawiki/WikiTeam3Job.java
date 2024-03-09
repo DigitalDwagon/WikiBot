@@ -4,14 +4,22 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobLogEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.ThreadChannel;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a WikiTeam3 job, which implements the Job interface.
@@ -56,13 +64,11 @@ public class WikiTeam3Job implements Job {
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
         this.runDir =  args.getResumeDir() != null ? args.getResumeDir().getParentFile() : directory;
-        //handler.onMessage(runDir.getAbsolutePath());
-        this.downloadCommand = new RunCommand(null, params, runDir, handler);
         this.args = args;
     }
 
     private void failure(int code) {
-        logsUrl = CommonTasks.uploadLogs(this);
+        logsUrl = WikiBot.getLogFiles().uploadLogs(this);
         status = JobStatus.FAILED;
         failedTaskCode = code;
         handler.end();
@@ -77,8 +83,26 @@ public class WikiTeam3Job implements Job {
     public void run() {
         if (aborted)
             return;
+
+        WikiBot.getLogFiles().setLogFile(this, new File(runDir, "log.txt"));
         startTime = Instant.now();
         status = JobStatus.RUNNING;
+
+        log("Starting Task DownloadMediaWiki");
+
+        downloadCommand = new RunCommand(null, params, runDir, message -> {
+            log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+        });
+
+        downloadCommand.run();
+        if (downloadCommand.waitFor() != 0) {
+            failure(downloadCommand.waitFor());
+            return;
+        }
+
+        log("Finished task DownloadMediaWiki");
 
         int runDownload = runDownload();
         if (runDownload != 0) {
@@ -98,7 +122,7 @@ public class WikiTeam3Job implements Job {
             warcMachine.run();
         }
 
-        logsUrl = CommonTasks.uploadLogs(this);
+        logsUrl = WikiBot.getLogFiles().uploadLogs(this);
 
         runningTask = "LinkExtract";
         CommonTasks.extractLinks(this);
@@ -111,28 +135,36 @@ public class WikiTeam3Job implements Job {
 
     private int runDownload() {
         runningTask = "DownloadMediaWiki";
-        handler.onMessage("----- Bot: Task " + runningTask + " started -----");
+        log("----- Bot: Task " + runningTask + " started -----");
         return CommonTasks.runAndVerify(downloadCommand, handler, runningTask);
     }
 
     private int runUpload() {
         runningTask = "UploadMediaWiki";
-        handler.onMessage("----- Bot: Task " + runningTask + " started -----");
+        log("----- Bot: Task " + runningTask + " started -----");
         if (runDir.listFiles() == null) {
             return 999;
         }
 
         for (File file : runDir.listFiles()) {
             if (file.isDirectory()) {
-                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, runDir, handler::onMessage);
+                uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, runDir, message -> {
+                    log(message);
+                    CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+                });
                 break;
             }
         }
         if (uploadCommand == null) {
             return 999;
         }
+
+        System.out.println("Archive URL: " + archiveUrl);
         return CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
     }
+
+
 
 
 
@@ -141,11 +173,11 @@ public class WikiTeam3Job implements Job {
             return false;
         }
         if (runningTask.equals("DownloadMediaWiki")) {
-            handler.onMessage("----- Bot: Aborting task " + runningTask + " -----");
+            log("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
             downloadCommand.getProcess().destroyForcibly();
             status = JobStatus.ABORTED;
-            handler.onMessage("----- Bot: Aborted task " + runningTask + " -----");
+            log("----- Bot: Aborted task " + runningTask + " -----");
             aborted = true;
             return true;
         }
@@ -164,5 +196,9 @@ public class WikiTeam3Job implements Job {
 
     public List<String> getAllTasks() {
         return List.of("DownloadMediaWiki", "UploadMediaWiki", "Wget-AT", "LinkExtract");
+    }
+
+    private void log(String message) {
+        WikiBot.getBus().post(new JobLogEvent(this, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now().atZone(ZoneOffset.UTC)) + " | " + message));
     }
 }

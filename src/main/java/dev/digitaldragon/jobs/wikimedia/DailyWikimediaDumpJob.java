@@ -211,7 +211,7 @@ public class DailyWikimediaDumpJob implements Job {
                 + " --metadata=\"creator:Wikimedia Foundation\""
                 + " --retries 50";
 
-        RunCommand uploadCommand = new RunCommand(command, null, directory, handler);
+        RunCommand uploadCommand = new RunCommand(command, null, directory, handler::onMessage);
         int exitCode = CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
         if (exitCode != 0) {
             failedTaskCode = exitCode;

@@ -29,7 +29,7 @@ public class GenericLogsHandler implements StringLogHandler {
             //LogWebsocket.sendLogMessageToClients(job.getId(), message);
 
             //System.out.println(message);
-            writeLineToFile(new File(job.getDirectory(), "log.txt"), message);
+            //writeLineToFile(new File(job.getDirectory(), "log.txt"), message);
 
             if (message.contains("https://archive.org/details/") && message.contains(" ")) {
                 String[] split = message.split(" ");

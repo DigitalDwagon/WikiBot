@@ -3,34 +3,21 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.api.JavalinAPI;
 import dev.digitaldragon.interfaces.discord.*;
 import dev.digitaldragon.interfaces.telegram.TelegramClient;
 import dev.digitaldragon.util.Config;
-import dev.digitaldragon.util.EnvConfig;
 import dev.digitaldragon.interfaces.irc.IRCClient;
-import dev.digitaldragon.util.SystemListener;
+import dev.digitaldragon.jobs.LogFiles;
 import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,6 +33,8 @@ public class WikiBot {
     private static Config config = null;
     @Getter
     private static DiscordClient discordClient = null;
+    @Getter
+    private static LogFiles logFiles = new LogFiles();
     public static String getVersion() {
         return "1.4.0";
     }
@@ -77,7 +66,8 @@ public class WikiBot {
         //instance.awaitReady();
         DiscordClient.enable();
         TelegramClient.enable();
-        bus.register(new SystemListener());
+        logFiles = new LogFiles();
+        bus.register(logFiles);
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
         Bucket bucket = storage.get("cdn.digitaldragon.dev");

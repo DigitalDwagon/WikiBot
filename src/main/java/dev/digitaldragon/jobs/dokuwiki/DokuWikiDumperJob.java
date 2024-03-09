@@ -55,7 +55,10 @@ public class DokuWikiDumperJob implements Job {
         this.directory.mkdirs();
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand(null, params, directory, handler);
+        this.downloadCommand = new RunCommand(null, params, directory, message -> {
+            handler.onMessage(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+        });
     }
 
     private void failure(int code) {
