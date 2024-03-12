@@ -4,7 +4,6 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobStatus;
 import dev.digitaldragon.util.Config;
-import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -35,7 +34,7 @@ public class DiscordClient {
 
         GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
         try {
-            instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
+            instance = JDABuilder.create(config.token(), Arrays.asList(INTENTS))
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())

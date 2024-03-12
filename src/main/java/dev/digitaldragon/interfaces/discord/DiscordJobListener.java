@@ -6,7 +6,6 @@ import dev.digitaldragon.interfaces.irc.IRCFormat;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobStatus;
 import dev.digitaldragon.jobs.events.*;
-import dev.digitaldragon.util.EnvConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;

@@ -10,7 +10,6 @@ import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
-import dev.digitaldragon.util.EnvConfig;
 import io.javalin.Javalin;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
@@ -23,7 +22,7 @@ import java.util.UUID;
 public class JavalinAPI {
     public static Javalin app;
     public static void register() {
-        app = Javalin.create().start(Integer.parseInt(EnvConfig.getConfigs().get("api_port")));
+        app = Javalin.create().start(WikiBot.getConfig().getDashboardConfig().port());
         UpdatesWebsocket updatesWebsocket = new UpdatesWebsocket();
         LogWebsocket logWebsocket = new LogWebsocket();
 
@@ -88,7 +87,7 @@ public class JavalinAPI {
                 return;
             }
 
-            String auth = req.getHeader("Authorization");
+            /*String auth = req.getHeader("Authorization");
             if (auth == null) {
                 ctx.status(400);
                 ctx.result(error("You must specify an API key via the Authorization header"));
@@ -99,7 +98,7 @@ public class JavalinAPI {
                 ctx.status(401);
                 ctx.result(error("Invalid API key"));
                 return;
-            }
+            }//*/
 
 
             //valid JSON is required

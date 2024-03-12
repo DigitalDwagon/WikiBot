@@ -13,6 +13,7 @@ import java.util.Optional;
 public class Config {
     public TelegramConfig telegramConfig;
     public DiscordConfig discordConfig;
+    public DashboardConfig dashboardConfig;
     public IRCConfig ircConfig;
     public WikiTeam3Config wikiTeam3Config;
 
@@ -46,6 +47,16 @@ public class Config {
             );
         } else {
             discordConfig = new DiscordConfig(false, null, null, Optional.empty(), Optional.empty());
+        }
+
+        if (json.has("dashboard")) {
+            JSONObject dashboard = json.getJSONObject("dashboard");
+            dashboardConfig = new DashboardConfig(
+                    dashboard.getBoolean("enabled"),
+                    dashboard.getInt("port")
+            );
+        } else {
+            dashboardConfig = new DashboardConfig(false, 0);
         }
 
         if (json.has("irc")) {
@@ -87,6 +98,7 @@ public class Config {
 
     public record TelegramConfig(boolean isEnabled, String token, String channelId, Long creatorId, String username) {}
     public record DiscordConfig(boolean isEnabled, String token, String channelId, Optional<String> successChannel, Optional<String> failureChannel) {}
+    public record DashboardConfig(boolean isEnabled, int port) {}
     public record IRCConfig(boolean isEnabled, String server, int port, String channel, String nick, String realName, IRCAuthOptions authOptions) {}
     public record IRCAuthOptions(boolean isEnabled, String password) {}
     public record WikiTeam3Config(boolean isEnabled, String userAgent, boolean warcEnabled, boolean autoWarc, String binZstd) {}

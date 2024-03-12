@@ -14,6 +14,7 @@ import java.io.IOException;
 /**
  * A StringLogHandler that writes logs to log.txt and a Discord channel.
  */
+@Deprecated
 public class GenericLogsHandler implements StringLogHandler {
     private final Job job;
 
@@ -23,8 +24,10 @@ public class GenericLogsHandler implements StringLogHandler {
         //onMessage("----- Bot: Logs manager init -----");
     }
 
+    @Deprecated
     public synchronized void onMessage(String message) {
-        WikiBot.getBus().post(new JobLogEvent(job, message));
+        job.log(message);
+        /*WikiBot.getBus().post(new JobLogEvent(job, message));
         try {
             //LogWebsocket.sendLogMessageToClients(job.getId(), message);
 
@@ -44,7 +47,7 @@ public class GenericLogsHandler implements StringLogHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }//*/
     }
 
     private static void writeLineToFile(File file, String line) {
@@ -56,6 +59,7 @@ public class GenericLogsHandler implements StringLogHandler {
         }
     }
 
+    @Deprecated
     public void end() {
 
     }

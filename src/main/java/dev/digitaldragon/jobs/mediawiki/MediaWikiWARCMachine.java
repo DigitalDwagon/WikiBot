@@ -3,6 +3,7 @@ package dev.digitaldragon.jobs.mediawiki;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.Dashboard;
 import dev.digitaldragon.jobs.CommonTasks;
+import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.RunCommand;
 import dev.digitaldragon.jobs.StringLogHandler;
 import dev.digitaldragon.util.Config;
@@ -12,11 +13,15 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.netpreserve.jwarc.WarcWriter;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +33,24 @@ public class MediaWikiWARCMachine {
     private File jobDir;
     private File warcFile;
     private File urlsFile;
+    private Job job;
 
-    public MediaWikiWARCMachine(String apiUrl, StringLogHandler handler, File jobDir, File warcFile, File urlsFile) {
+    public MediaWikiWARCMachine(Job job, String apiUrl, StringLogHandler handler, File jobDir, File warcFile, File urlsFile) {
         this.apiUrl = apiUrl;
         this.handler = handler;
         this.jobDir = jobDir;
         this.warcFile = warcFile;
         this.urlsFile = urlsFile;
+        this.job = job;
     }
 
     /**
      * Writes a list of all page URLs on the MediaWiki instance to a file, then downloads them to a WARC with wget-at.
      */
     public String run() {
+        System.out.println("running log hello");
+        job.log("warcmachine hello");
+        System.out.println("ran log hello");
         try {
             for (String namespace : getNamespaces()) {
                 fetchPagesInNamespace(namespace);
@@ -69,7 +79,11 @@ public class MediaWikiWARCMachine {
 
 
         String[] wgetArgs = new String[]{
+                "docker", "run", "--rm", "-v", jobDir.getAbsolutePath() + ":/data",
+                "--network", "host",
+                //"atdr.meo.ws/archiveteam/wget-lua:v1.21.3-at-openssl",
                 "wget-at",
+                "wget-lua",
                 "-w", "1", //wait 0.5 seconds between requests
                 //"--random-wait", // vary the wait time 0.5-1.5x to the wait time
                 "-U", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 (compatible; Wikibot/1.2.1; wikibot@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)",
@@ -78,13 +92,13 @@ public class MediaWikiWARCMachine {
                 "--resolvconf-file", "/dev/null",
                 "--dns-servers", "9.9.9.9,9.9.9.10,2620:fe::10,2620:fe::fe:10",
                 "--reject-reserved-subnets",
-                "--prefer-family", "IPv6",
+                //"--prefer-family", "IPv6",
                 "--content-on-error",
                 "--max-redirect", "20",
-                "--lua-script", wgetLuaHook.getAbsolutePath(),
-                "-o", "wget.log", // Instead of logging to a file, we capture stderror for logs.
+                "--lua-script", "/data/" + wgetLuaHook.getName(),
+                "-o", "/data/wget.log", // Instead of logging to a file, we capture stderror for logs.
                 //"--no-check-certificate",
-                "--output-document", "wget.tmp",
+                "--output-document", "/tmp/wget.tmp",
                 //"--truncate-output",
                 "-e", "robots=off",
                 //"--recursive", "--level=inf","
@@ -92,7 +106,7 @@ public class MediaWikiWARCMachine {
                 "--timeout", "60",
                 "--tries", "2",
                 "--waitretry", "0",
-                "--warc-file", domain,
+                "--warc-file", "/data/" + domain,
                 "--warc-header", "operator: DigitalDragon",
                 "--warc-header", "x-wikibot-version: " + WikiBot.getVersion(),
                 "--warc-dedup-url-agnostic",
@@ -102,15 +116,59 @@ public class MediaWikiWARCMachine {
                 "--header", "Accept-Language: en-US;q=0.9, en;q=0.8",
                 "--header", "Accept: text/html",
                 //"https://archiveteam.invalid/wikibot-input-file/" + urlsFile.getAbsolutePath(),
-                "-i", urlsFile.getAbsolutePath(),
+                "-i", "/data/" + urlsFile.getName(),
+
+        };
+        //convert arg array to command line runnable string (ie space deliminated with quotes around args containing spaces
+        StringBuilder command = new StringBuilder();
+        for (String arg : wgetArgs) {
+            if (arg.contains(" ")) {
+                command.append("\"").append(arg).append("\" ");
+            } else {
+                command.append(arg).append(" ");
+            }
+        }
+        System.out.println(command.toString());
+
+
+        RunCommand wgetAtCommand = new RunCommand(null, wgetArgs, jobDir, job::log);
+        job.log("----- Bot: Task Wget-AT started -----");
+
+        wgetAtCommand.run();
+        int wgetAtExitCode = wgetAtCommand.waitFor();
+        if (wgetAtExitCode != 0 && wgetAtExitCode != 2 && wgetAtExitCode != 4) {
+            return "wget-at failed with exit code " + wgetAtExitCode;
+        }
+        job.log("-------- Bot: Task Wget-AT finished -----");
+
+        //CommonTasks.runAndVerify(wgetAtCommand, handler, "Wget-AT");//*/
+
+        /*job.log("hi");
+        String[] gsArgs = new String[]{
+                "grab-site",
+                "--1", urlsFile.getAbsolutePath(),
 
         };
 
+        RunCommand gsCommand = new RunCommand(null, gsArgs, jobDir, message -> {
+            job.log(message);
+        });
+        gsCommand.run();
+        int gsExitCode = gsCommand.waitFor();
+        if (gsExitCode != 0) {
+            return "grab-site failed with exit code " + gsExitCode;
+        }
 
-        RunCommand wgetAtCommand = new RunCommand(null, wgetArgs, jobDir, handler::onMessage);
-        handler.onMessage("----- Bot: Task Wget-AT started -----");
 
-        CommonTasks.runAndVerify(wgetAtCommand, handler, "Wget-AT");
+        try {
+            try (WarcWriter writer = new WarcWriter(new FileOutputStream(warcFile))) {
+                for (String url : Files.readAllLines(urlsFile.toPath())) {
+                    writer.fetch(URI.create(url));
+                }
+            }
+        } catch (IOException e) {
+            LoggerFactory.getLogger(MediaWikiWARCMachine.class).error("Failed to write WARC", e);
+        }*/
 
 
 

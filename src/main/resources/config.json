@@ -25,6 +25,10 @@
       "password": "a$$word"
     }
   },
+  "dashboard": {
+    "enabled": true,
+    "port": 4567
+  },
   "wikiteam3": {
     "enabled": true,
     "userAgent": "wikiteam3/4.1.7 Wikibot/1.2.0 (Wikibot preserves public wikis)",

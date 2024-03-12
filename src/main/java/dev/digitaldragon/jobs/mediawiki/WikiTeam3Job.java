@@ -84,61 +84,61 @@ public class WikiTeam3Job extends Job {
         if (aborted)
             return;
 
+        if (!args.isWarcOnly()) {
+            WikiBot.getLogFiles().setLogFile(this, new File(runDir, "log.txt"));
+            startTime = Instant.now();
+            status = JobStatus.RUNNING;
+            log("wikibot v" + WikiBot.getVersion() + " job " + id + " starting now");
 
-        WikiBot.getLogFiles().setLogFile(this, new File(runDir, "log.txt"));
-        startTime = Instant.now();
-        status = JobStatus.RUNNING;
-        log("wikibot v" + WikiBot.getVersion() + " job " + id + " starting now");
+            runningTask = "DownloadMediaWiki";
+            log("Starting Task DownloadMediaWiki");
 
-        runningTask = "DownloadMediaWiki";
-        log("Starting Task DownloadMediaWiki");
+            downloadCommand = new RunCommand(null, params, runDir, message -> {
+                log(message);
+                CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
-        downloadCommand = new RunCommand(null, params, runDir, message -> {
-            log(message);
-            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+            });
 
-        });
+            downloadCommand.run();
+            int downloadExitCode = downloadCommand.waitFor();
+            if (downloadExitCode != 0) {
+                failure(downloadExitCode);
+                return;
+            }
 
-        downloadCommand.run();
-        int downloadExitCode = downloadCommand.waitFor();
-        if (downloadExitCode != 0) {
-            failure(downloadExitCode);
-            return;
+            log("Finished task DownloadMediaWiki");
+
+            runningTask = "UploadMediaWiki";
+            log("Starting Task UploadMediaWiki");
+
+            File dumpDir = CommonTasks.findDumpDir(runDir);
+            if (dumpDir == null) {
+                log("Failed to find the dump directory, aborting...");
+                failure(999);
+                return;
+            }
+            String[] uploadParams = new String[] {"wikiteam3uploader", dumpDir.getName(), "--zstd-level", "22", "--parallel", "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd()};
+            uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
+                log(message);
+                CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+            });
+
+            uploadCommand.run();
+            if (uploadCommand.waitFor() != 0) {
+                failure(uploadCommand.waitFor());
+                return;
+            }
+
+            log("Finished task UploadMediaWiki");
         }
-
-        log("Finished task DownloadMediaWiki");
-
-        runningTask = "UploadMediaWiki";
-        log("Starting Task UploadMediaWiki");
-
-        File dumpDir = CommonTasks.findDumpDir(runDir);
-        if (dumpDir == null) {
-            log("Failed to find the dump directory, aborting...");
-            failure(999);
-            return;
-        }
-        String[] uploadParams = new String[] {"wikiteam3uploader", dumpDir.getName(), "--zstd-level", "22", "--parallel", "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd()};
-        uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
-            log(message);
-            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
-
-        });
-
-        uploadCommand.run();
-        if (uploadCommand.waitFor() != 0) {
-            failure(uploadCommand.waitFor());
-            return;
-        }
-
-        log("Finished task UploadMediaWiki");
-
 
         if (args.isWarc()) {
             log("Starting Task Wget-AT");
             runningTask = "Wget-AT";
             File warcFile = new File(runDir, "output.warc");
             File urlsFile = new File(runDir, "pages.txt");
-            MediaWikiWARCMachine warcMachine = new MediaWikiWARCMachine(args.getApi(), handler, directory, warcFile, urlsFile);
+            MediaWikiWARCMachine warcMachine = new MediaWikiWARCMachine(this, args.getApi(), handler, directory, warcFile, urlsFile);
             warcMachine.run();
             log("Finished task Wget-AT");
         }

@@ -2,7 +2,7 @@ package dev.digitaldragon.interfaces.irc;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.irc.IrcCommandListener;
-import dev.digitaldragon.util.EnvConfig;
+import dev.digitaldragon.util.Config;
 import lombok.Getter;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.feature.auth.GameSurge;
@@ -22,7 +22,7 @@ public class IRCClient {
      */
     public static void sendMessage(String message) {
         if (!enabled) return;
-        client.sendMessage(EnvConfig.getConfigs().get("ircchannel").trim(), message);
+        client.sendMessage(WikiBot.getConfig().getIrcConfig().channel(), message);
     }
     /**
      * Sends a message to the IRC channel defined in the config, directed at a specific user.
@@ -56,18 +56,19 @@ public class IRCClient {
      */
     public static void connect() {
         if (!enabled) return;
+        Config.IRCConfig config = WikiBot.getConfig().getIrcConfig();
         client = Client.builder()
-                .nick(EnvConfig.getConfigs().get("ircnick").trim())
-                .realName(EnvConfig.getConfigs().get("ircnick").trim())
-                .user(EnvConfig.getConfigs().get("ircnick").trim())
-                .server().host("irc.hackint.org").port(6697).secure(true).then()
+                .nick(config.nick())
+                .realName(config.realName())
+                .user(config.nick())
+                .server().host(config.server()).port(config.port()).secure(true).then()
                 .buildAndConnect();
 
         client.getEventManager().registerEventListener(new IrcCommandListener());
 
-        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("irclogin"))) {
+        /*if (Boolean.parseBoolean(EnvConfig.getConfigs().get("irclogin"))) {
             client.getAuthManager().addProtocol(new GameSurge(client, EnvConfig.getConfigs().get("ircnick").trim(), EnvConfig.getConfigs().get("ircpass").trim()));
-        }
-        client.addChannel(EnvConfig.getConfigs().get("ircchannel").trim());
+        }*/
+        client.addChannel(config.channel());
     }
 }

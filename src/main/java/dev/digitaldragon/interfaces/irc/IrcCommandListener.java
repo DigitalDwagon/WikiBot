@@ -10,7 +10,6 @@ import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.Wiki;
 import dev.digitaldragon.jobs.wikimedia.DailyWikimediaDumpJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
-import dev.digitaldragon.util.EnvConfig;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -21,6 +20,8 @@ import java.net.URLEncoder;
 import java.util.*;
 
 public class IrcCommandListener {
+    private boolean submissionsEnabled = true;
+
     @Handler
     public void message(ChannelMessageEvent event) {
         String[] commands = new String[]{
@@ -68,11 +69,11 @@ public class IrcCommandListener {
     }
 
     private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
-        if (!isVoiced(channel, user) && !Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"))) {
+        if (!isVoiced(channel, user)/* && !Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"))*/) {
             throw new UserErrorException("Requires (@) or (+).");
         }
 
-        if (Boolean.parseBoolean(EnvConfig.getConfigs().get("pause_submissions")) && shouldPause) {
+        if (!submissionsEnabled && shouldPause) {
             if (isOped(channel, user)) {
                 channel.sendMessage(user.getNick() + ": WARN - submissions are paused for a pending update. Please abort this job and try again later if it is non-urgent.");
             } else {
@@ -159,6 +160,21 @@ public class IrcCommandListener {
             }
             event.getChannel().sendMessage(event.getActor().getNick() + ": " + message);
         }
+    }
+
+    @Handler
+    public void pauseCommand(ChannelMessageEvent event) {
+        if (!event.getMessage().equals("!pause"))
+            return;
+
+        if (!isOped(event.getChannel(), event.getActor()))
+            return;
+
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+
+        submissionsEnabled = !submissionsEnabled;
+        channel.sendMessage(nick + ": Submissions are now " + (submissionsEnabled ? "enabled." : "disabled."));
     }
 
     @Handler
