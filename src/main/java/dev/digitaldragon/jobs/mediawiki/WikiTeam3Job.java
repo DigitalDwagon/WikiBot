@@ -88,7 +88,7 @@ public class WikiTeam3Job extends Job {
             WikiBot.getLogFiles().setLogFile(this, new File(runDir, "log.txt"));
             startTime = Instant.now();
             status = JobStatus.RUNNING;
-            log("wikibot v" + WikiBot.getVersion() + " job " + id + " starting now");
+            log("wikibot v" + WikiBot.getVersion() + " job " + id);
 
             runningTask = "DownloadMediaWiki";
             log("Starting Task DownloadMediaWiki");
