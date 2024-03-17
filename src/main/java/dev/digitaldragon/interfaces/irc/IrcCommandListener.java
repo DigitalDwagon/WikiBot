@@ -267,7 +267,7 @@ public class IrcCommandListener {
             return;
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
-        channel.sendMessage(nick + ": https://cdn.digitaldragon.dev/wikibot/help.html");
+        channel.sendMessage(nick + ": https://wikibot.digitaldragon.dev/help");
     }
 
     @Handler

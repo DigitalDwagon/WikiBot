@@ -4,14 +4,29 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import lombok.SneakyThrows;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import static dev.digitaldragon.interfaces.api.JavalinAPI.app;
 
 public class Dashboard {
     public static void register() {
+        help();
         index();
         cards();
+    }
+
+    public static void help() {
+        try {
+            InputStream stream = Dashboard.class.getClassLoader().getResourceAsStream("help.html");
+            String content = new String(stream.readAllBytes());
+            app.get("/help", (ctx) -> {
+                ctx.res().setContentType("text/html");
+                ctx.result(content);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
