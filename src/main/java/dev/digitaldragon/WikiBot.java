@@ -6,6 +6,7 @@ import com.google.cloud.storage.StorageOptions;
 import dev.digitaldragon.interfaces.api.JavalinAPI;
 import dev.digitaldragon.interfaces.discord.*;
 import dev.digitaldragon.interfaces.telegram.TelegramClient;
+import dev.digitaldragon.jobs.CleanupListener;
 import dev.digitaldragon.util.Config;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.jobs.LogFiles;
@@ -68,6 +69,7 @@ public class WikiBot {
         TelegramClient.enable();
         logFiles = new LogFiles();
         bus.register(logFiles);
+        bus.register(new CleanupListener());
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
