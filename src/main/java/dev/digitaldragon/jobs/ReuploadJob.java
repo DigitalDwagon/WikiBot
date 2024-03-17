@@ -115,6 +115,17 @@ public class ReuploadJob extends Job {
                 hasRun = true;
                 continue;
             }
+
+            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("wiki"))) {
+                runningTask = "UploadDokuWiki";
+                int runUpload = CommonTasks.runUpload(this, new File("jobs/" + uploadingFor + "/"), handler, uploadCommand, JobType.PUKIWIKIDUMPER);
+                if (runUpload != 0) {
+                    failure(runUpload);
+                    return;
+                }
+                hasRun = true;
+                continue;
+            }
         }
 
         if (!hasRun) {

@@ -52,6 +52,9 @@ public class CommonTasks {
                 if (type == JobType.DOKUWIKIDUMPER) {
                     uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, handler::onMessage);
                 }
+                if (type == JobType.PUKIWIKIDUMPER) {
+                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName(), null, directory, handler::onMessage);
+                }
                 break;
             }
         }

@@ -31,6 +31,7 @@ public class IrcCommandListener {
                 "mw",
                 "mediawikisingle",
                 "mediawikibulk",
+                "pw",
                 "reupload"
         };
         //return if event does not start with one of the above commands
@@ -61,6 +62,7 @@ public class IrcCommandListener {
 
             handleDokuCommands(event, nick, opts);
             handleMediaWikiCommands(event, nick, opts);
+            handlePukiCommands(event, nick, opts);
             handleReuploadCommands(event, channel, nick, opts);
         } catch (UserErrorException exception) {
             channel.sendMessage(nick + ": " + exception.getMessage());
@@ -87,6 +89,15 @@ public class IrcCommandListener {
             return;
 
         String message = DokuWikiDumperHelper.beginJob(opts, nick);
+        if (message != null)
+            event.getChannel().sendMessage(nick + ": " + message);
+    }
+
+    private void handlePukiCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
+        if (!event.getMessage().startsWith("!pw"))
+            return;
+
+        String message = PukiWikiDumperHelper.beginJob(opts, nick);
         if (message != null)
             event.getChannel().sendMessage(nick + ": " + message);
     }
