@@ -69,12 +69,8 @@ public class TelegramCommandsBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(ctx -> {
                     String message = null;
-                    try {
-                        System.out.println(arrayToString(ctx.arguments()));
-                        message = WikiTeam3Helper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
-                    } catch (UserErrorException e) {
-                        message = e.getMessage();
-                    }
+                    System.out.println(arrayToString(ctx.arguments()));
+                    message = WikiTeam3Helper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
                     if (message != null)
                         reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                     else
@@ -93,12 +89,8 @@ public class TelegramCommandsBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(ctx -> {
                     String message = null;
-                    try {
-                        System.out.println(arrayToString(ctx.arguments()));
-                        message = DokuWikiDumperHelper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
-                    } catch (UserErrorException e) {
-                        message = e.getMessage();
-                    }
+                    System.out.println(arrayToString(ctx.arguments()));
+                    message = DokuWikiDumperHelper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
 
                     if (message != null)
                         reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());

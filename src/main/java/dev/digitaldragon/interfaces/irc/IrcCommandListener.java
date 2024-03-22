@@ -18,56 +18,47 @@ import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class IrcCommandListener {
     private boolean submissionsEnabled = true;
 
     @Handler
     public void message(ChannelMessageEvent event) {
-        String[] commands = new String[]{
-                "dw",
-                "dokusingle",
-                "dokubulk",
-                "mw",
-                "mediawikisingle",
-                "mediawikibulk",
-                "pw",
-                "reupload"
-        };
-        //return if event does not start with one of the above commands
-        boolean startsWithCommand = false;
-        String prefix = "!";
-        for (String command : commands) {
-            if (event.getMessage().startsWith(prefix + command + " ")) {
-                startsWithCommand = true;
-                System.out.println(true);
-                break;
-            }
-        }
-        if (!startsWithCommand)
-            return;
+        Map<String, BiFunction<String, String, String>> commandHandlers = new HashMap<>();
+        commandHandlers.put("!dokusingle", DokuWikiDumperHelper::beginJob);
+        commandHandlers.put("!dw", DokuWikiDumperHelper::beginJob);
+        commandHandlers.put("!pw", PukiWikiDumperHelper::beginJob);
+        commandHandlers.put("!mediawikisingle", WikiTeam3Helper::beginJob);
+        commandHandlers.put("!mw", WikiTeam3Helper::beginJob);
+        commandHandlers.put("!reupload", ReuploadHelper::beginJob);
 
+        String message = event.getMessage();
         String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
 
-        String[] parts = event.getMessage().split(" ", 2);
-        if (parts.length < 2) {
-            channel.sendMessage(nick + ": Not enough arguments!");
-            return;
+        String[] parts = message.split(" ", 2);
+
+        String command = parts[0];
+
+        if (commandHandlers.containsKey(command)) {
+            if (parts.length < 2) {
+                channel.sendMessage(nick + ": Not enough arguments!");
+                return;
+            }
+
+            String opts = parts[1];
+
+            try {
+                checkUserPermissions(channel, event.getActor(), true);
+                String resultMessage = commandHandlers.get(command).apply(opts, nick);
+                if (resultMessage != null) {
+                    channel.sendMessage(nick + ": " + resultMessage);
+                }
+            } catch (UserErrorException exception) {
+                channel.sendMessage(nick + ": " + exception.getMessage());
+            }
         }
-
-        String opts = parts[1];
-        try {
-            checkUserPermissions(channel, event.getActor(), true);
-
-            handleDokuCommands(event, nick, opts);
-            handleMediaWikiCommands(event, nick, opts);
-            handlePukiCommands(event, nick, opts);
-            handleReuploadCommands(event, channel, nick, opts);
-        } catch (UserErrorException exception) {
-            channel.sendMessage(nick + ": " + exception.getMessage());
-        }
-
     }
 
     private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
@@ -82,48 +73,6 @@ public class IrcCommandListener {
                 throw new UserErrorException("Submissions are paused for a pending update. Please try again later.");
             }
         }
-    }
-
-    private void handleDokuCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
-        if (!event.getMessage().startsWith("!doku") && !event.getMessage().startsWith("!dw"))
-            return;
-
-        String message = DokuWikiDumperHelper.beginJob(opts, nick);
-        if (message != null)
-            event.getChannel().sendMessage(nick + ": " + message);
-    }
-
-    private void handlePukiCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
-        if (!event.getMessage().startsWith("!pw"))
-            return;
-
-        String message = PukiWikiDumperHelper.beginJob(opts, nick);
-        if (message != null)
-            event.getChannel().sendMessage(nick + ": " + message);
-    }
-
-    private void handleMediaWikiCommands(ChannelMessageEvent event, String nick, String opts) throws UserErrorException {
-        if (!event.getMessage().startsWith("!mediawiki") && !event.getMessage().startsWith("!mw"))
-            return;
-
-        String message = WikiTeam3Helper.beginJob(opts, nick);
-        if (message != null)
-            event.getChannel().sendMessage(nick + ": " + message);
-
-    }
-
-    private void handleReuploadCommands(ChannelMessageEvent event, Channel channel, String nick, String opts) throws UserErrorException {
-        if (!event.getMessage().startsWith("!reupload"))
-            return;
-
-        if (opts.contains(" ")) {
-            channel.sendMessage(nick + ": Too many arguments!");
-            return;
-        }
-
-        String message = ReuploadHelper.beginJob(opts, nick);
-        if (message != null)
-            event.getChannel().sendMessage(nick + ": " + message);
     }
 
     @Handler

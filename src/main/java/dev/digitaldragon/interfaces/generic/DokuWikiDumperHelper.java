@@ -17,9 +17,8 @@ public class DokuWikiDumperHelper {
      * @param unparsedArgs the command line arguments to parse
      * @param userName the name of the user initiating the job
      * @return a string representing the result of the job initiation
-     * @throws UserErrorException if there is an error with user input
      */
-    public static String beginJob(String unparsedArgs, String userName) throws UserErrorException {
+    public static String beginJob(String unparsedArgs, String userName) {
         DokuWikiDumperArgs args = new DokuWikiDumperArgs();
         if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
             unparsedArgs = unparsedArgs.replace("'", "\"");
@@ -43,12 +42,14 @@ public class DokuWikiDumperHelper {
      * @param args the DokuWikiDumperArgs object
      * @param userName the name of the user initiating the job
      * @return a string representing the result of the job initiation
-     * @throws UserErrorException if there is an error with user input
      */
-    public static String beginJob(DokuWikiDumperArgs args, String userName) throws UserErrorException {
+    public static String beginJob(DokuWikiDumperArgs args, String userName) {
         String explain = args.getExplain();
-        args.check();
-
+        try {
+            args.check();
+        } catch (UserErrorException e) {
+            return e.getMessage();
+        }
         Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), args.getUrl(), args.get(), explain);
         JobManager.submit(job);
 
