@@ -1,5 +1,6 @@
 package dev.digitaldragon.jobs;
 
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.backfeed.LinkExtract;
 import dev.digitaldragon.util.UploadObject;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +39,7 @@ public class CommonTasks {
         return String.format("https://cdn.digitaldragon.dev/wikibot/jobs/%s/log.txt", jobId);
     }
 
+    @Deprecated
     public static int runUpload(Job job, File directory, StringLogHandler handler, RunCommand uploadCommand, JobType type) {
         handler.onMessage("----- Bot: Task " + job.getRunningTask() + " started -----");
         if (directory.listFiles() == null) {
@@ -47,7 +49,7 @@ public class CommonTasks {
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 if (type == JobType.WIKITEAM3) {
-                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, directory, handler::onMessage);
+                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel --bin-zstd " + WikiBot.getConfig().getWikiTeam3Config().binZstd(), null, directory, handler::onMessage);
                 }
                 if (type == JobType.DOKUWIKIDUMPER) {
                     uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, handler::onMessage);
