@@ -49,6 +49,18 @@ dependencies {
     implementation("org.telegram:telegrambots:6.8.0")
     implementation("org.telegram:telegrambots-abilities:6.8.0")
 
+    //loggers
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation("org.slf4j:slf4j-api:2.0.12")
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    implementation("org.slf4j:slf4j-simple:2.0.12")
+
+    //WAAAARRRRCCCC
+    // https://mvnrepository.com/artifact/org.netpreserve/jwarc
+    implementation("org.netpreserve:jwarc:0.2.0")
+
+
+
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }

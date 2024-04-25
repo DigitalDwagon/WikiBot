@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
-public class DailyWikimediaDumpJob implements Job {
+public class DailyWikimediaDumpJob extends Job {
     private String id ;
     private final String name = "Wikimedia Incremental Dump";
     private final String userName = "AutomaticDragon";
@@ -36,8 +36,6 @@ public class DailyWikimediaDumpJob implements Job {
     private String archiveUrl = "https://archive.org/details/@DigitalDragons";
     @Setter
     private String logsUrl = null;
-    @Setter
-    private ThreadChannel threadChannel = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
     private boolean aborted;
@@ -213,7 +211,7 @@ public class DailyWikimediaDumpJob implements Job {
                 + " --metadata=\"creator:Wikimedia Foundation\""
                 + " --retries 50";
 
-        RunCommand uploadCommand = new RunCommand(command, null, directory, handler);
+        RunCommand uploadCommand = new RunCommand(command, null, directory, handler::onMessage);
         int exitCode = CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
         if (exitCode != 0) {
             failedTaskCode = exitCode;

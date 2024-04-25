@@ -9,8 +9,7 @@ import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.util.EnvConfig;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import io.javalin.Javalin;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
@@ -23,9 +22,12 @@ import java.util.UUID;
 public class JavalinAPI {
     public static Javalin app;
     public static void register() {
-        app = Javalin.create().start(4567);
-        app.ws("/api/logfirehose", new LogWebsocket());
-        app.ws("/api/jobevents", new UpdatesWebsocket());
+        app = Javalin.create().start(WikiBot.getConfig().getDashboardConfig().port());
+        UpdatesWebsocket updatesWebsocket = new UpdatesWebsocket();
+        LogWebsocket logWebsocket = new LogWebsocket();
+
+        app.ws("/api/logfirehose", logWebsocket);
+        app.ws("/api/jobevents", updatesWebsocket);
 
         enableCORS("*", "*", "*");
         postValidation(); //validate all POST requests
@@ -37,7 +39,8 @@ public class JavalinAPI {
         runCommand(); //POST /api/command
         createJob(); //POST /api/jobs
 
-        WikiBot.getBus().register(new APIJobListener());
+        WikiBot.getBus().register(updatesWebsocket);
+        WikiBot.getBus().register(logWebsocket);
     }
 
     private static void enableCORS(final String origin, final String methods, final String headers) {
@@ -84,7 +87,7 @@ public class JavalinAPI {
                 return;
             }
 
-            String auth = req.getHeader("Authorization");
+            /*String auth = req.getHeader("Authorization");
             if (auth == null) {
                 ctx.status(400);
                 ctx.result(error("You must specify an API key via the Authorization header"));
@@ -95,7 +98,7 @@ public class JavalinAPI {
                 ctx.status(401);
                 ctx.result(error("Invalid API key"));
                 return;
-            }
+            }//*/
 
 
             //valid JSON is required
@@ -154,17 +157,13 @@ public class JavalinAPI {
             String body = json.getString("body");
             String username = ctx.req().getHeader("X-Platform-User");
             String successMessage;
-            try {
-                successMessage = switch (json.getString("command")) {
-                    case "mediawikisingle" -> WikiTeam3Helper.beginJob(body, username);
-                    case "dokuwikisingle" -> DokuWikiDumperHelper.beginJob(body, username);
-                    case "abort" -> AbortHelper.abortJob(body);
-                    case "status" -> StatusHelper.getStatus(body);
-                    default -> null;
-                };
-            } catch (UserErrorException exception) {
-                successMessage = exception.getMessage(); //API was used correctly, even though the user on the other side may have had an error
-            }
+            successMessage = switch (json.getString("command")) {
+                case "mediawikisingle" -> WikiTeam3Helper.beginJob(body, username);
+                case "dokuwikisingle" -> DokuWikiDumperHelper.beginJob(body, username);
+                case "abort" -> AbortHelper.abortJob(body);
+                case "status" -> StatusHelper.getStatus(body);
+                default -> null;
+            };
 
             if (successMessage == null) {
                 ctx.status(400).result(error("Invalid command"));
@@ -186,29 +185,24 @@ public class JavalinAPI {
                 clean.remove("jobType");
                 String username = ctx.req().getHeader("X-Platform-User");
 
-                try {
-                    if (json.getString("jobType").equalsIgnoreCase("wikiteam3")) {
-                        System.out.println(clean);
-                        WikiTeam3Args args = new Gson().fromJson(clean.toString(), WikiTeam3Args.class);
-                        System.out.println(args.getExplain());
-                        System.out.println(args.getUrl());
-                        String jobId = UUID.randomUUID().toString();
-                        String message = WikiTeam3Helper.beginJob(args, username, jobId);
-                        if (message != null) {
-                            ctx.status(400).result(error(message));
-                            return;
-                        }
-                        JSONObject response = new JSONObject();
-                        response.put("jobId", jobId);
-                        response.put("success", true);
-                        ctx.result(response.toString());
-                        return;
-                    } else {
-                        ctx.status(400).result(error("Invalid job type"));
+                if (json.getString("jobType").equalsIgnoreCase("wikiteam3")) {
+                    System.out.println(clean);
+                    WikiTeam3Args args = new Gson().fromJson(clean.toString(), WikiTeam3Args.class);
+                    System.out.println(args.getExplain());
+                    System.out.println(args.getUrl());
+                    String jobId = UUID.randomUUID().toString();
+                    String message = WikiTeam3Helper.beginJob(args, username, jobId);
+                    if (message != null) {
+                        ctx.status(400).result(error(message));
                         return;
                     }
-                } catch (UserErrorException exception) {
-                    ctx.status(400).result(error(exception.getMessage()));
+                    JSONObject response = new JSONObject();
+                    response.put("jobId", jobId);
+                    response.put("success", true);
+                    ctx.result(response.toString());
+                    return;
+                } else {
+                    ctx.status(400).result(error("Invalid job type"));
                     return;
                 }
             } catch (Exception e) {

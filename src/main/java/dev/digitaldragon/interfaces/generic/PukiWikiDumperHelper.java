@@ -7,10 +7,12 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
+import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
+import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 
 import java.util.UUID;
 
-public class DokuWikiDumperHelper {
+public class PukiWikiDumperHelper {
     /**
      * Begins a new job with the given unparsed arguments and username.
      *
@@ -19,7 +21,7 @@ public class DokuWikiDumperHelper {
      * @return a string representing the result of the job initiation
      */
     public static String beginJob(String unparsedArgs, String userName) {
-        DokuWikiDumperArgs args = new DokuWikiDumperArgs();
+        PukiWikiDumperArgs args = new PukiWikiDumperArgs();
         if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
             unparsedArgs = unparsedArgs.replace("'", "\"");
         unparsedArgs = unparsedArgs.replace("”", "\"");
@@ -43,14 +45,16 @@ public class DokuWikiDumperHelper {
      * @param userName the name of the user initiating the job
      * @return a string representing the result of the job initiation
      */
-    public static String beginJob(DokuWikiDumperArgs args, String userName) {
+    public static String beginJob(PukiWikiDumperArgs args, String userName) {
         String explain = args.getExplain();
+
         try {
             args.check();
         } catch (UserErrorException e) {
             return e.getMessage();
         }
-        Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), args.getUrl(), args.get(), explain);
+
+        Job job = new PukiWikiDumperJob(userName, UUID.randomUUID().toString(),args);
         JobManager.submit(job);
 
         return null;

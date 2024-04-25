@@ -14,21 +14,17 @@ public class DokuWiki extends Wiki {
     }
 
     @Override
-    public boolean isSafe() {
-        return true; //TODO: Implement dokuwiki safety check
+    public String getUnsafeReason() {
+        return null;
     }
 
     @Override
     public Optional<Job> run(String url, String username, String explain) throws UserErrorException {
-        try {
-            return run(Jsoup.connect(url).get(), username, explain);
-        } catch (IOException e) {
-            return Optional.empty();
-        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Job> run(Document document, String username, String explain) throws UserErrorException {
-        throw new UserErrorException("DokuWiki!");
+        return Optional.empty();
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
  * Job to re-attempt an upload of a dump to archive.org.
  */
 @Getter
-public class ReuploadJob implements Job {
+public class ReuploadJob extends Job {
     private final String id;
     private final String name;
     private final String userName;
@@ -31,8 +31,6 @@ public class ReuploadJob implements Job {
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    @Setter
-    private ThreadChannel threadChannel = null;
     private final GenericLogsHandler handler;
     private int failedTaskCode;
     private final String uploadingFor;
@@ -110,6 +108,17 @@ public class ReuploadJob implements Job {
             if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("meta"))) {
                 runningTask = "UploadDokuWiki";
                 int runUpload = CommonTasks.runUpload(this, new File("jobs/" + uploadingFor + "/"), handler, uploadCommand, JobType.DOKUWIKIDUMPER);
+                if (runUpload != 0) {
+                    failure(runUpload);
+                    return;
+                }
+                hasRun = true;
+                continue;
+            }
+
+            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("wiki"))) {
+                runningTask = "UploadDokuWiki";
+                int runUpload = CommonTasks.runUpload(this, new File("jobs/" + uploadingFor + "/"), handler, uploadCommand, JobType.PUKIWIKIDUMPER);
                 if (runUpload != 0) {
                     failure(runUpload);
                     return;

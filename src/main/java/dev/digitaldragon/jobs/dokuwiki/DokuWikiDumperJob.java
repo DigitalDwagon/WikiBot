@@ -22,7 +22,7 @@ import java.util.List;
  * aborting a DokuWiki dump job.
  */
 @Getter
-public class DokuWikiDumperJob implements Job {
+public class DokuWikiDumperJob extends Job {
     private String id = null;
     private String name = "undefined";
     private String userName = "undefined";
@@ -38,8 +38,6 @@ public class DokuWikiDumperJob implements Job {
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    @Setter
-    private ThreadChannel threadChannel = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
 
@@ -57,7 +55,10 @@ public class DokuWikiDumperJob implements Job {
         this.directory.mkdirs();
         this.explanation = explanation;
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand(null, params, directory, handler);
+        this.downloadCommand = new RunCommand(null, params, directory, message -> {
+            handler.onMessage(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+        });
     }
 
     private void failure(int code) {

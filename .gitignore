@@ -60,3 +60,5 @@ gradle/*
 
 wikiteambot
 warcprox/*
+
+config.json

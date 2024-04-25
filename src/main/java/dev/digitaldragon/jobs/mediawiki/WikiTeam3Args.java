@@ -1,17 +1,15 @@
-package dev.digitaldragon.jobs.wikiteam;
+package dev.digitaldragon.jobs.mediawiki;
 
 import com.beust.jcommander.Parameter;
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.CommonTasks;
-import dev.digitaldragon.util.EnvConfig;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +61,10 @@ public class WikiTeam3Args {
     private String index;
     @Parameter(names = {"--url", "-u"}, variableArity = true)
     private String url;
+    @Parameter(names = {"--warc-not-for-production"})
+    private boolean warc;
+    @Parameter(names = {"--warconly"})
+    private boolean warcOnly;
 
     /**
      * This method checks the validity of three URL options - api, index, and url.
@@ -107,7 +109,7 @@ public class WikiTeam3Args {
         List<String> args = new ArrayList<>();
         args.add("wikiteam3dumpgenerator");
         args.add("--user-agent");
-        args.add(EnvConfig.getConfigs().get("user_agent"));
+        args.add(WikiBot.getConfig().getWikiTeam3Config().userAgent());
 
         parseDoubleOption(args, delay, "--delay");
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");

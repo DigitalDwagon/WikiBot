@@ -3,66 +3,79 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.api.JavalinAPI;
 import dev.digitaldragon.interfaces.discord.*;
 import dev.digitaldragon.interfaces.telegram.TelegramClient;
-import dev.digitaldragon.util.EnvConfig;
+import dev.digitaldragon.jobs.CleanupListener;
+import dev.digitaldragon.util.Config;
 import dev.digitaldragon.interfaces.irc.IRCClient;
+import dev.digitaldragon.jobs.LogFiles;
 import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class WikiBot {
-    @Getter
-    public static JDA instance;
+    //@Getter
+    //public static JDA instance;
     @Getter
     public static ExecutorService executorService = Executors.newFixedThreadPool(10);
     @Getter
     public static EventBus bus = new EventBus();
     public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
-
+    @Getter
+    private static Config config = null;
+    @Getter
+    private static DiscordClient discordClient = null;
+    @Getter
+    private static LogFiles logFiles = new LogFiles();
+    public static String getVersion() {
+        return "1.4.0";
+    }
 
     public static void main (String[] args) throws LoginException, InterruptedException, IOException {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down...");
             WarcproxManager.stopCleanly();
         }));
+        Logger logger = LoggerFactory.getLogger(WikiBot.class);
+        try {
+            config = new Config("config.json");
+        } catch (IOException e) {
+            logger.error("Failed to load config", e);
+            System.exit(1);
+        }
+        discordClient = new DiscordClient();
+
+
         WarcproxManager.run();
-        instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
+        /*instance = JDABuilder.create(EnvConfig.getConfigs().get("token"), Arrays.asList(INTENTS))
                 .enableCache(CacheFlag.VOICE_STATE)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
                 .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener())
-                .build();
+                .build();*/
 
         IRCClient.enable();
-        instance.awaitReady();
+        //instance.awaitReady();
         DiscordClient.enable();
         TelegramClient.enable();
+        logFiles = new LogFiles();
+        bus.register(logFiles);
+        bus.register(new CleanupListener());
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
         System.out.println(bucket.getName());
 
-        Guild testServer = instance.getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
+        /*Guild testServer = instance.getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
         if (testServer != null) {
 
             // ----------------------------- dokuwiki ----------------------------- //
@@ -145,12 +158,12 @@ public class WikiBot {
             testServer.upsertCommand("reupload", "Reupload a failed upload to the Internet Archive")
                     .addOption(OptionType.STRING, "jobid", "Job ID of the failed upload", true)
                     .queue();
-        }
+        }*/
 
         JavalinAPI.register();
     }
 
-    public static TextChannel getLogsChannel() {
+    /*public static TextChannel getLogsChannel() {
         Guild testServer = WikiBot.getInstance().getGuildById(EnvConfig.getConfigs().get("discord_server").trim());
         if (testServer == null) {
             return null;
@@ -165,5 +178,5 @@ public class WikiBot {
             throw new UserErrorException("Something went wrong.");
         }
         return discordChannel;
-    }
+    }*/
 }

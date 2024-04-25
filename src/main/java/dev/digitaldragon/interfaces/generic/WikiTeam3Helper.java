@@ -5,8 +5,8 @@ import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikiteam.WikiTeam3Job;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,8 @@ public class WikiTeam3Helper {
      * @param unparsedArgs The unparsed arguments for the job.
      * @param userName The name of the user.
      * @return A string representing the result of the job initiation.
-     * @throws UserErrorException If there is an error with the user input.
      */ //TODO switch to the new Args class-type parser here to enable compatibility with more platforms and modules.
-    public static String beginJob(String unparsedArgs, String userName) throws UserErrorException {
+    public static String beginJob(String unparsedArgs, String userName) {
         WikiTeam3Args args = new WikiTeam3Args();
         if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
             unparsedArgs = unparsedArgs.replace("'", "\"");
@@ -59,10 +58,15 @@ public class WikiTeam3Helper {
      * @param args The parsed arguments for the job.
      * @param userName The name of the user.
      * @return A string representing the result of the job initiation.
-     * @throws UserErrorException If there is an error with the user input.
      */
-    public static String beginJob(WikiTeam3Args args, String userName, String jobId) throws UserErrorException {
-        args.check();
+    public static String beginJob(WikiTeam3Args args, String userName, String jobId) {
+
+        try {
+            args.check();
+        } catch (UserErrorException e) {
+            return e.getMessage();
+        }
+
         if (args.getUrl() == null && args.getApi() == null && args.getIndex() == null)
             return "You need to specify --url, --api, or --index! Note: URLs are required in the form of an option, eg \"--url https://wikipedia.org\"";
         if (args.getExplain() == null)
@@ -81,7 +85,7 @@ public class WikiTeam3Helper {
         return null;
     }
 
-    public static String beginJob(WikiTeam3Args args, String userName) throws UserErrorException {
+    public static String beginJob(WikiTeam3Args args, String userName) {
         return beginJob(args, userName, UUID.randomUUID().toString());
     }
 }

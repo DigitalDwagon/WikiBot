@@ -2,6 +2,7 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.LogWebsocket;
+import dev.digitaldragon.jobs.events.JobLogEvent;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.ThreadChannel;
 
@@ -13,62 +14,25 @@ import java.io.IOException;
 /**
  * A StringLogHandler that writes logs to log.txt and a Discord channel.
  */
+@Deprecated
 public class GenericLogsHandler implements StringLogHandler {
     private final Job job;
-    private ThreadChannel threadChannel;
-    private String logs = "";
-    private final int maxMessageLength = 2000;
+
     public GenericLogsHandler(Job job) {
         this.job = job;
-        String message = "Running job of type " + job.getType().name() +
-                " (for " + job.getUserName() +
-                "). `" + job.getId() + "` ```" +
-                job.getExplanation() + "```";
-        String name = job.getName();
 
-        TextChannel channel = WikiBot.getLogsChannel();
-        if (channel == null) {
-            return;
-        }
-
-        String threadName;
-        int maxLength = 100;
-        if (name.length() <= maxLength) {
-            threadName = name;
-        } else {
-            threadName = name.substring(0, maxLength - 3) + "...";
-        }
-
-
-        channel.createThreadChannel(threadName).setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
-                .queue(thread -> {
-                    thread.sendMessage(message).queue(sentMessage -> sentMessage.pin().queue());
-                    this.threadChannel = thread;
-                    job.setThreadChannel(thread);
-                });
-
-        onMessage("----- Bot: Logs manager init -----");
+        //onMessage("----- Bot: Logs manager init -----");
     }
 
+    @Deprecated
     public synchronized void onMessage(String message) {
+        job.log(message);
+        /*WikiBot.getBus().post(new JobLogEvent(job, message));
         try {
-            LogWebsocket.sendLogMessageToClients(job.getId(), message);
+            //LogWebsocket.sendLogMessageToClients(job.getId(), message);
 
-            System.out.println(message);
-            writeLineToFile(new File(job.getDirectory(), "log.txt"), message);
-
-
-            if (logs.length() + message.length() > maxMessageLength - 6) {
-                try {
-                    threadChannel.sendMessage("```" + logs + "```").queue();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                logs = "";
-            }
-
-            logs += message + "\n";
-
+            //System.out.println(message);
+            //writeLineToFile(new File(job.getDirectory(), "log.txt"), message);
 
             if (message.contains("https://archive.org/details/") && message.contains(" ")) {
                 String[] split = message.split(" ");
@@ -83,7 +47,7 @@ public class GenericLogsHandler implements StringLogHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }//*/
     }
 
     private static void writeLineToFile(File file, String line) {
@@ -95,12 +59,8 @@ public class GenericLogsHandler implements StringLogHandler {
         }
     }
 
+    @Deprecated
     public void end() {
-        try {
-            threadChannel.sendMessage("```" + logs + "```").queue();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        logs = "";
+
     }
 }

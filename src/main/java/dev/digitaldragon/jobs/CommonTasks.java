@@ -5,6 +5,7 @@ import dev.digitaldragon.util.UploadObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -46,10 +47,13 @@ public class CommonTasks {
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 if (type == JobType.WIKITEAM3) {
-                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, directory, handler);
+                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel", null, directory, handler::onMessage);
                 }
                 if (type == JobType.DOKUWIKIDUMPER) {
-                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, handler);
+                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, handler::onMessage);
+                }
+                if (type == JobType.PUKIWIKIDUMPER) {
+                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName(), null, directory, handler::onMessage);
                 }
                 break;
             }
@@ -80,6 +84,18 @@ public class CommonTasks {
             }
         }
         return null;
+    }
+
+    public static Optional<String> getArchiveUrl(String message) {
+        if (message.contains("https://archive.org/details/")) {
+            String[] split = message.split(" ");
+            for (String s : split) {
+                if (s.contains("https://archive.org/details/")) {
+                    return Optional.of(s);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public static void extractLinks(Job job) {

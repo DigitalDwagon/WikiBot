@@ -1,5 +1,6 @@
 package dev.digitaldragon.interfaces.telegram;
 
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
 import dev.digitaldragon.interfaces.generic.*;
@@ -8,7 +9,6 @@ import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
-import dev.digitaldragon.util.EnvConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
@@ -38,7 +38,7 @@ public class TelegramCommandsBot extends AbilityBot {
     }
 
     public TelegramCommandsBot() {
-        super(EnvConfig.getConfigs().get("telegram_api_token"), "wikiteambot");
+        super(WikiBot.getConfig().getTelegramConfig().token(), "wikiteambot");
     }
 
     @Override
@@ -69,12 +69,8 @@ public class TelegramCommandsBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(ctx -> {
                     String message = null;
-                    try {
-                        System.out.println(arrayToString(ctx.arguments()));
-                        message = WikiTeam3Helper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
-                    } catch (UserErrorException e) {
-                        message = e.getMessage();
-                    }
+                    System.out.println(arrayToString(ctx.arguments()));
+                    message = WikiTeam3Helper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
                     if (message != null)
                         reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                     else
@@ -93,12 +89,8 @@ public class TelegramCommandsBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(ctx -> {
                     String message = null;
-                    try {
-                        System.out.println(arrayToString(ctx.arguments()));
-                        message = DokuWikiDumperHelper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
-                    } catch (UserErrorException e) {
-                        message = e.getMessage();
-                    }
+                    System.out.println(arrayToString(ctx.arguments()));
+                    message = DokuWikiDumperHelper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
 
                     if (message != null)
                         reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
