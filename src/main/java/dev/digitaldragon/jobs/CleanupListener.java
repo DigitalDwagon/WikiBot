@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class CleanupListener {
     private static Logger logger = LoggerFactory.getLogger(CleanupListener.class);
@@ -19,9 +21,11 @@ public class CleanupListener {
             if (!doneDir.exists()) {
                 doneDir.mkdirs();
             }
-            boolean success = job.getDirectory().renameTo(new File(doneDir, job.getId()));
-            if (!success) {
-                logger.error("Error moving job directory to jobs-done");
+
+            try {
+                Files.move(job.getDirectory().toPath(), new File(doneDir, job.getId()).toPath());
+            } catch (IOException e) {
+                logger.error("Error moving job directory to jobs-done", e);
             }
         }
     }
