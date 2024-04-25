@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * The CommonTasks class provides common tasks and utilities for various operations.
@@ -46,16 +47,21 @@ public class CommonTasks {
             return 999;
         }
 
+        Consumer<String> jobWatcher = (message -> {
+            job.log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(job::setArchiveUrl);
+        });
+
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 if (type == JobType.WIKITEAM3) {
-                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel --bin-zstd " + WikiBot.getConfig().getWikiTeam3Config().binZstd(), null, directory, handler::onMessage);
+                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel --bin-zstd " + WikiBot.getConfig().getWikiTeam3Config().binZstd(), null, directory, jobWatcher);
                 }
                 if (type == JobType.DOKUWIKIDUMPER) {
-                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, handler::onMessage);
+                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, jobWatcher);
                 }
                 if (type == JobType.PUKIWIKIDUMPER) {
-                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName(), null, directory, handler::onMessage);
+                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName(), null, directory, jobWatcher);
                 }
                 break;
             }
