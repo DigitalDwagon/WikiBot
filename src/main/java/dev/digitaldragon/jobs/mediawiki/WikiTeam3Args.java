@@ -24,7 +24,7 @@ public class WikiTeam3Args {
     @Parameter(names = {"--api_chunksize", "-C"})
     private int apiChunkSize;
     @Parameter(names = {"--index-check-threshold", "-T"})
-    private double indexCheckThreshold = 1.0;
+    private Double indexCheckThreshold = null;
     @Parameter(names = {"--xml", "-x"})
     private boolean xml;
     @Parameter(names = {"--xmlapiexport", "-a"})
