@@ -42,6 +42,7 @@ public class DailyWikimediaDumpJob extends Job {
     private final List<WikimediaWiki> wikis = new ArrayList<>();
     private final Map<String, String> wikiInfo = new HashMap<>();
     private final List<File> inflightFiles = new ArrayList<>();
+    private JobMeta meta;
 
     public DailyWikimediaDumpJob(String id) {
         this.id = id;
@@ -49,6 +50,10 @@ public class DailyWikimediaDumpJob extends Job {
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
         this.handler = new GenericLogsHandler(this);
+        this.meta = new JobMeta("Wikibot-internal-queue");
+        meta.setPlatform(JobMeta.JobPlatform.API);
+        meta.setExplain("This job is automatically created by the bot to download the Wikimedia incremental dumps every day.");
+        meta.setTargetUrl("https://dumps.wikimedia.org/other/incr/");
     }
 
     private void fail(String message) {

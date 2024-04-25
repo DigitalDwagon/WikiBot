@@ -40,6 +40,7 @@ public class DokuWikiDumperJob extends Job {
     private String logsUrl = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
+    private JobMeta meta;
 
     public DokuWikiDumperJob(String userName, String id, String name, String[] params, String explanation) {
         System.out.println(name);
@@ -59,6 +60,9 @@ public class DokuWikiDumperJob extends Job {
             handler.onMessage(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
         });
+        this.meta = new JobMeta(userName);
+        meta.setExplain(explanation);
+        meta.setTargetUrl(name);
     }
 
     private void failure(int code) {

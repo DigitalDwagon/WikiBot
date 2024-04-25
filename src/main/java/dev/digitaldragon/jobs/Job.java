@@ -45,12 +45,14 @@ public abstract class Job {
      *
      * @return the name of the job as a string.
      */
+    @Deprecated
     public abstract String getName();
     /**
      * Returns the username associated with the job.
      *
      * @return the username associated with the job as a string.
      */
+    @Deprecated
     public abstract String getUserName();
     /**
      * Gets the user's platform (IRC, Telegram, Discord, etc.)
@@ -67,6 +69,7 @@ public abstract class Job {
      *
      * @return the explanation of the job as a string.
      */
+    @Deprecated
     public abstract String getExplanation();
     /**
      * Returns the status of the job.
@@ -130,6 +133,12 @@ public abstract class Job {
      * @return the error code of the failed task, or 0 if no task has failed.
      */
     public abstract int getFailedTaskCode();
+
+    /**
+     * Gets the job's metadata.
+     * @return the job's metadata as a JobMeta object.
+     */
+    public abstract JobMeta getMeta();
 
     public void log(String message) {
         WikiBot.getBus().post(new JobLogEvent(this, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now().atZone(ZoneOffset.UTC)) + " | " + message));

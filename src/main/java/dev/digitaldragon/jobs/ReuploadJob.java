@@ -35,6 +35,7 @@ public class ReuploadJob extends Job {
     private int failedTaskCode;
     private final String uploadingFor;
     private boolean aborted = false;
+    private JobMeta meta;
 
     public ReuploadJob(String userName, String id, String targetId) {
         this.userName = userName;
@@ -47,6 +48,8 @@ public class ReuploadJob extends Job {
         this.status = JobStatus.QUEUED;
         this.name =  "Reupload " + targetId;
         this.handler = new GenericLogsHandler(this);
+        meta = new JobMeta(userName);
+
     }
 
     private void failure(int code) {
