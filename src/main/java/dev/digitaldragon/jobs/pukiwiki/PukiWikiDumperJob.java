@@ -39,6 +39,8 @@ public class PukiWikiDumperJob extends Job {
     private GenericLogsHandler handler;
     private int failedTaskCode;
     private PukiWikiDumperArgs args;
+    private JobMeta meta;
+
 
     public PukiWikiDumperJob(String userName, String id, PukiWikiDumperArgs args) {
         name = args.getUrl();
@@ -50,6 +52,9 @@ public class PukiWikiDumperJob extends Job {
         this.explanation = args.getExplain();
         this.handler = new GenericLogsHandler(this);
         this.args = args;
+        this.meta = new JobMeta(userName);
+        meta.setExplain(args.getExplain());
+        meta.setTargetUrl(args.getUrl());
     }
 
     private void failure(int code) {

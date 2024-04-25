@@ -47,6 +47,7 @@ public class WikiTeam3Job extends Job {
     private int failedTaskCode;
     private boolean aborted;
     private WikiTeam3Args args;
+    private JobMeta meta;
 
 
     public WikiTeam3Job(String userName, String id, String name, String[] params, WikiTeam3Args args, String explanation) {
@@ -65,6 +66,9 @@ public class WikiTeam3Job extends Job {
         this.handler = new GenericLogsHandler(this);
         this.runDir =  args.getResumeDir() != null ? args.getResumeDir().getParentFile() : directory;
         this.args = args;
+        this.meta = new JobMeta(userName);
+        meta.setExplain(args.getExplain());
+        meta.setTargetUrl(args.getUrl());
     }
 
     private void failure(int code) {
