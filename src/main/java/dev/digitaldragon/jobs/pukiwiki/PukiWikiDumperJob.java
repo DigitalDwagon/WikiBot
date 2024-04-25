@@ -165,7 +165,7 @@ public class PukiWikiDumperJob extends Job {
 
 
     public JobType getType() {
-        return JobType.DOKUWIKIDUMPER;
+        return JobType.PUKIWIKIDUMPER;
     }
 
     public List<String> getAllTasks() {
