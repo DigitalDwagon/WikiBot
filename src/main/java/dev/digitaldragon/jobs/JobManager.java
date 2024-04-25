@@ -73,12 +73,13 @@ public class JobManager {
     }
 
     public static JSONObject getJsonForJob(Job job) {
+        JobMeta meta = job.getMeta();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("status", job.getStatus());
-        jsonObject.put("explanation", job.getExplanation());
-        jsonObject.put("user", job.getUserName());
+        if (meta.getExplain().isPresent()) jsonObject.put("explanation", meta.getExplain().get());
+        jsonObject.put("user", meta.getUserName());
         jsonObject.put("started", job.getStartTime());
-        jsonObject.put("name", job.getName());
+        if (meta.getExplain().isPresent()) jsonObject.put("name", meta.getExplain().get());
         jsonObject.put("runningTask", job.getRunningTask());
         //jsonObject.put("directory", job.getDirectory());
         jsonObject.put("failedTaskCode", job.getFailedTaskCode());
