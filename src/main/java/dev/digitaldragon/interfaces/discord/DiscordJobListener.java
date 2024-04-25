@@ -83,7 +83,7 @@ public class DiscordJobListener {
             return;
         }
 
-        channel.createThreadChannel(truncateString(job.getName(), 100))
+        channel.createThreadChannel(truncateString(job.getMeta().getTargetUrl().orElse(job.getId()), 100))
                 .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     thread.sendMessageEmbeds(DiscordClient.getStatusEmbed(job).build())

@@ -2,6 +2,7 @@ package dev.digitaldragon.interfaces.discord;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.JobStatus;
 import dev.digitaldragon.util.Config;
 import lombok.Getter;
@@ -66,14 +67,11 @@ public class DiscordClient {
     public static EmbedBuilder getStatusEmbed(Job job) {
 
         EmbedBuilder builder = new EmbedBuilder();
+        JobMeta meta = job.getMeta();
 
-        if (job.getName().startsWith("http://") || job.getName().startsWith("https://")) {
-            builder.setTitle(job.getName(), job.getName());
-        } else {
-            builder.setTitle(job.getName());
-        }
+        builder.setTitle(meta.getTargetUrl().orElse("Job"), meta.getTargetUrl().orElse(null));
 
-        builder.addField("User", job.getUserName(), true);
+        builder.addField("User", meta.getUserName(), true);
         builder.addField("Job ID", "`" +  job.getId() + "`", true);
         builder.addField("Type", job.getType().name(), true);
         String quickLinks = "";
@@ -82,13 +80,13 @@ public class DiscordClient {
             //
         }
         else if (job.getStatus() == JobStatus.FAILED || job.getStatus() == JobStatus.ABORTED) {
-            builder.setDescription("<:failed:1214681282626326528> Failed\n" + job.getExplanation());
+            builder.setDescription("<:failed:1214681282626326528> Failed");
             builder.setColor(Color.RED);
             builder.addField("Failed Task", String.format("`%s` (Exit Code `%s`)", job.getRunningTask(), job.getFailedTaskCode()), true);
             quickLinks += "[Logs](" + job.getLogsUrl() + ") ";
         }
         else if (job.getStatus() == JobStatus.COMPLETED) {
-            builder.setDescription("<:done:1214681284778000504> Done!\n" + job.getExplanation());
+            builder.setDescription("<:done:1214681284778000504> Done!");
             builder.setColor(Color.GREEN);
             quickLinks += "[Logs](" + job.getLogsUrl() + ") ";
             if (job.getArchiveUrl() != null) {
@@ -103,26 +101,29 @@ public class DiscordClient {
 
         switch (job.getStatus()) {
             case QUEUED:
-                builder.setDescription("<:inprogress:1214681283771375706> In queue...\n" + job.getExplanation());
+                builder.setDescription("<:inprogress:1214681283771375706> In queue...");
                 builder.setColor(Color.YELLOW);
                 break;
             case RUNNING:
-                builder.setDescription("<:inprogress:1214681283771375706> Running...\n" + job.getExplanation());
+                builder.setDescription("<:inprogress:1214681283771375706> Running...");
                 builder.setColor(Color.YELLOW);
                 builder.addField("Task", job.getRunningTask(), true);
                 break;
             case FAILED:
-                builder.setDescription("<:failed:1214681282626326528> Failed\n" + job.getExplanation());
+                builder.setDescription("<:failed:1214681282626326528> Failed");
                 builder.setColor(Color.RED);
                 break;
             case ABORTED:
-                builder.setDescription("<:failed:1214681282626326528> Aborted\n" + job.getExplanation());
+                builder.setDescription("<:failed:1214681282626326528> Aborted");
                 builder.setColor(Color.ORANGE);
                 break;
             case COMPLETED:
-                builder.setDescription("<:done:1214681284778000504> Done!\n" + job.getExplanation());
+                builder.setDescription("<:done:1214681284778000504> Done!");
                 builder.setColor(Color.GREEN);
                 break;
+        }
+        if (meta.getExplain().isPresent()) {
+            builder.addField("Explanation", meta.getExplain().get(), false);
         }
         return builder;
     }
