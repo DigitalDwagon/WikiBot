@@ -33,7 +33,6 @@ public class WikiTeam3Job extends Job {
     private JobStatus status = null;
     private String runningTask = null;
     private Instant startTime = null;
-    private String[] params = null;
     private File directory = null;
     private File runDir = null;
     private RunCommand downloadCommand = null;
@@ -50,25 +49,26 @@ public class WikiTeam3Job extends Job {
     private JobMeta meta;
 
 
-    public WikiTeam3Job(String userName, String id, String name, String[] params, WikiTeam3Args args, String explanation) {
-        System.out.println(name);
-        if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
+    public WikiTeam3Job(String userName, String id, WikiTeam3Args args) {
+        String targetUrl = args.getUrl();
+        if (targetUrl == null)
+            targetUrl = args.getApi();
+        if (targetUrl == null)
+            targetUrl = args.getIndex();
+
         this.userName = userName;
         this.id = id;
-        this.name = name;
-        this.params = params;
+        this.name = targetUrl;
         this.status = JobStatus.QUEUED;
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.explanation = explanation;
+        this.explanation = args.getExplain();
         this.handler = new GenericLogsHandler(this);
         this.runDir =  args.getResumeDir() != null ? args.getResumeDir().getParentFile() : directory;
         this.args = args;
         this.meta = new JobMeta(userName);
         meta.setExplain(args.getExplain());
-        meta.setTargetUrl(args.getUrl());
+        meta.setTargetUrl(targetUrl);
     }
 
     private void failure(int code) {
@@ -97,7 +97,7 @@ public class WikiTeam3Job extends Job {
             runningTask = "DownloadMediaWiki";
             log("Starting Task DownloadMediaWiki");
 
-            downloadCommand = new RunCommand(null, params, runDir, message -> {
+            downloadCommand = new RunCommand(null, args.get(), runDir, message -> {
                 log(message);
                 CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
