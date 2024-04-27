@@ -69,16 +69,14 @@ public class WikiTeam3Helper {
 
         if (args.getUrl() == null && args.getApi() == null && args.getIndex() == null)
             return "You need to specify --url, --api, or --index! Note: URLs are required in the form of an option, eg \"--url https://wikipedia.org\"";
-        if (args.getExplain() == null)
-            return "An explanation is required! Note: Explanations are required in the form of an option, eg \"--explain Closing soon\"";
+        //if (args.getExplain() == null)
+        //    return "An explanation is required! Note: Explanations are required in the form of an option, eg \"--explain Closing soon\"";
 
         String jobName = args.getUrl();
         if (jobName == null)
             jobName = args.getApi();
         if (jobName == null)
             jobName = args.getIndex();
-
-        String explain = args.getExplain();
 
         Job job = new WikiTeam3Job(userName, jobId, args);
         JobManager.submit(job);
