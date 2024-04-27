@@ -7,7 +7,6 @@ import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.api.entities.ThreadChannel;
 
 import java.io.File;
 import java.time.Instant;

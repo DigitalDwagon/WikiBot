@@ -4,7 +4,6 @@ import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import lombok.Getter;
-import okhttp3.HttpUrl;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;

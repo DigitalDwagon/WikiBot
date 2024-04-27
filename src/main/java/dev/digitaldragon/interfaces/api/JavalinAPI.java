@@ -2,7 +2,6 @@ package dev.digitaldragon.interfaces.api;
 
 import com.google.gson.Gson;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.StatusHelper;

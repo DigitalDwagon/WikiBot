@@ -1,7 +1,6 @@
 package dev.digitaldragon.interfaces.telegram;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.events.JobAbortEvent;

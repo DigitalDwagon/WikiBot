@@ -1,11 +1,5 @@
 package dev.digitaldragon.jobs;
 
-import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.api.LogWebsocket;
-import dev.digitaldragon.jobs.events.JobLogEvent;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
