@@ -1,24 +1,15 @@
 package dev.digitaldragon.interfaces.discord;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.irc.IRCClient;
-import dev.digitaldragon.interfaces.irc.IRCFormat;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobMeta;
-import dev.digitaldragon.jobs.JobStatus;
 import dev.digitaldragon.jobs.events.*;
 import net.badbird5907.lightning.annotation.EventHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class DiscordJobListener {
     private static Map<String, ThreadChannel> jobChannels = new HashMap<>();
@@ -62,13 +53,33 @@ public class DiscordJobListener {
                 .setEmbeds(DiscordClient.getStatusEmbed(job).build())
                 .queue();
 
+        List<MessageChannel> channels = new ArrayList<>();
+
+        if (meta.getDiscordUserId().isPresent()) {
+            message += " <@" + meta.getDiscordUserId().get() + ">"; // haha ping go brr
+            Optional<User> user = WikiBot.getDiscordClient().getUserById(meta.getDiscordUserId().get());
+            try {
+                user.ifPresent(value -> channels.add(value.openPrivateChannel().complete()));
+            } catch (RuntimeException e) {
+                LoggerFactory.getLogger(DiscordJobListener.class).error("Failed to open private channel with user " + meta.getDiscordUserId().get(), e);
+
+            }
+
+        }
+
         if (jobUpdateChannels.containsKey(job.getId())) {
-            if (meta.getDiscordUserId().isPresent()) message += " <@" + meta.getDiscordUserId().get() + ">"; // haha ping go brr
-            jobUpdateChannels.get(job.getId())
-                    .sendMessage(message)
+            System.out.println("Sending to " + jobUpdateChannels.get(job.getId()).getId());
+            channels.add(jobUpdateChannels.get(job.getId()));
+        }
+
+
+
+        for (MessageChannel channel : channels) {
+            channel.sendMessage(message)
                     .setActionRow(DiscordClient.getJobActionRow(job))
                     .setEmbeds(DiscordClient.getStatusEmbed(job).build())
-                    .queue(); // todo dupe :(
+                    .queue();
+
         }
 
         Optional<String> channelId = switch (job.getStatus()) {
