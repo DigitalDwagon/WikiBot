@@ -13,6 +13,7 @@ import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -25,9 +26,65 @@ import java.util.List;
 import java.util.UUID;
 
 public class DiscordCommandListener extends ListenerAdapter {
+    private static final String[] PERMITTED_ROLES = {
+            "1195125742653149294", // Miraheze: MediaWiki Support Volunteers
+            "834935892166574130", // Miraheze: Discord Moderators
+            "803977072875405422", // Miraheze: Discord Administrators
+            "1019837414035959849", // Miraheze: Wiki Creators
+            "407534159909748746", // Miraheze: Site Reliability Engineers
+            "407534772542242816", // Miraheze: Stewards
+            "407534909746577418", // Miraheze: MediaWiki Engineers
+            "1112838174071324744", // !digiserver: wikibot
+    };
+
+    private static final String[] PERMITTED_USERS = {
+            "287696585142304769", // digitaldragon
+    };
+
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         System.out.println("got event");
+        boolean permitted = false;
+        if (!event.getName().equals("status")) {
+            // check if user has the role in the guild they're in
+            for (String role : PERMITTED_ROLES) {
+                Member member = event.getMember();
+                if (member == null) continue;
+                if (member.getRoles().stream().anyMatch(r -> r.getId().equals(role))) {
+                    permitted = true;
+                    break;
+                }
+            }
+            // check if user is in the list of permitted users
+            for (String user : PERMITTED_USERS) {
+                if (event.getUser().getId().equals(user)) {
+                    permitted = true;
+                    break;
+                }
+            }
+
+            //check if user has a permitted role in another guild
+            if (!permitted) {
+                for (var guild : event.getJDA().getGuilds()) {
+                    for (String role : PERMITTED_ROLES) {
+                        Member member = guild.getMember(event.getUser());
+                        if (member == null) continue;
+                        if (member.getRoles().stream().anyMatch(r -> r.getId().equals(role))) {
+                            permitted = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!permitted) {
+                event.reply("You do not have permission to use this command!").setEphemeral(true).queue();
+                return;
+            }
+
+        }
+
+
         if (event.getName().equals("mediawiki_dump")) onMediaWikiSlashCommandInteraction(event);
         if (event.getName().equals("dokuwiki_dump")) onDokuWikiSlashCommandInteraction(event);
         if (event.getName().equals("pukiwiki_dump")) onPukiWikiSlashCommandInteraction(event);
@@ -57,16 +114,15 @@ public class DiscordCommandListener extends ListenerAdapter {
     }
 
     private void submitJob(SlashCommandInteractionEvent event, Job job) {
-        String jobId = UUID.randomUUID().toString();
         job.getMeta().setPlatform(JobMeta.JobPlatform.DISCORD);
         job.getMeta().setDiscordUserId(event.getUser().getId());
-        WikiBot.getDiscordClient().getJobListener().setJobChannel(jobId, event.getChannel());
+        WikiBot.getDiscordClient().getJobListener().setJobChannel(job.getId(), event.getChannel());
 
         JobManager.submit(job);
-        event.reply("Done! Running job `" + jobId + "`. I will notify you when it updates. Use `/status` with the job ID or use the `Status` button to manually check the job.")
+        event.reply("Done! Running job `" + job.getId() + "`. I will notify you when it updates. Use `/status` with the job ID or use the `Info` button to manually check the job.")
                 .addEmbeds(DiscordClient.getStatusEmbed(job).build())
                 .addActionRow(DiscordClient.getJobActionRow(job))
-                .setEphemeral(true).queue();
+                .setEphemeral(false).queue();
     }
 
     public void onMediaWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
