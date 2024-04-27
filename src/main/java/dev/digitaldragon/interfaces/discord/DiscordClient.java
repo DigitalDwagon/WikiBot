@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -29,6 +30,7 @@ import java.awt.*;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class DiscordClient {
     @Getter
@@ -133,15 +135,17 @@ public class DiscordClient {
             builder.setDescription("<:failed:1214681282626326528> Failed");
             builder.setColor(Color.RED);
             builder.addField("Failed Task", String.format("`%s` (Exit Code `%s`)", job.getRunningTask(), job.getFailedTaskCode()), true);
-            quickLinks += "[Logs](" + job.getLogsUrl() + ") ";
         }
         else if (job.getStatus() == JobStatus.COMPLETED) {
             builder.setDescription("<:done:1214681284778000504> Done!");
             builder.setColor(Color.GREEN);
+        }
+
+        if (job.getLogsUrl() != null) {
             quickLinks += "[Logs](" + job.getLogsUrl() + ") ";
-            if (job.getArchiveUrl() != null) {
-                quickLinks += "[Archive](" + job.getArchiveUrl() + ") ";
-            }
+        }
+        if (job.getArchiveUrl() != null) {
+            quickLinks += "[Archive](" + job.getArchiveUrl() + ") ";
         }
 
         if (!quickLinks.isEmpty()) {
@@ -162,6 +166,10 @@ public class DiscordClient {
             case FAILED:
                 builder.setDescription("<:failed:1214681282626326528> Failed");
                 builder.setColor(Color.RED);
+                if (job.getFailedTaskCode() == 88) {
+                    builder.setDescription("<:inprogress:1214681283771375706> Cancelled\n\n**This job was automatically aborted because a dump of this wiki was made less than a year ago!**\nIf you still need a new dump, you should run the command again with `Force` set to `true`.");
+                    builder.setColor(Color.YELLOW);
+                }
                 break;
             case ABORTED:
                 builder.setDescription("<:failed:1214681282626326528> Aborted");
@@ -216,6 +224,21 @@ public class DiscordClient {
         return Button.secondary("archive_" + job.getId(), "Archive")
                 .withEmoji(Emoji.fromUnicode("📁"))
                 .withUrl(job.getArchiveUrl());
+    }
+
+    public Optional<User> getUserById(String id) {
+        //loop through all guilds to check for the user
+        for (var guild : instance.getGuilds()) {
+            try {
+                User user = guild.retrieveMemberById(id).complete().getUser();
+                if (user != null) {
+                    return Optional.of(user);
+                }
+            } catch (RuntimeException e) {
+                LoggerFactory.getLogger(DiscordClient.class).error("Failed to get user by ID", e);
+            }
+        }
+        return Optional.empty();
     }
 
 
