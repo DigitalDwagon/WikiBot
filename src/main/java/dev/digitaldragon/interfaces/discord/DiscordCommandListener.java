@@ -15,6 +15,7 @@ import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +31,7 @@ public class DiscordCommandListener extends ListenerAdapter {
         if (event.getName().equals("mediawiki_dump")) onMediaWikiSlashCommandInteraction(event);
         if (event.getName().equals("dokuwiki_dump")) onDokuWikiSlashCommandInteraction(event);
         if (event.getName().equals("pukiwiki_dump")) onPukiWikiSlashCommandInteraction(event);
-
+        if (event.getName().equals("status") || event.getName().equals("abort")) onStatusOrAbortSlashCommandInteraction(event);
     }
 
 
@@ -84,6 +85,30 @@ public class DiscordCommandListener extends ListenerAdapter {
         PukiWikiDumperArgs args = processArgs(new PukiWikiDumperArgs(), event);
         Job job = new PukiWikiDumperJob(event.getUser().getName(), UUID.randomUUID().toString(), args);
         submitJob(event, job);
+    }
+
+    public void onStatusOrAbortSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        OptionMapping jobOption = event.getOption("job");
+        if (jobOption == null) {
+            event.reply("No job ID provided!").setEphemeral(true).queue();
+            return;
+        }
+        String jobId = jobOption.getAsString();
+        Job job = JobManager.get(jobId);
+        if (job == null) {
+            event.reply("Job not found!").setEphemeral(true).queue();
+            return;
+        }
+        String message = "";
+        if (event.getName().equals("abort")) {
+            message = JobManager.abort(job.getId()) ? "Job aborted!" : "Failed to abort job!";
+        }
+
+
+        event.reply(message)
+                .addEmbeds(DiscordClient.getStatusEmbed(job).build())
+                .addActionRow(DiscordClient.getJobActionRow(job))
+                .setEphemeral(true).queue();
     }
 
 
