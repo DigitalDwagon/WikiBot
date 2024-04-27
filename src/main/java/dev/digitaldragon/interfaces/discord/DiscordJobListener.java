@@ -4,21 +4,18 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.interfaces.irc.IRCFormat;
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.JobStatus;
 import dev.digitaldragon.jobs.events.*;
 import net.badbird5907.lightning.annotation.EventHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +23,12 @@ import java.util.Optional;
 public class DiscordJobListener {
     private static Map<String, ThreadChannel> jobChannels = new HashMap<>();
     private static Map<String, String> jobLogs = new HashMap<>();
+    private static final Map<String, MessageChannel> jobUpdateChannels = new HashMap<>();
+
+    public void setJobChannel(String jobId, MessageChannel channel) {
+        // TODO: I'm not super happy with this method being here specifically
+        jobUpdateChannels.put(jobId, channel);
+    }
 
     @EventHandler
     public void onJobSuccess(JobSuccessEvent event) {
@@ -43,6 +46,7 @@ public class DiscordJobListener {
     }
 
     private void onJobEnd(Job job) {
+        JobMeta meta = job.getMeta();
         String message = switch (job.getStatus()) {
             case COMPLETED -> "Job ended.";
             case FAILED -> "Job failed.";
@@ -51,11 +55,21 @@ public class DiscordJobListener {
         };
 
         sendLogs(jobLogs.getOrDefault(job.getId(), ""), job);
+
         jobChannels.get(job.getId())
                 .sendMessage(message)
+                .setActionRow(DiscordClient.getJobActionRow(job))
                 .setEmbeds(DiscordClient.getStatusEmbed(job).build())
-                .setActionRows(getJobActionRow(job))
                 .queue();
+
+        if (jobUpdateChannels.containsKey(job.getId())) {
+            if (meta.getDiscordUserId().isPresent()) message += " <@" + meta.getDiscordUserId().get() + ">"; // haha ping go brr
+            jobUpdateChannels.get(job.getId())
+                    .sendMessage(message)
+                    .setActionRow(DiscordClient.getJobActionRow(job))
+                    .setEmbeds(DiscordClient.getStatusEmbed(job).build())
+                    .queue(); // todo dupe :(
+        }
 
         Optional<String> channelId = switch (job.getStatus()) {
             case COMPLETED -> WikiBot.getConfig().getDiscordConfig().successChannel();
@@ -87,7 +101,7 @@ public class DiscordJobListener {
                 .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.TIME_1_HOUR)
                 .queue(thread -> {
                     thread.sendMessageEmbeds(DiscordClient.getStatusEmbed(job).build())
-                            .setActionRows(getJobActionRow(job))
+                            .setActionRow(DiscordClient.getJobActionRow(job))
                             .queue(sentMessage -> sentMessage.pin().queue());
                     jobChannels.put(job.getId(), thread);
                 });
@@ -119,47 +133,6 @@ public class DiscordJobListener {
         }
 
     }
-
-
-    private static ActionRow getJobActionRow(Job job) {
-        return ActionRow.of(getAbortButton(job), getStatusButton(job), getLogsButton(job), getArchiveButton(job));
-    }
-
-    private static Button getAbortButton(Job job) {
-        return Button.danger("abort_" + job.getId(), "Abort")
-                .withEmoji(Emoji.fromUnicode("✖"))
-                .withDisabled(!(job.getStatus() == JobStatus.QUEUED || job.getStatus() == JobStatus.RUNNING));
-    }
-
-    private static Button getStatusButton(Job job) {
-        return Button.secondary("status_" + job.getId(), "Info")
-                .withEmoji(Emoji.fromUnicode("ℹ️"));
-    }
-
-    private static Button getLogsButton(Job job) {
-        if (job.getLogsUrl() == null) {
-            return Button.secondary("logs_" + job.getId(), "Logs")
-                    //.withUrl("about:blank")
-                    .withEmoji(Emoji.fromUnicode("📄"))
-                    .withDisabled(true);
-        }
-        return Button.secondary("logs_" + job.getId(), "Logs")
-                .withEmoji(Emoji.fromUnicode("📄"))
-                .withUrl(job.getLogsUrl());
-    }
-
-    private static Button getArchiveButton(Job job) {
-        if (job.getArchiveUrl() == null) {
-            return Button.secondary("archive_" + job.getId(), "Archive")
-                    //.withUrl("about:blank")
-                    .withEmoji(Emoji.fromUnicode("📁"))
-                    .withDisabled(true);
-        }
-        return Button.secondary("archive_" + job.getId(), "Archive")
-                .withEmoji(Emoji.fromUnicode("📁"))
-                .withUrl(job.getArchiveUrl());
-    }
-
 
 
     private static String truncateString(String message, int maxLength) {
