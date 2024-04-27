@@ -1,14 +1,5 @@
 package dev.digitaldragon.interfaces.api;
 
-import dev.digitaldragon.interfaces.irc.IRCClient;
-import dev.digitaldragon.interfaces.irc.IRCFormat;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
-import net.badbird5907.lightning.annotation.EventHandler;
-
 public class APIJobListener {/*
     @EventHandler
     public void onJobSuccess(JobSuccessEvent event) {

@@ -1,30 +1,21 @@
 package dev.digitaldragon.jobs.mediawiki;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.api.Dashboard;
-import dev.digitaldragon.jobs.CommonTasks;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.RunCommand;
 import dev.digitaldragon.jobs.StringLogHandler;
-import dev.digitaldragon.util.Config;
-import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.netpreserve.jwarc.WarcWriter;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Scanner;
 
 public class MediaWikiWARCMachine {

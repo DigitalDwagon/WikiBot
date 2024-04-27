@@ -5,8 +5,6 @@ import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
-import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 

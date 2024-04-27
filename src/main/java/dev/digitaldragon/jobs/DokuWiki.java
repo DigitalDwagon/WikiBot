@@ -1,10 +1,8 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.interfaces.UserErrorException;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.IOException;
 import java.util.Optional;
 
 public class DokuWiki extends Wiki {

@@ -2,7 +2,6 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobLogEvent;
-import net.dv8tion.jda.api.entities.ThreadChannel;
 
 import java.io.File;
 import java.time.Instant;

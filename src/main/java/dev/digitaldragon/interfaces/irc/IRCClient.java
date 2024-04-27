@@ -1,11 +1,9 @@
 package dev.digitaldragon.interfaces.irc;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.irc.IrcCommandListener;
 import dev.digitaldragon.util.Config;
 import lombok.Getter;
 import org.kitteh.irc.client.library.Client;
-import org.kitteh.irc.client.library.feature.auth.GameSurge;
 
 /**
  * IRCClient manages the bot's IRC connection.

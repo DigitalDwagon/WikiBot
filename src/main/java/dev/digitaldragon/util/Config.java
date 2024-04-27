@@ -3,7 +3,6 @@ package dev.digitaldragon.util;
 import lombok.Getter;
 import org.json.JSONObject;
 
-import javax.naming.ConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

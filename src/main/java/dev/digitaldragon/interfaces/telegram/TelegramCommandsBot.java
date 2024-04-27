@@ -1,15 +1,7 @@
 package dev.digitaldragon.interfaces.telegram;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.interfaces.api.UpdatesWebsocket;
 import dev.digitaldragon.interfaces.generic.*;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
-import net.badbird5907.lightning.annotation.EventHandler;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

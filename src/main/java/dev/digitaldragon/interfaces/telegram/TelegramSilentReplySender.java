@@ -5,7 +5,6 @@ import org.telegram.abilitybots.api.sender.SilentSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-
 import java.util.Optional;
 
 public class TelegramSilentReplySender extends SilentSender{

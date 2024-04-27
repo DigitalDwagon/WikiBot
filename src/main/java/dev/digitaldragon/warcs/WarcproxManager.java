@@ -3,7 +3,6 @@ package dev.digitaldragon.warcs;
 import dev.digitaldragon.jobs.RunCommand;
 import dev.digitaldragon.jobs.SimpleLogsHandler;
 
-import javax.ws.rs.DELETE;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
