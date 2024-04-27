@@ -26,15 +26,15 @@ public class JobMeta {
     }
 
     public void setExplain(String explain) {
-        this.explain = Optional.of(explain);
+        if (explain != null && !explain.isEmpty()) this.explain = Optional.of(explain);
     }
 
     public void setTargetUrl(String targetUrl) {
-        this.targetUrl = Optional.of(targetUrl);
+        if (targetUrl != null && !targetUrl.isEmpty()) this.targetUrl = Optional.of(targetUrl);
     }
 
     public void setDiscordUserId(String discordUserId) {
-        this.discordUserId = Optional.of(discordUserId);
+        if (discordUserId != null && !discordUserId.isEmpty()) this.discordUserId = Optional.of(discordUserId);
     }
 
 
