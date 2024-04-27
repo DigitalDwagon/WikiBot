@@ -44,9 +44,6 @@ public class DokuWikiDumperJob extends Job {
 
     public DokuWikiDumperJob(String userName, String id, String name, String[] params, String explanation) {
         System.out.println(name);
-        if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
         this.userName = userName;
         this.id = id;
         this.name = name;
