@@ -9,10 +9,10 @@ import java.util.Optional;
 @Setter
 public class JobMeta {
     private String userName;
-    private Optional<String> explain;
+    private Optional<String> explain = Optional.empty();
     private JobPlatform platform;
-    private Optional<String> targetUrl;
-    private Optional<String> discordUserId;
+    private Optional<String> targetUrl = Optional.empty();
+    private Optional<String> discordUserId = Optional.empty();
 
     public JobMeta(String userName) {
         this.userName = userName;
