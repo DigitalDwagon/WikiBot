@@ -42,7 +42,7 @@ public class DiscordButtonListener extends ListenerAdapter {
             event.reply("Job not found").setEphemeral(true).queue();
             return;
         }
-        event.replyEmbeds(DiscordClient.getStatusEmbed(job).build()).setEphemeral(true).queue();
+        event.replyEmbeds(DiscordClient.getStatusEmbed(job).build()).addActionRow(DiscordClient.getJobActionRow(job)).setEphemeral(true).queue();
     }
 
 }
