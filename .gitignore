@@ -43,8 +43,11 @@ build/
 .env
 dumps/
 dumps/*
-/jobs/
-/jobs/*
+jobs
+jobs-done
+config.json
+
+
 done.txt
 failed.txt
 todo.txt
@@ -60,5 +63,9 @@ gradle/*
 
 wikiteambot
 warcprox/*
+wikiteambot.wal.0
+config.json
+warcprox
+
 
 config.json
