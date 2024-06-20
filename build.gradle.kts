@@ -28,7 +28,7 @@ dependencies {
     //implementation("commons-io:commons-io:2.13.0")
 
     //used for XML parsing in link extractor.
-    implementation("org.jsoup:jsoup:1.16.1")
+    implementation("org.jsoup:jsoup:1.17.2")
 
     //used to decompress zstd streams
     // https://mvnrepository.com/artifact/com.github.luben/zstd-jni
