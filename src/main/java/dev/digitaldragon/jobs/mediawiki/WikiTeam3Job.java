@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,7 +27,6 @@ public class WikiTeam3Job extends Job {
     private String runningTask = null;
     private Instant startTime = null;
     private File directory = null;
-    private File runDir = null;
     private RunCommand downloadCommand = null;
     private RunCommand uploadCommand = null;
     private String explanation = null;
@@ -55,7 +56,6 @@ public class WikiTeam3Job extends Job {
         this.directory.mkdirs();
         this.explanation = args.getExplain();
         this.handler = new GenericLogsHandler(this);
-        this.runDir =  args.getResumeDir() != null ? args.getResumeDir().getParentFile() : directory;
         this.args = args;
         this.meta = new JobMeta(userName);
         meta.setExplain(args.getExplain());
@@ -79,8 +79,25 @@ public class WikiTeam3Job extends Job {
         if (aborted)
             return;
 
+        List<String> parsedArgs = new ArrayList<>(Arrays.stream(args.get()).toList());
+
+        File runDir = directory;
+        if (args.getResume() != null) {
+            runDir = new File("jobs/" + args.getResume() + "/");
+            File dumpDir = CommonTasks.findDumpDir(runDir);
+            if (!runDir.exists() || dumpDir == null) {
+                log("Failed to find the resume directory, aborting...");
+                failure(999);
+                return;
+            }
+            parsedArgs.add("--resume");
+            parsedArgs.add("--path");
+            parsedArgs.add(dumpDir.getName());
+
+        }
+
         if (!args.isWarcOnly()) {
-            WikiBot.getLogFiles().setLogFile(this, new File(runDir, "log.txt"));
+            WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
             startTime = Instant.now();
             status = JobStatus.RUNNING;
             log("wikibot v" + WikiBot.getVersion() + " job " + id);
@@ -88,7 +105,7 @@ public class WikiTeam3Job extends Job {
             runningTask = "DownloadMediaWiki";
             log("Starting Task DownloadMediaWiki");
 
-            downloadCommand = new RunCommand(null, args.get(), runDir, message -> {
+            downloadCommand = new RunCommand(null, parsedArgs.toArray(new String[0]), runDir, message -> {
                 log(message);
                 CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
