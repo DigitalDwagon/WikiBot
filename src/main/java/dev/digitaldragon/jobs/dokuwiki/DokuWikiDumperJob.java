@@ -40,13 +40,14 @@ public class DokuWikiDumperJob extends Job {
     private GenericLogsHandler handler;
     private int failedTaskCode;
     private JobMeta meta;
+    private DokuWikiDumperArgs args;
 
-    public DokuWikiDumperJob(String userName, String id, String name, String[] params, String explanation) {
+    public DokuWikiDumperJob(String userName, String id, String name, DokuWikiDumperArgs args, String explanation) {
         System.out.println(name);
         this.userName = userName;
         this.id = id;
         this.name = name;
-        this.params = params;
+        this.params = args.get();
         this.status = JobStatus.QUEUED;
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();

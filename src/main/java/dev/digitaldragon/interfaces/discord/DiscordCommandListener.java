@@ -133,7 +133,7 @@ public class DiscordCommandListener extends ListenerAdapter {
 
     public void onDokuWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         DokuWikiDumperArgs args = processArgs(new DokuWikiDumperArgs(), event);
-        Job job = new DokuWikiDumperJob(event.getUser().getName(), UUID.randomUUID().toString(), args.getUrl(), args.get(), args.getExplain());
+        Job job = new DokuWikiDumperJob(event.getUser().getName(), UUID.randomUUID().toString(), args.getUrl(), args, args.getExplain());
         submitJob(event, job);
     }
 
