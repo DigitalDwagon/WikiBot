@@ -58,8 +58,6 @@ all_links.txt
 .gradle/*
 build
 build/*
-gradle
-gradle/*
 
 wikiteambot
 warcprox/*
