@@ -59,6 +59,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.netpreserve/jwarc
     implementation("org.netpreserve:jwarc:0.2.0")
 
+    // sqlite for database
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    implementation("org.xerial:sqlite-jdbc:3.46.0.0")
 
 
     //compileOnly("org.projectlombok:lombok:1.18.26")

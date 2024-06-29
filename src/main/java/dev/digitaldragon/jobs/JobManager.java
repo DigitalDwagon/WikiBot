@@ -98,4 +98,12 @@ public class JobManager {
         }
     }
 
+    public static void submitJobDbOnly(Job job) {
+        jobs.put(job.getId(), job);
+    }
+
+    public static void clearDb(String jobId) {
+        jobs.remove(jobId);
+    }
+
 }
