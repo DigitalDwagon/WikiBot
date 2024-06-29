@@ -66,6 +66,6 @@ warcprox/*
 wikiteambot.wal.0
 config.json
 warcprox
-
+jobs.db
 
 config.json
