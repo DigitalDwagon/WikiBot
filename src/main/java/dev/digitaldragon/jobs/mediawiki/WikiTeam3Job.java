@@ -145,16 +145,6 @@ public class WikiTeam3Job extends Job {
             log("Finished task UploadMediaWiki");
         }
 
-        if (args.isWarc()) {
-            log("Starting Task Wget-AT");
-            runningTask = "Wget-AT";
-            File warcFile = new File(runDir, "output.warc");
-            File urlsFile = new File(runDir, "pages.txt");
-            MediaWikiWARCMachine warcMachine = new MediaWikiWARCMachine(this, args.getApi(), handler, directory, warcFile, urlsFile);
-            warcMachine.run();
-            log("Finished task Wget-AT");
-        }
-
         logsUrl = WikiBot.getLogFiles().uploadLogs(this);
 
         runningTask = "LinkExtract";

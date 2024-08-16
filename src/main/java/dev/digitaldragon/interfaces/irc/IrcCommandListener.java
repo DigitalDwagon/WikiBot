@@ -7,7 +7,9 @@ import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.Wiki;
+import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.wikimedia.DailyWikimediaDumpJob;
 import net.engio.mbassy.listener.Handler;
@@ -281,6 +283,24 @@ public class IrcCommandListener {
             return;
         }
         channel.sendMessage(nick + ": " + args.get());
+    }
+
+    @Handler
+    public void testWarc(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!warctest"))
+            return;
+
+        String nick = event.getActor().getNick();
+        Channel channel = event.getChannel();
+
+        String[] parts = event.getMessage().split(" ", 2);
+        if (parts.length < 2) {
+            channel.sendMessage(nick + ": Not enough arguments!");
+            return;
+        }
+
+        MediaWikiWARCJob job = new MediaWikiWARCJob(UUID.randomUUID().toString(), parts[1], new JobMeta(nick));
+        JobManager.submit(job);
     }
 
     private boolean isVoiced(Channel channel, User user) {
