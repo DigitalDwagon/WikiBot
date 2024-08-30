@@ -139,7 +139,15 @@ public abstract class Job {
      */
     public abstract JobMeta getMeta();
 
+    /**
+     * Adds a log message to the job's log.
+     * @param message the message to add to the log
+     */
     public void log(String message) {
         WikiBot.getBus().post(new JobLogEvent(this, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now().atZone(ZoneOffset.UTC)) + " | " + message));
+    }
+
+    public void uploadLogs() {
+
     }
 }

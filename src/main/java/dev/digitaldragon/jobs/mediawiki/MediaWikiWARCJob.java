@@ -2,6 +2,8 @@ package dev.digitaldragon.jobs.mediawiki;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
+import dev.digitaldragon.jobs.events.JobFailureEvent;
+import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +14,9 @@ import java.util.List;
 @Getter
 public class MediaWikiWARCJob extends Job {
     @Setter private String logsUrl;
-    @Setter private String archiveUrl = "Sorry, during testing no data will be uploaded.";
+    @Setter private String archiveUrl = "disabled";
+
+    private String WARC_BASE = "wikibot_go_";
 
     private JobStatus status = JobStatus.QUEUED;
     private Instant startTime = null;
@@ -38,6 +42,7 @@ public class MediaWikiWARCJob extends Job {
         startTime = Instant.now();
         log("wikibot v" + WikiBot.getVersion() + " job " + id);
         log("WARC archival of wikis is experimental. These jobs run silently after normal wikiteam jobs.");
+        String warcFilename = WARC_BASE + Instant.now().getEpochSecond() + "_" + id; // wikibot_go_1723841562_20bf797d-8f8a-47da-9b2a-c182a95287a8
         String[] args = new String[]{
                 "docker", "run", "--rm",
                 "-v", directory.getAbsolutePath() + ":/grab/wikibot",
@@ -62,13 +67,13 @@ public class MediaWikiWARCJob extends Job {
                 "--span-hosts",
                 "--page-requisites",
                 "--waitretry", "0",
-                "--warc-file", "wikibot/output",
+                "--warc-file", "wikibot/" + warcFilename,
                 "--warc-header", "operator: DigitalDragon <warc@digitaldragon.dev>",
                 "--warc-header", "x-wikibot-version: " + WikiBot.getVersion(),
                 "--warc-header", "x-wikibot-job-id: " + id,
                 "--warc-dedup-url-agnostic",
                 "--warc-compression-use-zstd",
-                //"--warc-zstd-dict-no-include",
+                //"--warc-zstd-dict-no-include", TODO: make and use a dictionary
                 "--header", "Connection: keep-alive",
                 "--header", "Accept-Language: en-US;q=0.9, en;q=0.8",
                 "--lua-script", "wikibot/mediawiki.lua",
@@ -80,14 +85,19 @@ public class MediaWikiWARCJob extends Job {
         RunCommand wget = new RunCommand(null, args, directory, this::log);
         wget.run();
         int wgetExitCode = wget.waitFor();
-        status = JobStatus.COMPLETED;
-        if (wgetExitCode != 0) {
+        if (wgetExitCode == 0) {
+            log("wget completed successfully!");
+            log("WARC file: " + warcFilename + ".warc.zst");
+            status = JobStatus.COMPLETED;
+            logsUrl = WikiBot.getLogFiles().uploadLogs(this);
+            WikiBot.getBus().post(new JobSuccessEvent(this));
+        } else {
             log("wget failed with exit code " + wgetExitCode);
-            log("I won't announce this failure because wget-at jobs are silent.");
+            log("WARC file: " + warcFilename + ".warc.zst");
             status = JobStatus.FAILED;
+            logsUrl = WikiBot.getLogFiles().uploadLogs(this);
+            WikiBot.getBus().post(new JobFailureEvent(this));
         }
-
-        logsUrl = WikiBot.getLogFiles().uploadLogs(this);
     }
 
     private void writeResourceToJobDirectory(String resource, String destinationName) {

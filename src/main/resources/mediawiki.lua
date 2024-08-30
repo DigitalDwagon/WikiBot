@@ -28,7 +28,51 @@ local api_url = nil -- api.php url for the wiki
 local index_url = nil -- index.php url for the wiki
 local page_queue_start = false -- Set to true when the "all page queuing" is beginning (e.g. we have requested the namespaces from the API, which will then start listing the pages in those namespaces)
 
+local abort_grab = false -- Set to true to abort with failure
+local exit = false -- Set to exit (cleanly)
+
 local discovered_outlinks = {} -- TODO: outlinks discovered on pages (to be queued to #// or otherwise)
+
+--
+-- --- Resume ---
+--
+
+local resume_file = io.open("wikibot/meta.json", "r")
+if resume_file ~= nil then
+	print("This grab will be resumed from file...")
+	local resume_content = resume_file:read("*all")
+	resume_file:close()
+	local resume_data = JSON:decode(resume_content)
+	url_count = resume_data["url_count"]
+	api_url = resume_data["api_url"]
+	index_url = resume_data["index_url"]
+	page_queue_start = resume_data["page_queue_start"]
+	print("Loaded meta.json")
+end
+
+local resume_file = io.open("wikibot/queue.json", "r")
+if resume_file ~= nil then
+	local resume_content = resume_file:read("*all")
+	resume_file:close()
+	urls_to_queue = JSON:decode(resume_content)
+	print("Loaded queue.json")
+end
+
+resume_file = io.open("wikibot/addedtolist.json", "r")
+if resume_file ~= nil then
+	local resume_content = resume_file:read("*all")
+	resume_file:close()
+	addedtolist = JSON:decode(resume_content)
+	print("Loaded addedtolist.json")
+end
+
+resume_file = io.open("wikibot/downloaded.json", "r")
+if resume_file ~= nil then
+	local resume_content = resume_file:read("*all")
+	resume_file:close()
+	downloaded = JSON:decode(resume_content)
+	print("Loaded downloaded.json")
+end
 
 --
 -- --- Helper functions ---
@@ -79,6 +123,20 @@ debug_print = function(string)
 	if print_debug_lines then
 		print(string)
 	end
+end
+
+-- Stop the grab with failure
+abort = function()
+	abort_grab = true
+	exit = true
+	print("Aborting...")
+end
+
+-- Write content to a file
+write_to_file = function(filename, content)
+	local file = io.open(filename, "w")
+	file:write(content)
+	file:close()
 end
 
 -- Checks if a string starts with a given prefix
@@ -219,6 +277,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 	return wget.actions.NOTHING
 end
 
+-- queues urls found in css from load.php files
 wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_parsed, iri, verdict, reason)
 	debug_print(table.show({urlpos=urlpos, parent=parent, depth=depth, start_url_parsed=start_url_parsed, iri=iri, verdict=verdict, reason=reason}, "download_child"))
 
@@ -232,11 +291,34 @@ end
 
 -- Chooses the next URL to queue
 wget.callbacks.get_urls = function(file, url, is_css, iri)
-	local urls = urls_to_queue
 	debug_print(table.show({file=file, url=url, is_css=is_css, iri=iri}, "get_urls"))
-	urls_to_queue = {}
+	if exit then
+		return {}
+	end
 
-	return urls
+	local stop_file = io.open("wikibot/STOP", "r")
+	if stop_file ~= nil then
+		stop_file:close()
+		exit = true
+		return {}
+	end
+
+	if retry_url ~= nil then
+		retry_url = nil
+		retries = retries + 1
+		if retries < max_retries then
+			retries = 0
+			return {{url=retry_url}}
+		end
+	end
+	-- return first item from urls_to_queue and remove it
+	if #urls_to_queue > 0 then
+		local urls = {urls_to_queue[1]}
+		table.remove(urls_to_queue, 1)
+		return urls
+	end
+
+	return {}
 end
 
 wget.callbacks.write_to_warc = function(url, http_stat)
@@ -249,6 +331,26 @@ wget.callbacks.write_to_warc = function(url, http_stat)
 	debug_print(table.show({addedtolist=addedtolist, downloaded=downloaded}, "queue_status"))
 
 	return true
+end
+
+wget.callbacks.before_exit = function(exit_status, exit_status_string)
+	-- writes important data to files so that the grab can be resumed later
+	-- (ex. wikibot will stop wget-at to split the warcs if they get too big)
+	meta = {}
+	meta["url_count"] = url_count
+	meta["api_url"] = api_url
+	meta["index_url"] = index_url
+	meta["page_queue_start"] = page_queue_start
+	write_to_file("wikibot/meta.json", JSON:encode_pretty(meta))
+	write_to_file("wikibot/queue.json", JSON:encode_pretty(urls_to_queue))
+	write_to_file("wikibot/addedtolist.json", JSON:encode_pretty(addedtolist))
+	write_to_file("wikibot/downloaded.json", JSON:encode_pretty(downloaded))
+
+	if abort_grab then
+		print("wget failed, exiting...")
+		return 1
+	end
+	return 0 -- makes my life in wikibot easier
 end
 
 -- Wget callbacks down here are only used for printing debug information --
@@ -265,9 +367,8 @@ end
 
 wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total_downloaded_bytes, total_download_time)
 	debug_print(table.show({start_time=start_time, end_time=end_time, wall_time=wall_time, numurls=numurls, total_downloaded_bytes=total_downloaded_bytes, total_download_time=total_download_time}, "finish"))
+	print("Done! Downloaded " .. numurls .. " URLs in " .. total_download_time .. " seconds.")
+	print("Total download size: " .. total_downloaded_bytes .. " bytes")
 end
 
-wget.callbacks.before_exit = function(exit_status, exit_status_string)
-	debug_print(table.show({exit_status=exit_status, exit_status_string=exit_status_string}, "before_exit"))
-	return exit_status
-end
+
