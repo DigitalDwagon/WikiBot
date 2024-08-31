@@ -65,7 +65,7 @@ public class IrcCommandListener {
 
     private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
         if (!isVoiced(channel, user)/* && !Boolean.parseBoolean(EnvConfig.getConfigs().get("is_test"))*/) {
-            throw new UserErrorException("Requires (@) or (+).");
+            throw new UserErrorException("You don't have permission to do that! Please ask someone else to run this wiki for you.");
         }
 
         if (!submissionsEnabled && shouldPause) {
