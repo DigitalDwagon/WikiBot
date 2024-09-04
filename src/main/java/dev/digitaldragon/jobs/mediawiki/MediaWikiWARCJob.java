@@ -47,7 +47,7 @@ public class MediaWikiWARCJob extends Job {
                 "docker", "run", "--rm",
                 "-v", directory.getAbsolutePath() + ":/grab/wikibot",
                 "digitaldragons/wget-at:20240624.01",
-                "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 (compatible; " +  "WikiBot/" + WikiBot.getVersion() + "; Wikibot preserves public wikis; wikibot@digitaldragon.dev; +https://wikibot.digitaldragon.dev)",
+                "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 (compatible; " +  "WikiBot/" + WikiBot.getVersion() + " - Wikibot preserves public wikis; wikibot@digitaldragon.dev; +https://wikibot.digitaldragon.dev)",
                 "--verbose",
                 "--host-lookups", "dns",
                 "--hosts-file", "/dev/null",
