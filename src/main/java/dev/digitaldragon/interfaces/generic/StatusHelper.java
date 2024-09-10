@@ -19,9 +19,9 @@ public class StatusHelper {
         if (jobId == null)
             return JobManager.getActiveJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.";
         Job job = JobManager.get(jobId);
-        JobMeta meta = job.getMeta();
         if (job == null)
             return "Job " + jobId + " does not exist!";
+        JobMeta meta = job.getMeta();
 
 
         StringBuilder message = new StringBuilder();
