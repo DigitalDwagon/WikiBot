@@ -241,7 +241,7 @@ public class IrcCommandListener {
         JobManager.submit(job);
     }*/
 
-    private boolean isVoiced(Channel channel, User user) {
+    public static boolean isVoiced(Channel channel, User user) {
         Optional<SortedSet<ChannelUserMode>> modes = channel.getUserModes(user);
         if (modes.isPresent()) {
             for (ChannelUserMode mode : modes.get()) {
@@ -251,7 +251,7 @@ public class IrcCommandListener {
         return false;
     }
 
-    private boolean isOped(Channel channel, User user) {
+    public static boolean isOped(Channel channel, User user) {
         Optional<SortedSet<ChannelUserMode>> modes = channel.getUserModes(user);
         if (modes.isPresent()) {
             for (ChannelUserMode mode : modes.get()) {
