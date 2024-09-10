@@ -1,16 +1,7 @@
 package dev.digitaldragon.interfaces.irc;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.JobMeta;
-import dev.digitaldragon.jobs.Wiki;
-import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
-import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
-import dev.digitaldragon.jobs.wikimedia.DailyWikimediaDumpJob;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -18,7 +9,10 @@ import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.SortedSet;
 import java.util.function.BiFunction;
 
 public class IrcCommandListener {
@@ -132,7 +126,7 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": Submissions are now " + (submissionsEnabled ? "enabled." : "disabled."));
     }
 
-    @Handler
+    /*@Handler
     public void wikiDetection(ChannelMessageEvent event) {
         if (!event.getMessage().startsWith("!a "))
             return;
@@ -154,7 +148,7 @@ public class IrcCommandListener {
             channel.sendMessage(nick + ": " + e.getMessage());
         }
 
-    }
+    }*/
 
     @Handler
     public void helpCommand(ChannelMessageEvent event) {
@@ -165,7 +159,7 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": https://wikibot.digitaldragon.dev/help");
     }
 
-    @Handler
+    /*@Handler
     public void mdumpCommand(ChannelMessageEvent event) {
         if (!event.getMessage().startsWith("!wmdump"))
             return;
@@ -174,7 +168,7 @@ public class IrcCommandListener {
 
         Job wmjob = new DailyWikimediaDumpJob(UUID.randomUUID().toString());
         JobManager.submit(wmjob);
-    }
+    }*/
 
     @Handler
     public void checkCommand(ChannelMessageEvent event) {
@@ -194,7 +188,7 @@ public class IrcCommandListener {
         channel.sendMessage(nick + ": " + url);
     }
 
-    @Handler
+    /*@Handler
     public void testParserCommand(ChannelMessageEvent event) {
         if (!event.getMessage().startsWith("!testparser"))
             return;
@@ -245,7 +239,7 @@ public class IrcCommandListener {
 
         MediaWikiWARCJob job = new MediaWikiWARCJob(UUID.randomUUID().toString(), parts[1], new JobMeta(nick));
         JobManager.submit(job);
-    }
+    }*/
 
     private boolean isVoiced(Channel channel, User user) {
         Optional<SortedSet<ChannelUserMode>> modes = channel.getUserModes(user);
