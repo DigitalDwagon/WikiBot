@@ -41,12 +41,13 @@ public class MediaWikiWARCJob extends Job {
     public void run() {
         startTime = Instant.now();
         log("wikibot v" + WikiBot.getVersion() + " job " + id);
-        log("WARC archival of wikis is experimental. These jobs run silently after normal wikiteam jobs.");
+        //log("WARC archival of wikis is experimental. These jobs run silently after normal wikiteam jobs.");
         String warcFilename = WARC_BASE + Instant.now().getEpochSecond() + "_" + id; // wikibot_go_1723841562_20bf797d-8f8a-47da-9b2a-c182a95287a8
         String[] args = new String[]{
                 "docker", "run", "--rm",
                 "-v", directory.getAbsolutePath() + ":/grab/wikibot",
-                "digitaldragons/wget-at:20240624.01",
+                "--entrypoint", "/usr/local/bin/wget-lua",
+                "atdr.meo.ws/archiveteam/grab-base@sha256:50245bd61b56b05f481546866d2e93d1d5bd4afb56644c9889120d3741476de7", //20240513.01
                 "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 (compatible; " +  "WikiBot/" + WikiBot.getVersion() + " - Wikibot preserves public wikis; wikibot@digitaldragon.dev; +https://wikibot.digitaldragon.dev)",
                 "--verbose",
                 "--host-lookups", "dns",
