@@ -68,8 +68,9 @@ end
 -- Queues a url
 queue_url = function(url, referer)
 	local headers = {}
-	if referer ~= nil then
-		headers["Referer"] = referer
+	headers["Referer"] = referer
+	if headers["Referer"] == nil then
+		headers["Referer"] = ""
 	end
 	table.insert(urls_to_queue, {url=url, headers=headers})
 	addedtolist[url] = true
@@ -87,8 +88,9 @@ end
 safe_queue_html = function(url, referer)
 	if not processed(url) then
 		local headers = {}
-		if referer ~= nil then
-			headers["Referer"] = referer
+		headers["Referer"] = referer
+		if headers["Referer"] == nil then
+			headers["Referer"] = ""
 		end
 		table.insert(urls_to_queue, {url=url, link_expect_html=1, headers=headers})
 		addedtolist[url] = true
@@ -100,8 +102,9 @@ end
 safe_queue_css = function(url, referer)
 	if not processed(url) then
 		local headers = {}
-		if referer ~= nil then
-			headers["Referer"] = referer
+		headers["Referer"] = referer
+		if headers["Referer"] == nil then
+			headers["Referer"] = ""
 		end
 		table.insert(urls_to_queue, {url=url, link_expect_css=1, headers=headers})
 		addedtolist[url] = true
