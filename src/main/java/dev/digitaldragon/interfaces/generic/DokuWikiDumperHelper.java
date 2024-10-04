@@ -14,22 +14,18 @@ public class DokuWikiDumperHelper {
     /**
      * Begins a new job with the given unparsed arguments and username.
      *
-     * @param unparsedArgs the command line arguments to parse
+     * @param command the command line arguments to parse
      * @param userName the name of the user initiating the job
      * @return a string representing the result of the job initiation
      */
-    public static String beginJob(String unparsedArgs, String userName) {
+    public static String beginJob(String command, String userName) {
         DokuWikiDumperArgs args = new DokuWikiDumperArgs();
-        if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
-            unparsedArgs = unparsedArgs.replace("'", "\"");
-        unparsedArgs = unparsedArgs.replace("”", "\"");
-        unparsedArgs = unparsedArgs.replace("“", "\"");
 
         try {
             JCommander.newBuilder()
                     .addObject(args)
                     .build()
-                    .parse(unparsedArgs.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    .parse(Command.shellSplit(command).toArray(new String[0]));
         } catch (ParameterException e) {
             return "Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")";
         }

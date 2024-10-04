@@ -29,23 +29,18 @@ public class WikiTeam3Helper {
     /**
      * Begins a job with the given unparsed arguments and username.
      *
-     * @param unparsedArgs The unparsed arguments for the job.
+     * @param command The unparsed arguments for the job.
      * @param userName The name of the user.
      * @return A string representing the result of the job initiation.
      */ //TODO switch to the new Args class-type parser here to enable compatibility with more platforms and modules.
-    public static String beginJob(String unparsedArgs, String userName) {
+    public static String beginJob(String command, String userName) {
         WikiTeam3Args args = new WikiTeam3Args();
-        if (!unparsedArgs.contains("\"")) //hack to make single quotes work lol
-            unparsedArgs = unparsedArgs.replace("'", "\"");
-        unparsedArgs = unparsedArgs.replace("”", "\"");
-        unparsedArgs = unparsedArgs.replace("“", "\"");
-
 
         try {
             JCommander.newBuilder()
                     .addObject(args)
                     .build()
-                    .parse(unparsedArgs.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
+                    .parse(Command.shellSplit(command).toArray(new String[0]));
         } catch (ParameterException e) {
             return "Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")";
         }
