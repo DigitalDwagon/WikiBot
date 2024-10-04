@@ -63,7 +63,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
     implementation("org.xerial:sqlite-jdbc:3.46.0.0")
 
-
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }
@@ -108,5 +109,8 @@ tasks {
     }
     processResources {
         filteringCharset = UTF_8.name() // We want UTF-8 for everything
+    }
+    test {
+        useJUnitPlatform()
     }
 }
