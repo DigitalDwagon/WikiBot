@@ -15,6 +15,7 @@ public class Config {
     public DashboardConfig dashboardConfig;
     public IRCConfig ircConfig;
     public WikiTeam3Config wikiTeam3Config;
+    public UploadConfig uploadConfig;
 
     public Config(String filename) throws IOException {
         File file = new File(filename);
@@ -91,6 +92,13 @@ public class Config {
         } else {
             wikiTeam3Config = new WikiTeam3Config(false, null, false, false, null);
         }
+
+        if (json.has("upload")) {
+            JSONObject upload = json.getJSONObject("upload");
+            uploadConfig = new UploadConfig(upload.getString("collection"));
+        } else {
+            uploadConfig = new UploadConfig("opensource");
+        }
     }
 
 
@@ -101,4 +109,5 @@ public class Config {
     public record IRCConfig(boolean isEnabled, String server, int port, String channel, String nick, String realName, IRCAuthOptions authOptions) {}
     public record IRCAuthOptions(boolean isEnabled, String password) {}
     public record WikiTeam3Config(boolean isEnabled, String userAgent, boolean warcEnabled, boolean autoWarc, String binZstd) {}
+    public record UploadConfig(String collection) {}
 }

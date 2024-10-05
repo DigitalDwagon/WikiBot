@@ -35,5 +35,8 @@
     "warcEnabled": true,
     "autoWarc": false,
     "binZstd": "zstd"
+  },
+  "upload": {
+    "collection": "opensource"
   }
 }

@@ -125,7 +125,7 @@ public class PukiWikiDumperJob extends Job {
             failure(999);
             return;
         }
-        String[] uploadParams = new String[] {"pukiWikiUploader", dumpDir.getName()};
+        String[] uploadParams = new String[] {"pukiWikiUploader", dumpDir.getName(), "--collection", WikiBot.getConfig().getUploadConfig().collection()};
         uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
             log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
@@ -175,6 +175,6 @@ public class PukiWikiDumperJob extends Job {
     }
 
     public List<String> getAllTasks() {
-        return List.of("DokuWikiDumper");
+        return List.of("Dump", "Upload");
     }
 }

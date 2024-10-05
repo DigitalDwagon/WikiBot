@@ -130,7 +130,11 @@ public class WikiTeam3Job extends Job {
                 failure(999);
                 return;
             }
-            String[] uploadParams = new String[] {"wikiteam3uploader", dumpDir.getName(), "--zstd-level", "22", "--parallel", "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd()};
+            String[] uploadParams = new String[] {"wikiteam3uploader", dumpDir.getName(),
+                    "--zstd-level", "22",
+                    "--parallel",
+                    "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd(),
+                    "--collection", WikiBot.getConfig().getUploadConfig().collection()};
             uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
                 log(message);
                 CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);

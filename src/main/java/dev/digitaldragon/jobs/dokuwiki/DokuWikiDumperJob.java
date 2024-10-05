@@ -125,7 +125,7 @@ public class DokuWikiDumperJob extends Job {
             failure(999);
             return;
         }
-        String[] uploadParams = new String[] {"dokuWikiUploader", dumpDir.getName()};
+        String[] uploadParams = new String[] {"dokuWikiUploader", dumpDir.getName(), "--collection", WikiBot.getConfig().getUploadConfig().collection()};
         uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
             log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
