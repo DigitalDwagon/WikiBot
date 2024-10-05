@@ -47,8 +47,12 @@ public class StatusHelper {
 
         message.append("Status: ");
         message.append(job.getStatus().toString());
-        message.append(". Started: ");
-        message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
+        message.append(". ");
+        if (job.getStartTime() != null) {
+            message.append("Started: ");
+            message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
+        }
+
         if (meta.getExplain().isPresent()) message.append("\"").append(meta.getExplain().get()).append("\"");
 
         return message.toString();
