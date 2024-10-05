@@ -71,7 +71,7 @@ public class IRCBulkCommand {
                                     jobs++;
                                 }
                                 default -> {
-                                    event.getChannel().sendMessage(String.format("%s: Invalid command on line %s", nick, i));
+                                    if (line.startsWith("!")) event.getChannel().sendMessage(String.format("%s: Invalid command on line %s", nick, i));
                                     continue;
                                 }
                             }
