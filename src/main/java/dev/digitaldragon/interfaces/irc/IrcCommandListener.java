@@ -1,7 +1,11 @@
 package dev.digitaldragon.interfaces.irc;
 
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
+import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -9,51 +13,99 @@ import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class IrcCommandListener {
     private boolean submissionsEnabled = true;
 
     @Handler
-    public void message(ChannelMessageEvent event) {
-        Map<String, BiFunction<String, String, String>> commandHandlers = new HashMap<>();
-        commandHandlers.put("!dokusingle", DokuWikiDumperHelper::beginJob);
-        commandHandlers.put("!dw", DokuWikiDumperHelper::beginJob);
-        commandHandlers.put("!pw", PukiWikiDumperHelper::beginJob);
-        commandHandlers.put("!mediawikisingle", WikiTeam3Helper::beginJob);
-        commandHandlers.put("!mw", WikiTeam3Helper::beginJob);
-        commandHandlers.put("!reupload", ReuploadHelper::beginJob);
+    public void onMessage(ChannelMessageEvent event) {
+        if (!event.getMessage().startsWith("!")) return;
 
-        String message = event.getMessage();
-        String nick = event.getActor().getNick();
         Channel channel = event.getChannel();
+        User user = event.getActor();
+        String nick = user.getNick();
+        String rawMessage = event.getMessage();
+        String[] parts = rawMessage.split(" ", 2);
+        if (parts[0].length() < 2) return;
+        String command = parts[0].substring(1).trim();
+        String message = (parts.length > 1 && !parts[1].isBlank()) ? parts[1].trim() : null;
 
-        String[] parts = message.split(" ", 2);
+        Map<String, Runnable> commands = new HashMap<>();
+        // !bulk has its own listener for now, so skipped here.
 
-        String command = parts[0];
+        // --- Non-job specific commands ---
+        commands.put("help", () -> {
+            channel.sendMessage(nick + ": https://wikibot.digitaldragon.dev/help");
+        });
 
-        if (commandHandlers.containsKey(command)) {
-            if (parts.length < 2) {
+        commands.put("check", () -> {
+            String reply = URLEncoder.encode(message);
+            String url = "https://archive.org/search?query=originalurl%3A%28%2A" + reply + "%2A%29";
+            channel.sendMessage(nick + ": " + url);
+        });
+
+        commands.put("pause", () -> {
+            if (!isOped(event.getChannel(), event.getActor())) {
+                channel.sendMessage(nick + ": You don't have permission to do that! Please ask an op.");
+                return;
+            }
+
+            submissionsEnabled = !submissionsEnabled;
+            channel.sendMessage(nick + ": Submissions are now " + (submissionsEnabled ? "enabled." : "disabled."));
+        });
+
+        if (WikiBot.getConfig().getWikiTeam3Config().warcEnabled()) commands.put("warctest", () -> {
+            JobManager.submit(new MediaWikiWARCJob(UUID.randomUUID().toString(), parts[1], new JobMeta(nick)));
+        });
+
+        // --- Job-specific commands ---
+        commands.put("status", () -> {
+            String reply = StatusHelper.getStatus(message);
+            channel.sendMessage(nick + ": " + reply);
+        });
+
+        commands.put("abort", () -> {
+            try {
+                checkUserPermissions(channel, event.getActor(), false);
+            } catch (UserErrorException e) {
+                channel.sendMessage(nick + ": " + e.getMessage());
+                return;
+            }
+
+            if (message == null) {
                 channel.sendMessage(nick + ": Not enough arguments!");
                 return;
             }
 
-            String opts = parts[1];
+            String reply = AbortHelper.abortJob(message);
+            if (reply != null)
+                channel.sendMessage(nick + ": " + reply);
+        });
 
-            try {
-                checkUserPermissions(channel, event.getActor(), true);
-                String resultMessage = commandHandlers.get(command).apply(opts, nick);
-                if (resultMessage != null) {
-                    channel.sendMessage(nick + ": " + resultMessage);
-                }
-            } catch (UserErrorException exception) {
-                channel.sendMessage(nick + ": " + exception.getMessage());
-            }
+        commands.put("mediawikisingle", () -> runHelper(channel, user, message, WikiTeam3Helper::beginJob));
+        commands.put("mw", () -> runHelper(channel, user, message, WikiTeam3Helper::beginJob));
+        commands.put("dokusingle", () -> runHelper(channel, user, message, DokuWikiDumperHelper::beginJob));
+        commands.put("dw", () -> runHelper(channel, user, message, DokuWikiDumperHelper::beginJob));
+        commands.put("pukisingle", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
+        commands.put("pw", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
+        commands.put("reupload", () -> runHelper(channel, user, message, ReuploadHelper::beginJob));
+
+        if (commands.get(command) != null) {
+            commands.get(command).run();
         }
+    }
+
+    public void runHelper(Channel channel, User user, String message, BiFunction<String, String, String> helper) {
+        try {
+            checkUserPermissions(channel, user, true);
+        } catch (UserErrorException e) {
+            channel.sendMessage(user.getNick() + ": " + e.getMessage());
+        }
+
+        String reply = helper.apply(message, user.getNick());
+        if (reply != null) channel.sendMessage(user.getNick() + ": " + message);
     }
 
     private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
@@ -69,177 +121,6 @@ public class IrcCommandListener {
             }
         }
     }
-
-    @Handler
-    public void abortCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!abort"))
-            return;
-
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-        try {
-            checkUserPermissions(channel, event.getActor(), false);
-        } catch (UserErrorException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        }
-
-        if (event.getMessage().split(" ").length < 2) {
-            channel.sendMessage(nick + ": Not enough arguments!");
-            return;
-        }
-        String jobId = event.getMessage().split(" ")[1];
-
-        String message = AbortHelper.abortJob(jobId);
-        if (message != null)
-            event.getChannel().sendMessage(nick + ": " + message);
-    }
-
-    @Handler
-    public void statusCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!status"))
-            return;
-
-        String jobId;
-        if (event.getMessage().split(" ").length < 2) {
-            jobId = null;
-        } else {
-            jobId = event.getMessage().split(" ")[1];
-        }
-
-        String message = StatusHelper.getStatus(jobId);
-        event.getChannel().sendMessage(event.getActor().getNick() + ": " + message);
-    }
-
-    @Handler
-    public void pauseCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().equals("!pause"))
-            return;
-
-        if (!isOped(event.getChannel(), event.getActor()))
-            return;
-
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-
-        submissionsEnabled = !submissionsEnabled;
-        channel.sendMessage(nick + ": Submissions are now " + (submissionsEnabled ? "enabled." : "disabled."));
-    }
-
-    /*@Handler
-    public void wikiDetection(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!a "))
-            return;
-
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-
-        String[] parts = event.getMessage().split(" ", 3);
-        if (parts.length < 3) {
-            channel.sendMessage(nick + ": Not enough arguments!");
-            return;
-        }
-        String url = parts[1];
-
-        try {
-            Wiki wiki = Wiki.detectWiki(url);
-            wiki.run(url, nick, parts[2]);
-        } catch (UserErrorException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-        }
-
-    }*/
-
-    @Handler
-    public void helpCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!help"))
-            return;
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-        channel.sendMessage(nick + ": https://wikibot.digitaldragon.dev/help");
-    }
-
-    /*@Handler
-    public void mdumpCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!wmdump"))
-            return;
-        if (!isOped(event.getChannel(), event.getActor()))
-            return;
-
-        Job wmjob = new DailyWikimediaDumpJob(UUID.randomUUID().toString());
-        JobManager.submit(wmjob);
-    }*/
-
-    @Handler
-    public void checkCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!check"))
-            return;
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-
-        String[] parts = event.getMessage().split(" ", 2);
-        if (parts.length < 2) {
-            channel.sendMessage(nick + ": Not enough arguments!");
-            return;
-        }
-        String opts = parts[1];
-        opts = URLEncoder.encode(opts);
-        String url = "https://archive.org/search?query=originalurl%3A%28%2A" + opts + "%2A%29";
-        channel.sendMessage(nick + ": " + url);
-    }
-
-    /*@Handler
-    public void testParserCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!testparser"))
-            return;
-
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-
-        String[] parts = event.getMessage().split(" ", 2);
-        if (parts.length < 2) {
-            channel.sendMessage(nick + ": Not enough arguments!");
-            return;
-        }
-
-        String opts = parts[1];
-        WikiTeam3Args args = new WikiTeam3Args();
-
-        //split opts on spaces, except when the spaces are in ""
-
-        try {
-            JCommander.newBuilder()
-                    .addObject(args)
-                    .build()
-                    .parse(opts.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
-            args.check();
-        } catch (UserErrorException e) {
-            channel.sendMessage(nick + ": " + e.getMessage());
-            return;
-        } catch (ParameterException e) {
-            channel.sendMessage(nick + ": Invalid parameters or options!");
-            return;
-        }
-        channel.sendMessage(nick + ": " + args.get());
-    }
-
-    @Handler
-    public void testWarc(ChannelMessageEvent event) {
-        if (!event.getMessage().startsWith("!warctest"))
-            return;
-
-        String nick = event.getActor().getNick();
-        Channel channel = event.getChannel();
-
-        String[] parts = event.getMessage().split(" ", 2);
-        if (parts.length < 2) {
-            channel.sendMessage(nick + ": Not enough arguments!");
-            return;
-        }
-
-        MediaWikiWARCJob job = new MediaWikiWARCJob(UUID.randomUUID().toString(), parts[1], new JobMeta(nick));
-        JobManager.submit(job);
-    }*/
 
     public static boolean isVoiced(Channel channel, User user) {
         Optional<SortedSet<ChannelUserMode>> modes = channel.getUserModes(user);
