@@ -105,7 +105,7 @@ public class IrcCommandListener {
         }
 
         String reply = helper.apply(message, user.getNick());
-        if (reply != null) channel.sendMessage(user.getNick() + ": " + message);
+        if (reply != null) channel.sendMessage(user.getNick() + ": " + reply);
     }
 
     private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
