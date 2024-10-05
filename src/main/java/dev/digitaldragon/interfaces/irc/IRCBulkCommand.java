@@ -3,6 +3,7 @@ package dev.digitaldragon.interfaces.irc;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
+import dev.digitaldragon.jobs.JobMeta;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
@@ -49,15 +50,26 @@ public class IRCBulkCommand {
                         //split lines
                         String[] lines = body.split("\n");
                         int i = 0;
+                        int jobs = 0;
                         for (String line : lines) {
                             i++;
                             String command = line.substring(0, 3);
                             line = line.substring(4).trim();
+                            if (!line.contains("--silent-mode")) line += " --silent-mode " + JobMeta.SilentMode.FAIL.name(); // references the enum directly to cause a compile error in case END is removed from the enum
                             String result = null;
                             switch (command) {
-                                case "!mw" -> WikiTeam3Helper.beginJob(line, nick);
-                                case "!dw" -> DokuWikiDumperHelper.beginJob(line, nick);
-                                case "!pw" -> PukiWikiDumperHelper.beginJob(line, nick);
+                                case "!mw" ->  {
+                                    WikiTeam3Helper.beginJob(line, nick);
+                                    jobs++;
+                                }
+                                case "!dw" -> {
+                                    DokuWikiDumperHelper.beginJob(line, nick);
+                                    jobs++;
+                                }
+                                case "!pw" -> {
+                                    PukiWikiDumperHelper.beginJob(line, nick);
+                                    jobs++;
+                                }
                                 default -> {
                                     event.getChannel().sendMessage(String.format("%s: Invalid command on line %s", nick, i));
                                     continue;
@@ -68,6 +80,7 @@ public class IRCBulkCommand {
                             }
 
                         }
+                        event.getChannel().sendMessage(String.format("%s: Launched %s jobs (for %s)", nick, jobs, uri));
                     });
         } catch (Exception e) {
             event.getChannel().sendMessage(String.format("%s: An error occurred while processing the URL", nick));
