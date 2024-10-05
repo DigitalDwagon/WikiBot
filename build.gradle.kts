@@ -18,17 +18,17 @@ repositories {
 
 dependencies {
     implementation(platform("com.google.cloud:libraries-bom:23.1.0"))
-    implementation("com.google.cloud:google-cloud-storage:2.1.7")
+    implementation("com.google.cloud:google-cloud-storage:2.43.1")
     implementation("net.dv8tion:JDA:5.0.0-alpha.12")
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
     implementation("org.kitteh.irc:client-lib:8.0.0")
-    implementation("org.json:json:20230227")
+    implementation("org.json:json:20240303")
     implementation("com.google.code.gson:gson:2.10.1") //yes there are two json libraries, one for receiving and one for sending. it's stupid but i'm lazy
     // https://mvnrepository.com/artifact/commons-io/commons-io
     //implementation("commons-io:commons-io:2.13.0")
 
     //used for XML parsing in link extractor.
-    implementation("org.jsoup:jsoup:1.16.1")
+    implementation("org.jsoup:jsoup:1.18.1")
 
     //used to decompress zstd streams
     // https://mvnrepository.com/artifact/com.github.luben/zstd-jni
@@ -46,18 +46,14 @@ dependencies {
 
     // telegram bot api
     //https://github.com/rubenlagus/TelegramBots
-    implementation("org.telegram:telegrambots:6.8.0")
-    implementation("org.telegram:telegrambots-abilities:6.8.0")
+    implementation("org.telegram:telegrambots:6.9.7.1")
+    implementation("org.telegram:telegrambots-abilities:6.9.7.1")
 
     //loggers
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation("org.slf4j:slf4j-api:2.0.12")
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation("org.slf4j:slf4j-simple:2.0.12")
-
-    //WAAAARRRRCCCC
-    // https://mvnrepository.com/artifact/org.netpreserve/jwarc
-    implementation("org.netpreserve:jwarc:0.2.0")
 
     // sqlite for database
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
