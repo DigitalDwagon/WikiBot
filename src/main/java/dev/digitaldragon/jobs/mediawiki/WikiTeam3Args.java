@@ -3,15 +3,16 @@ package dev.digitaldragon.jobs.mediawiki;
 import com.beust.jcommander.Parameter;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.jobs.CommonTasks;
+import dev.digitaldragon.jobs.JobMeta;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -63,6 +64,8 @@ public class WikiTeam3Args {
     private boolean warc;
     @Parameter(names = {"--warconly"})
     private boolean warcOnly;
+    @Parameter(names = {"--silent-mode"})
+    private String silentMode = null;
 
     /**
      * This method checks the validity of three URL options - api, index, and url.
@@ -74,6 +77,15 @@ public class WikiTeam3Args {
         checkUrlOption(api);
         checkUrlOption(index);
         checkUrlOption(url);
+
+        try {
+            if (silentMode != null) {
+                silentMode = silentMode.toUpperCase(Locale.ENGLISH);
+                JobMeta.SilentMode.valueOf(silentMode);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new UserErrorException("Invalid --silent-mode - it must be one of: " + Arrays.toString(JobMeta.SilentMode.values()));
+        }
     }
 
     private void checkUrlOption(String option) throws UserErrorException {

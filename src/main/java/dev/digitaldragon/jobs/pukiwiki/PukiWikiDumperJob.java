@@ -55,6 +55,7 @@ public class PukiWikiDumperJob extends Job {
         this.meta = new JobMeta(userName);
         meta.setExplain(args.getExplain());
         meta.setTargetUrl(args.getUrl());
+        if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
     }
 
     private void failure(int code) {

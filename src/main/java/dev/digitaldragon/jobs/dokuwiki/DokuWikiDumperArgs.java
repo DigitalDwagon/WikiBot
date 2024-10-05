@@ -2,13 +2,16 @@ package dev.digitaldragon.jobs.dokuwiki;
 
 import com.beust.jcommander.Parameter;
 import dev.digitaldragon.interfaces.UserErrorException;
+import dev.digitaldragon.jobs.JobMeta;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -46,6 +49,9 @@ public class DokuWikiDumperArgs {
     private boolean html;
     @Parameter(names = {"--pdf"})
     private boolean pdf;
+    @Parameter(names = {"--silent-mode"})
+    private String silentMode;
+
 
     /**
      * This method checks the validity of three URL options - api, index, and url.
@@ -62,6 +68,15 @@ public class DokuWikiDumperArgs {
             new URL(url);
         } catch (MalformedURLException e) {
             throw new UserErrorException("Invalid URL! Hint: make sure you include the protocol (http:// or https://)");
+        }
+
+        try {
+            if (silentMode != null) {
+                silentMode = silentMode.toUpperCase(Locale.ENGLISH);
+                JobMeta.SilentMode.valueOf(silentMode);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new UserErrorException("Invalid --silent-mode - it must be one of: " + Arrays.toString(JobMeta.SilentMode.values()));
         }
     }
 

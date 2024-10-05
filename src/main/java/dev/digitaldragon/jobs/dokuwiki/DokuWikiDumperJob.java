@@ -60,6 +60,7 @@ public class DokuWikiDumperJob extends Job {
         this.meta = new JobMeta(userName);
         meta.setExplain(explanation);
         meta.setTargetUrl(name);
+        if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
     }
 
     private void failure(int code) {

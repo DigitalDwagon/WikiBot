@@ -11,6 +11,7 @@ public class JobMeta {
     private String userName;
     private Optional<String> explain = Optional.empty();
     private JobPlatform platform;
+    private SilentMode silentMode = SilentMode.ALL;
     private Optional<String> targetUrl = Optional.empty();
     private Optional<String> discordUserId = Optional.empty();
 
@@ -23,6 +24,13 @@ public class JobMeta {
         IRC,
         TELEGRAM,
         API
+    }
+
+    public enum SilentMode {
+        ALL,
+        FAIL,
+        END,
+        SILENT
     }
 
     public void setExplain(String explain) {
