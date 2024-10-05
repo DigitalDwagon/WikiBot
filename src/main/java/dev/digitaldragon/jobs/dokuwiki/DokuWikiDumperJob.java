@@ -22,44 +22,39 @@ import java.util.List;
  */
 @Getter
 public class DokuWikiDumperJob extends Job {
-    private String id = null;
-    private String name = "undefined";
-    private String userName = "undefined";
-    private JobStatus status = null;
+    private final String id;
+    private final String name;
+    private final String userName;
+    private JobStatus status;
     private String runningTask = null;
     private Instant startTime = null;
-    private String[] params = null;
-    private File directory = null;
+    private final File directory;
     private RunCommand downloadCommand = null;
     private RunCommand uploadCommand = null;
-    private String explanation = null;
+    private String explanation;
     @Setter
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
     private GenericLogsHandler handler;
     private int failedTaskCode;
-    private JobMeta meta;
     private DokuWikiDumperArgs args;
+    private JobMeta meta;
 
-    public DokuWikiDumperJob(String userName, String id, String name, DokuWikiDumperArgs args, String explanation) {
-        System.out.println(name);
+
+    public DokuWikiDumperJob(String userName, String id, DokuWikiDumperArgs args) {
+        name = args.getUrl();
         this.userName = userName;
         this.id = id;
-        this.name = name;
-        this.params = args.get();
         this.status = JobStatus.QUEUED;
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.explanation = explanation;
+        this.explanation = args.getExplain();
         this.handler = new GenericLogsHandler(this);
-        this.downloadCommand = new RunCommand(null, params, directory, message -> {
-            handler.onMessage(message);
-            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
-        });
+        this.args = args;
         this.meta = new JobMeta(userName);
-        meta.setExplain(explanation);
-        meta.setTargetUrl(name);
+        meta.setExplain(args.getExplain());
+        meta.setTargetUrl(args.getUrl());
         if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
     }
 
@@ -79,11 +74,71 @@ public class DokuWikiDumperJob extends Job {
         startTime = Instant.now();
         status = JobStatus.RUNNING;
 
-        int runDownload = runDownload();
-        if (runDownload != 0) {
-            failure(runDownload);
+
+        WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
+        startTime = Instant.now();
+        status = JobStatus.RUNNING;
+        log("wikibot v" + WikiBot.getVersion() + " job " + id);
+
+        List<String> dumpArgs = args.get();
+        File runDir = directory;
+        if (args.getResume() != null) {
+            File resumeDir = CommonTasks.findDumpDir(args.getResume());
+
+            if (resumeDir == null) {
+                log("Error (bot): Unknown job " + args.getResume());
+                failure(1);
+                return;
+            }
+
+            runDir = resumeDir.getParentFile();
+            dumpArgs.add("--path");
+            dumpArgs.add(resumeDir.getName());
+        }
+
+
+
+        runningTask = "Dump";
+        log("Starting dump task");
+
+        downloadCommand = new RunCommand(null, dumpArgs.toArray(new String[0]), runDir, message -> {
+            log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+        });
+
+        downloadCommand.run();
+        int downloadExitCode = downloadCommand.waitFor();
+        if (downloadExitCode != 0) {
+            failure(downloadExitCode);
             return;
         }
+
+        log("Finished dump task");
+
+        runningTask = "Upload";
+        log("Starting upload task");
+
+        File dumpDir = CommonTasks.findDumpDir(runDir);
+        if (dumpDir == null) {
+            log("Failed to find the dump directory, aborting...");
+            failure(999);
+            return;
+        }
+        String[] uploadParams = new String[] {"dokuWikiUploader", dumpDir.getName()};
+        uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
+            log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+        });
+
+        uploadCommand.run();
+        if (uploadCommand.waitFor() != 0) {
+            failure(uploadCommand.waitFor());
+            return;
+        }
+
+        log("Finished task upload");
 
         logsUrl = CommonTasks.uploadLogs(this);
 
@@ -93,20 +148,14 @@ public class DokuWikiDumperJob extends Job {
         WikiBot.getBus().post(new JobSuccessEvent(this));
     }
 
-    private int runDownload() {
-        runningTask = "DokuWikiDumper";
-        handler.onMessage("----- Bot: Task " + runningTask + " started -----");
-        return CommonTasks.runAndVerify(downloadCommand, handler, runningTask);
-    }
-
 
     public boolean abort() {
-        if (runningTask.equals("DokuWikiDumper")) {
-            handler.onMessage("----- Bot: Aborting task " + runningTask + " -----");
+        if (runningTask.equals("Dump")) {
+            log("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
             downloadCommand.getProcess().destroyForcibly();
             status = JobStatus.ABORTED;
-            handler.onMessage("----- Bot: Aborted task " + runningTask + " -----");
+            log("----- Bot: Aborted task " + runningTask + " -----");
             runningTask = "AbortTask";
             return true;
         }
@@ -124,6 +173,6 @@ public class DokuWikiDumperJob extends Job {
     }
 
     public List<String> getAllTasks() {
-        return List.of("DokuWikiDumper");
+        return List.of("Dump", "Upload");
     }
 }

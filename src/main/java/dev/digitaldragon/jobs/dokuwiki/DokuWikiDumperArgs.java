@@ -51,6 +51,8 @@ public class DokuWikiDumperArgs {
     private boolean pdf;
     @Parameter(names = {"--silent-mode"})
     private String silentMode;
+    @Parameter(names = {"--resume"})
+    private String resume;
 
 
     /**
@@ -80,11 +82,10 @@ public class DokuWikiDumperArgs {
         }
     }
 
-    public String[] get() {
+    public List<String> get() {
         //parse the args into a string compatible with wikiteam3. Wikiteam3 only uses the long version of the args, so we have to convert the short versions to the long versions.
         List<String> args = new ArrayList<>();
         args.add("dokuWikiDumper");
-        args.add("--upload");
 
         parseUrlOption(args, url, "");
 
@@ -105,7 +106,7 @@ public class DokuWikiDumperArgs {
         parseBooleanOption(args, html, "--html");
         parseBooleanOption(args, pdf, "--pdf");
 
-        return args.toArray(new String[0]);
+        return args;
     }
 
     private void parseBooleanOption(List<String> args, boolean option, String longOption) {

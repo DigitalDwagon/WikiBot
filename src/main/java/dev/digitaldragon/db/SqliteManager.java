@@ -1,6 +1,7 @@
 package dev.digitaldragon.db;
 
 import com.google.gson.Gson;
+import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.interfaces.irc.IRCClient;
@@ -15,7 +16,6 @@ import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
-import jdk.jfr.Enabled;
 import net.badbird5907.lightning.annotation.EventHandler;
 
 import java.io.File;
@@ -222,6 +222,14 @@ public class SqliteManager {
                             }
                             setFailed(job.getId());
                             PukiWikiDumperHelper.beginJob(args, job.getMeta().getUserName());
+                        } else if (job.getType() == JobType.DOKUWIKIDUMPER) {
+                            IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
+                            DokuWikiDumperArgs args = (DokuWikiDumperArgs) getArgs(job.getId());
+                            if (dir.exists() && args.getResume() == null) {
+                                args.setResume(job.getId());
+                            }
+                            setFailed(job.getId());
+                            DokuWikiDumperHelper.beginJob(args, job.getMeta().getUserName());
                         } else {
                             IRCClient.sendMessage("DigitalDragons: " + job.getId() + " died.");
                         }

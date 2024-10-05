@@ -46,7 +46,7 @@ public class DokuWikiDumperHelper {
         } catch (UserErrorException e) {
             return e.getMessage();
         }
-        Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), args.getUrl(), args, explain);
+        Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), args);
         JobManager.submit(job);
 
         return null;
