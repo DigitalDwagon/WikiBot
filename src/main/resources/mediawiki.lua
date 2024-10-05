@@ -321,7 +321,7 @@ wget.callbacks.write_to_warc = function(url, http_stat)
 	debug_print(table.show({url, http_stat}, "write_to_warc"))
 	print(url_count .. " = " .. http_stat["statcode"] .. " " .. url["url"])
 	url_count = url_count + 1
-	addedtolist[url["url"]] = false
+	addedtolist[url["url"]] = nil
 	downloaded[url["url"]] = true
 
 	debug_print(table.show({addedtolist=addedtolist, downloaded=downloaded}, "queue_status"))
