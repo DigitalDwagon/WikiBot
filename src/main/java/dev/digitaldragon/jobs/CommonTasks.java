@@ -55,13 +55,13 @@ public class CommonTasks {
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 if (type == JobType.WIKITEAM3) {
-                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel --bin-zstd " + WikiBot.getConfig().getWikiTeam3Config().binZstd(), null, directory, jobWatcher);
+                    uploadCommand = new RunCommand("wikiteam3uploader " + file.getName() + " --zstd-level 22 --parallel --bin-zstd " + WikiBot.getConfig().getWikiTeam3Config().binZstd() + " --collection " + WikiBot.getConfig().getUploadConfig().collection(), null, directory, jobWatcher);
                 }
                 if (type == JobType.DOKUWIKIDUMPER) {
-                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName(), null, directory, jobWatcher);
+                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName() + " --collection " + WikiBot.getConfig().getUploadConfig().collection(), null, directory, jobWatcher);
                 }
                 if (type == JobType.PUKIWIKIDUMPER) {
-                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName(), null, directory, jobWatcher);
+                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName() + " --collection " + WikiBot.getConfig().getUploadConfig().collection(), null, directory, jobWatcher);
                 }
                 break;
             }
