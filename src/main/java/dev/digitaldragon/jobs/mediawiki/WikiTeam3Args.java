@@ -66,6 +66,8 @@ public class WikiTeam3Args {
     private boolean warcOnly;
     @Parameter(names = {"--silent-mode"})
     private String silentMode = null;
+    @Parameter(names = {"--queue"})
+    private String queue;
 
     /**
      * This method checks the validity of three URL options - api, index, and url.

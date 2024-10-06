@@ -61,6 +61,7 @@ public class WikiTeam3Job extends Job {
         meta.setExplain(args.getExplain());
         meta.setTargetUrl(targetUrl);
         if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
+        if (args.getQueue() != null) meta.setQueue(args.getQueue());
     }
 
     private void failure(int code) {

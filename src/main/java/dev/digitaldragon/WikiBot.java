@@ -9,6 +9,7 @@ import dev.digitaldragon.interfaces.discord.DiscordClient;
 import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.interfaces.telegram.TelegramClient;
 import dev.digitaldragon.jobs.CleanupListener;
+import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.LogFiles;
 import dev.digitaldragon.util.Config;
 import dev.digitaldragon.warcs.WarcproxManager;
@@ -51,6 +52,8 @@ public class WikiBot {
             System.exit(1);
         }
         discordClient = new DiscordClient();
+        JobManager.setQueueConcurrency("default", 15);
+        JobManager.setQueuePriority("default", 0);
 
         WarcproxManager.run();
         IRCClient.enable();

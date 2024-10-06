@@ -53,6 +53,8 @@ public class DokuWikiDumperArgs {
     private String silentMode;
     @Parameter(names = {"--resume"})
     private String resume;
+    @Parameter(names = {"--queue"})
+    private String queue;
 
 
     /**

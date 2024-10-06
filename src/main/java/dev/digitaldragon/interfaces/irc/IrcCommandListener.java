@@ -56,6 +56,39 @@ public class IrcCommandListener {
             channel.sendMessage(nick + ": Submissions are now " + (submissionsEnabled ? "enabled." : "disabled."));
         });
 
+        commands.put("setqueue", () -> {
+            if (!isOped(event.getChannel(), event.getActor())) {
+                channel.sendMessage(nick + ": You don't have permission to do that! Please ask an op.");
+                return;
+            }
+            List<String> args = Command.shellSplit(message);
+            if (args.size() != 3) {
+                channel.sendMessage(nick + ": invalid arguments! Usage: !setqueue <concurrency> <priority>");
+                return;
+            }
+            try {
+                String queue = args.get(0);
+                int concurrency = Integer.parseInt(args.get(1));
+                int priority = Integer.parseInt(args.get(2));
+                JobManager.setQueueConcurrency(queue, concurrency);
+                JobManager.setQueuePriority(queue, priority);
+                JobManager.launchJobs();
+                channel.sendMessage(String.format("%s: Set queue %s to max concurrency: %s, priority: %s", nick, queue, concurrency, priority));
+            } catch (Exception e) {
+                channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <concurrency> <priority>");
+            }
+        });
+
+        commands.put("getqueue", () -> {
+           Integer concurrency = JobManager.getQueueConcurrency(message);
+           Integer priority = JobManager.getQueuePriority(message);
+           if (concurrency == null || priority == null) {
+               channel.sendMessage(nick + ": Queue does not exist");
+               return;
+           }
+           channel.sendMessage(String.format("%s: Queue %s - max concurrency: %s, priority: %s", nick, message, concurrency, priority));
+        });
+
         if (WikiBot.getConfig().getWikiTeam3Config().warcEnabled()) commands.put("warctest", () -> {
             JobManager.submit(new MediaWikiWARCJob(UUID.randomUUID().toString(), parts[1], new JobMeta(nick)));
         });

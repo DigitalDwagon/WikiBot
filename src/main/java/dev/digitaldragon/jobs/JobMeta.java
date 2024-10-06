@@ -12,6 +12,7 @@ public class JobMeta {
     private Optional<String> explain = Optional.empty();
     private JobPlatform platform;
     private SilentMode silentMode = SilentMode.ALL;
+    private String queue = "default";
     private Optional<String> targetUrl = Optional.empty();
     private Optional<String> discordUserId = Optional.empty();
 

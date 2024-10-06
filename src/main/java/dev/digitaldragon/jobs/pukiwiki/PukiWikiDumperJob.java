@@ -56,6 +56,7 @@ public class PukiWikiDumperJob extends Job {
         meta.setExplain(args.getExplain());
         meta.setTargetUrl(args.getUrl());
         if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
+        if (args.getQueue() != null) meta.setQueue(args.getQueue());
     }
 
     private void failure(int code) {
