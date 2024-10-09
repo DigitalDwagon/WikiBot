@@ -22,6 +22,8 @@ public class WikiTeam3Args {
     private Double delay = 1.5;
     @Parameter(names = {"--retries", "-R"})
     private int retries;
+    @Parameter(names = {"--hard-retries", "-H"})
+    private int hardRetries;
     @Parameter(names = {"--api_chunksize", "-C"})
     private int apiChunkSize;
     @Parameter(names = {"--index-check-threshold", "-T"})
@@ -124,6 +126,7 @@ public class WikiTeam3Args {
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
 
         parseIntOption(args, retries, "--retries");
+        parseIntOption(args, hardRetries, "--hard-retries");
         parseIntOption(args, apiChunkSize, "--api_chunksize");
 
         parseBooleanOption(args, xml, "--xml");
