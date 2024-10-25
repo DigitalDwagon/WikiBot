@@ -64,7 +64,7 @@ public class MediaWikiWARCJob extends Job {
                 "--level=inf",
                 "--no-parent",
                 "--timeout", "10",
-                "--tries", "2",
+                "--tries", "999", //limits the number of times you can wget.actions.CONTINUE in lua
                 "--span-hosts",
                 "--page-requisites",
                 "--waitretry", "0",
