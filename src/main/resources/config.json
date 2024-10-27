@@ -37,6 +37,8 @@
     "binZstd": "zstd"
   },
   "upload": {
-    "collection": "opensource"
+    "collection": "opensource",
+    "offloadEnabled": false,
+    "offloadServer": "username@target::some/directory/"
   }
 }

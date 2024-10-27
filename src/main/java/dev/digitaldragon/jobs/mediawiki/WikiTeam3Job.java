@@ -5,6 +5,7 @@ import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.util.Config;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -131,12 +132,24 @@ public class WikiTeam3Job extends Job {
                 failure(999);
                 return;
             }
-            String[] uploadParams = new String[] {"wikiteam3uploader", dumpDir.getName(),
-                    "--zstd-level", "22",
-                    "--parallel",
-                    "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd(),
-                    "--collection", WikiBot.getConfig().getUploadConfig().collection()};
-            uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
+            Config.UploadConfig uploadConfig = WikiBot.getConfig().getUploadConfig();
+
+            List<String> uploadParams = new ArrayList<>();
+            uploadParams.add("wikiteam3uploader");
+            uploadParams.add(dumpDir.getName());
+            uploadParams.add("--zstd-level");
+            uploadParams.add("22");
+            uploadParams.add("--parallel");
+            uploadParams.add("--bin-zstd");
+            uploadParams.add(WikiBot.getConfig().getWikiTeam3Config().binZstd());
+            uploadParams.add("--collection");
+            uploadParams.add(uploadConfig.collection());
+            if (uploadConfig.offloadEnabled()) {
+                uploadParams.add("--offload");
+                uploadParams.add(uploadConfig.offloadServer());
+            }
+
+            uploadCommand = new RunCommand(null, uploadParams.toArray(new String[0]), runDir, message -> {
                 log(message);
                 CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
