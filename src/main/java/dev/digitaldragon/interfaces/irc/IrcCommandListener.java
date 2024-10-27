@@ -91,6 +91,12 @@ public class IrcCommandListener {
         });
 
         commands.put("movejob", () -> {
+            try {
+                checkUserPermissions(channel, event.getActor(), false);
+            } catch (UserErrorException e) {
+                channel.sendMessage(nick + ": " + e.getMessage());
+                return;
+            }
             List<String> args = Command.shellSplit(message);
             if (args.size() != 2) {
                 channel.sendMessage(nick + ": Invalid arguments! Usage: !movejob <job id> <queue>");
