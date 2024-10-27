@@ -77,19 +77,23 @@ public class JobManager {
     }
 
     public static Integer getQueueConcurrency(String queue) {
+        queue = queue.toLowerCase();
         return queueConcurrency.get(queue) == null ? 0 : queueConcurrency.get(queue);
     }
 
     public static void setQueueConcurrency(String queue, int concurrency) {
+        queue = queue.toLowerCase();
         queueConcurrency.put(queue, concurrency);
         if (queuePriority.get(queue) == null) setQueuePriority(queue, 0);
     }
 
     public static Integer getQueuePriority(String queue) {
+        queue = queue.toLowerCase();
         return queuePriority.get(queue) == null ? 0 : queuePriority.get(queue);
     }
 
     public static void setQueuePriority(String queue, int priority) {
+        queue = queue.toLowerCase();
         queuePriority.put(queue, priority);
         if (queueConcurrency.get(queue) == null) setQueueConcurrency(queue, 0);
 
