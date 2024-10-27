@@ -3,6 +3,7 @@ package dev.digitaldragon.interfaces.irc;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
+import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
@@ -87,6 +88,23 @@ public class IrcCommandListener {
                return;
            }
            channel.sendMessage(String.format("%s: Queue %s - max concurrency: %s, priority: %s", nick, message, concurrency, priority));
+        });
+
+        commands.put("movejob", () -> {
+            List<String> args = Command.shellSplit(message);
+            if (args.size() != 2) {
+                channel.sendMessage(nick + ": Invalid arguments! Usage: !movejob <job id> <queue>");
+            }
+            String jobId = args.get(0);
+            String queue = args.get(1);
+            Job job = JobManager.get(jobId);
+            if (job == null) {
+                channel.sendMessage(nick + ": Couldn't find job " + jobId);
+                return;
+            }
+            job.getMeta().setQueue(queue);
+            JobManager.launchJobs();
+            channel.sendMessage(String.format("%s: Moved job %s to queue %s", nick, jobId, queue));
         });
 
         if (WikiBot.getConfig().getWikiTeam3Config().warcEnabled()) commands.put("warctest", () -> {
