@@ -45,8 +45,19 @@ public class IRCBulkCommand {
                     .uri(uri)
                     .build();
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
+                    .thenApply(response -> {
+                        String contentType = response.headers()
+                                .firstValue("Content-Type")
+                                .orElse("");
+                        if (contentType.contains("text/plain")) {
+                            return response.body();
+                        } else {
+                            event.getChannel().sendMessage(nick + ": Server returned invalid Content-Type " + contentType + ", expected text/plain");
+                            return "";
+                        }
+                    })
                     .thenAccept(body -> {
+                        if (body.equals("")) return;
                         //split lines
                         String[] lines = body.split("\n");
                         int i = 0;
