@@ -39,7 +39,7 @@ public class PukiWikiDumperHelper {
      * @param userName the name of the user initiating the job
      * @return a string representing the result of the job initiation
      */
-    public static String beginJob(PukiWikiDumperArgs args, String userName) {
+    public static String beginJob(PukiWikiDumperArgs args, String userName, String jobId) {
         String explain = args.getExplain();
 
         try {
@@ -48,9 +48,15 @@ public class PukiWikiDumperHelper {
             return e.getMessage();
         }
 
-        Job job = new PukiWikiDumperJob(userName, UUID.randomUUID().toString(),args);
+        Job job = new PukiWikiDumperJob(userName, jobId, args);
         JobManager.submit(job);
 
         return null;
     }
+
+    public static String beginJob(PukiWikiDumperArgs args, String userName) {
+        return beginJob(args, userName, UUID.randomUUID().toString());
+    }
+
+
 }

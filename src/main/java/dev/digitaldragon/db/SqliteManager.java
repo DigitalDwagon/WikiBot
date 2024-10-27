@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
-import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -206,32 +205,41 @@ public class SqliteManager {
                         File dir = new File("jobs/" + job.getId() + "/");
 
                         if (job.getType() == JobType.WIKITEAM3) {
-                            IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
+                            //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
                             WikiTeam3Args args = (WikiTeam3Args) getArgs(job.getId());
-                            if (dir.exists() && args.getResume() == null) {
+                            if (dir.exists() && CommonTasks.findDumpDir(job.getId()) != null && args.getResume() == null) {
                                 args.setResume(job.getId());
                             }
                             setFailed(job.getId());
-                            WikiTeam3Helper.beginJob(args, job.getMeta().getUserName());
+                            if (args.getSilentMode() == null) {
+                                args.setSilentMode(JobMeta.SilentMode.END.name());
+                            }
+                            WikiTeam3Helper.beginJob(args, job.getMeta().getUserName(), job.getId());
 
                         } else if (job.getType() == JobType.PUKIWIKIDUMPER) {
-                            IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
+                            //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
                             PukiWikiDumperArgs args = (PukiWikiDumperArgs) getArgs(job.getId());
-                            if (dir.exists() && args.getResume() == null) {
+                            if (dir.exists() && CommonTasks.findDumpDir(job.getId()) != null && args.getResume() == null) {
                                 args.setResume(job.getId());
                             }
+                            if (args.getSilentMode() == null) {
+                                args.setSilentMode(JobMeta.SilentMode.END.name());
+                            }
                             setFailed(job.getId());
-                            PukiWikiDumperHelper.beginJob(args, job.getMeta().getUserName());
+                            PukiWikiDumperHelper.beginJob(args, job.getMeta().getUserName(), job.getId());
                         } else if (job.getType() == JobType.DOKUWIKIDUMPER) {
-                            IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
+                            //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
                             DokuWikiDumperArgs args = (DokuWikiDumperArgs) getArgs(job.getId());
-                            if (dir.exists() && args.getResume() == null) {
+                            if (dir.exists() && CommonTasks.findDumpDir(job.getId()) != null && args.getResume() == null) {
                                 args.setResume(job.getId());
+                            }
+                            if (args.getSilentMode() == null) {
+                                args.setSilentMode(JobMeta.SilentMode.END.name());
                             }
                             setFailed(job.getId());
                             DokuWikiDumperHelper.beginJob(args, job.getMeta().getUserName());
                         } else {
-                            IRCClient.sendMessage("DigitalDragons: " + job.getId() + " died.");
+                            //IRCClient.sendMessage("DigitalDragons: " + job.getId() + " died.");
                         }
 
 

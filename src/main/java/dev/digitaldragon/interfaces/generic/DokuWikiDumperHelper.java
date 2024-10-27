@@ -37,18 +37,30 @@ public class DokuWikiDumperHelper {
      *
      * @param args the DokuWikiDumperArgs object
      * @param userName the name of the user initiating the job
+     * @param jobId the ID to use for the job
      * @return a string representing the result of the job initiation
      */
-    public static String beginJob(DokuWikiDumperArgs args, String userName) {
+    public static String beginJob(DokuWikiDumperArgs args, String userName, String jobId) {
         String explain = args.getExplain();
         try {
             args.check();
         } catch (UserErrorException e) {
             return e.getMessage();
         }
-        Job job = new DokuWikiDumperJob(userName, UUID.randomUUID().toString(), args);
+        Job job = new DokuWikiDumperJob(userName, jobId, args);
         JobManager.submit(job);
 
         return null;
+    }
+
+    /**
+     * Begins a new job with the given parsed command line arguments and username.
+     *
+     * @param args the DokuWikiDumperArgs object
+     * @param userName the name of the user initiating the job
+     * @return a string representing the result of the job initiation
+     */
+    public static String beginJob(DokuWikiDumperArgs args, String userName) {
+        return beginJob(args, userName, UUID.randomUUID().toString());
     }
 }
