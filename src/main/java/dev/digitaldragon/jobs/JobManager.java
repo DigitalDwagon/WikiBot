@@ -41,7 +41,7 @@ public class JobManager {
      */
     public static boolean abort(String id) {
         Job job = jobs.get(id);
-        if (job != null && job.isRunning()) {
+        if (job != null && (job.isRunning() || job.getStatus() == JobStatus.QUEUED)) {
             return job.abort();
         }
 

@@ -176,8 +176,10 @@ public class WikiTeam3Job extends Job {
     }
 
     public boolean abort() {
-        if (runningTask == null) {
-            return false;
+        if (status == JobStatus.QUEUED) {
+            aborted = true;
+            status = JobStatus.ABORTED;
+            return true;
         }
         if (runningTask.equals("DownloadMediaWiki")) {
             log("----- Bot: Aborting task " + runningTask + " -----");

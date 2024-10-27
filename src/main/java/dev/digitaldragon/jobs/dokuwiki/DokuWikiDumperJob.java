@@ -72,6 +72,7 @@ public class DokuWikiDumperJob extends Job {
     }
 
     public void run() {
+        if (status == JobStatus.ABORTED) return;
         startTime = Instant.now();
         status = JobStatus.RUNNING;
 
@@ -151,6 +152,10 @@ public class DokuWikiDumperJob extends Job {
 
 
     public boolean abort() {
+        if (status == JobStatus.QUEUED) {
+            status = JobStatus.ABORTED;
+            return true;
+        }
         if (runningTask.equals("Dump")) {
             log("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
