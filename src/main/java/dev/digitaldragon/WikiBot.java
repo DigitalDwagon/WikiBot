@@ -36,7 +36,7 @@ public class WikiBot {
     @Getter
     private static LogFiles logFiles = new LogFiles();
     public static String getVersion() {
-        return "1.6.1";
+        return "1.6.2";
     }
 
     public static void main (String[] args) {
