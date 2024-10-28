@@ -5,7 +5,6 @@ import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 import lombok.SneakyThrows;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import static dev.digitaldragon.interfaces.api.JavalinAPI.app;
@@ -18,16 +17,11 @@ public class Dashboard {
     }
 
     public static void help() {
-        try {
-            InputStream stream = Dashboard.class.getClassLoader().getResourceAsStream("help.html");
-            String content = new String(stream.readAllBytes());
-            app.get("/help", (ctx) -> {
-                ctx.res().setContentType("text/html");
-                ctx.result(content);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        app.get("/help", (ctx) -> {
+            ctx.res().setHeader("Location", "https://wiki.archiveteam.org/index.php/Wikibot");
+            ctx.res().setStatus(302);
+            ctx.result("");
+        });
     }
 
 

@@ -38,7 +38,7 @@ public class IrcCommandListener {
 
         // --- Non-job specific commands ---
         commands.put("help", () -> {
-            channel.sendMessage(nick + ": https://wikibot.digitaldragon.dev/help");
+            channel.sendMessage(nick + ": https://wiki.archiveteam.org/index.php/Wikibot");
         });
 
         commands.put("check", () -> {
