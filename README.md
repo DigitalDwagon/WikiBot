@@ -1,31 +1,18 @@
 # WikiBot
-WikiBot is a Discord and IRC bot for easy archiving of MediaWiki and DokuWiki based wikis. It spawns powershell or bash processes in the background to run the dokuWikiDumper and dumpgenerator commands respectively.
-
-Note: Mediawiki uploading is currently Bash-only. 
+WikiBot is a bot for easy archiving of MediaWiki, DokuWiki, and PukiWiki based wikis. You can learn more about using it on [the wiki page](https://wiki.archiveteam.org/index.php/Wikibot).
 
 # Setup
-Note: this bot is NOT currently set up to be installed by other people (hardcoded Discord channels, google cloud bucket names, etc), though it is on my todo list. Dragona be here (not just me)!
-If you don't have it already, install JDK 17 (Link: <https://adoptium.net/temurin/releases/>) and Python 3.9+
+Note: this bot is NOT currently set up to be installed by other people (hardcoded Discord channels, google cloud bucket names, etc), though it is on my todo list. However, it should run "well enough" for development purposes.
 
-Install dokuWikiDumper for DokuWikis:
+Install [JDK 21 or later](https://adoptium.net/temurin/releases/) and Python 3.9+. For development, install Gradle (any version should do, as this project includes the gradle wrapper)
 
-```
-pip install dokuwikidumper
-```
-
-Install WikiTeam3 for MediaWikis:
+Install dokuWikiDumper/pukiWikiDumper/WikiTeam3:
 
 ```
-pip install wikiteam3
+pip install dokuwikidumper pukiwikidumper wikiteam3
 ```
 
-Install ia CLI for uploading:
-
-```
-pip install internetarchive
-```
-
-Run `ia configure` to log into your Internet Archive account. You'll also need to create `~/doku_uploader_ia_keys` (no file extension) with your Internet Archive s3-like API keys. Find them here: <https://archive.org/account/s3.php>. Only the access key on the first line, only the secret key on the second, with no further text.
+You'll also need to create `~/doku_uploader_ia_keys`, `~/puki_uploader_ia_keys`, and `~/wikiteam3_ia_keys.txt` with your Internet Archive s3-like API keys. Find them here: <https://archive.org/account/s3.php>. Only the access key on the first line, only the secret key on the second, with no further text. It's recommended that you create only one and symlink the rest to make it easier to update the keys.
 
 Install 7z (`p7zip-full`) and [zstd](https://github.com/facebook/zstd/) 1.5.5+, and add them to PATH.
 
@@ -33,8 +20,8 @@ Verify installations:
 
 ```
 dokuWikiDumper --help
+pukiWikiDumper --help
 wikiteam3dumpgenerator --help
-ia --help
 7z
 zstd -V
 ```
@@ -44,15 +31,4 @@ You'll also need to install the Google Cloud CLI and configure application defau
 You can now run the bot!
 
 # Configuration
-In the same folder as the jar file, create a .env file with the following:
-
-```env
-token=totallyrealdiscordtoken # The token for your discord bot user
-ircpass=password123! # irc password for the bot to use
-ircchannel=#example # IRC channel for the bot to use
-ircnick=WikiBot # The irc nick for the bot to use
-irclogin=true # use irc with authentication?
-disable_doku_archive=false # disable dokuwiki archiving commands?
-disable_mediawiki_archive=false # disable mediawiki archiving commands?
-is_test=false # whether the bot is running in development mode
-```
+In the same folder as the jar file, create config.json using the example json in the src/.../resources directory and fill in the values.
