@@ -53,6 +53,10 @@ public class StatusHelper {
             message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
         }
 
+        if (!job.getMeta().getQueue().equals("default")) {
+            message.append("In queue \"").append(job.getMeta().getQueue()).append("\". ");
+        }
+
         if (meta.getExplain().isPresent()) message.append("\"").append(meta.getExplain().get()).append("\"");
 
         return message.toString();
