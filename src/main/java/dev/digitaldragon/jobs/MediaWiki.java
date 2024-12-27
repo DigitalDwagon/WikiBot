@@ -87,7 +87,6 @@ public class MediaWiki extends Wiki {
         } else {
             args.setXmlApiExport(true);
         }
-        args.check();
         Job job = new WikiTeam3Job(username, UUID.randomUUID().toString(), args);
         JobManager.submit(job);
         return job.getId();
@@ -127,7 +126,6 @@ public class MediaWiki extends Wiki {
             args.setXmlApiExport(true);
         }
 
-        args.check();
         return args;
     }
 

@@ -1,18 +1,18 @@
 package dev.digitaldragon.jobs.mediawiki;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.UserErrorException;
-import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.util.SilentModeValidator;
+import dev.digitaldragon.util.URLValidator;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 @Getter
 @Setter
@@ -56,54 +56,31 @@ public class WikiTeam3Args {
     private String explain;
     @Parameter(names = {"--resume"})
     private String resume;
-    @Parameter(names = {"--api", "-A"})
+    @Parameter(names = {"--api", "-A"}, validateWith = URLValidator.class)
     private String api;
-    @Parameter(names = {"--index", "-N"})
+    @Parameter(names = {"--index", "-N"}, validateWith = URLValidator.class)
     private String index;
-    @Parameter(names = {"--url", "-u"}, variableArity = true)
+    @Parameter(names = {"--url", "-u"}, variableArity = true, validateWith = URLValidator.class)
     private String url;
     @Parameter(names = {"--warc-not-for-production"})
     private boolean warc;
     @Parameter(names = {"--warconly"})
     private boolean warcOnly;
-    @Parameter(names = {"--silent-mode"})
+    @Parameter(names = {"--silent-mode"}, validateWith = SilentModeValidator.class)
     private String silentMode = null;
     @Parameter(names = {"--queue"})
     private String queue;
     @Parameter(names = {"--redirects"})
     private boolean redirects;
 
-    /**
-     * This method checks the validity of three URL options - api, index, and url.
-     * If any of these options are invalid, a UserErrorException is thrown.
-     *
-     * @throws UserErrorException if any of the URL options are invalid
-     */
-    public void check() throws UserErrorException {
-        checkUrlOption(api);
-        checkUrlOption(index);
-        checkUrlOption(url);
+    public WikiTeam3Args() {}
 
-        try {
-            if (silentMode != null) {
-                silentMode = silentMode.toUpperCase(Locale.ENGLISH);
-                JobMeta.SilentMode.valueOf(silentMode);
-            }
-        } catch (IllegalArgumentException e) {
-            throw new UserErrorException("Invalid --silent-mode - it must be one of: " + Arrays.toString(JobMeta.SilentMode.values()));
-        }
-    }
+    public WikiTeam3Args(String[] args) throws ParameterException {
+        JCommander commander = JCommander.newBuilder()
+                .addObject(this)
+                .build();
 
-    private void checkUrlOption(String option) throws UserErrorException {
-        if (option == null || option.isEmpty()) {
-            return;
-        }
-
-        try {
-            new URL(option);
-        } catch (MalformedURLException e) {
-            throw new UserErrorException("Invalid URL in options: " + option);
-        }
+        commander.parse(args);
     }
 
     /**
@@ -111,9 +88,6 @@ public class WikiTeam3Args {
      * <p>
      * The method parses the arguments into a string and converts the short versions of the arguments
      * to their long versions, as WikiTeam3 only uses the long versions of the arguments.
-     * <p>
-     * Make sure you call {@link #check()} before calling this method to verify the validity of all
-     * options and gracefully hand errors back to the user. If this is not done, it may result in a {@link RuntimeException}.
      *
      * @return A string representation of the parsed arguments compatible with wikiteam3.
      */

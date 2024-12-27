@@ -100,7 +100,6 @@ public class DiscordCommandListener extends ListenerAdapter {
                     .build()
                     .parse(getArgsFromOptions(event));
             // Assuming args has a check() method
-            if (args instanceof WikiTeam3Args) ((WikiTeam3Args) args).check();
             if (args instanceof DokuWikiDumperArgs) ((DokuWikiDumperArgs) args).check();
             if (args instanceof PukiWikiDumperArgs) ((PukiWikiDumperArgs) args).check();
         } catch (ParameterException e) {
