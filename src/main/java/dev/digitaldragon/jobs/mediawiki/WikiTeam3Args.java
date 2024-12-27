@@ -70,6 +70,8 @@ public class WikiTeam3Args {
     private String silentMode = null;
     @Parameter(names = {"--queue"})
     private String queue;
+    @Parameter(names = {"--redirects"})
+    private boolean redirects;
 
     /**
      * This method checks the validity of three URL options - api, index, and url.
@@ -141,6 +143,7 @@ public class WikiTeam3Args {
         parseBooleanOption(args, warcImages, "--warc-images");
         parseBooleanOption(args, warcPages, "--warc-pages");
         parseBooleanOption(args, warcPagesHistory, "--warc-pages-history");
+        parseBooleanOption(args, redirects, "--redirects");
 
         parseUrlOption(args, api, "--api");
         parseUrlOption(args, index, "--index");
