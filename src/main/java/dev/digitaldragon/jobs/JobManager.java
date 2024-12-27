@@ -3,7 +3,6 @@ package dev.digitaldragon.jobs;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import lombok.Getter;
-import org.json.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -140,34 +139,6 @@ public class JobManager {
                         });
                     });
                 });
-    }
-
-    public static JSONObject getJsonForJob(Job job) {
-        JobMeta meta = job.getMeta();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("status", job.getStatus());
-        if (meta.getExplain().isPresent()) jsonObject.put("explanation", meta.getExplain().get());
-        jsonObject.put("user", meta.getUserName());
-        jsonObject.put("started", job.getStartTime());
-        if (meta.getExplain().isPresent()) jsonObject.put("name", meta.getExplain().get());
-        jsonObject.put("runningTask", job.getRunningTask());
-        //jsonObject.put("directory", job.getDirectory());
-        jsonObject.put("failedTaskCode", job.getFailedTaskCode());
-        jsonObject.put("archiveUrl", job.getArchiveUrl());
-        jsonObject.put("type", job.getType());
-        jsonObject.put("isRunning", job.isRunning());
-        jsonObject.put("allTasks", job.getAllTasks());
-        jsonObject.put("logsUrl", job.getLogsUrl());
-        return jsonObject;
-    }
-
-    public static JSONObject getJsonForJob(String jobId) {
-        Job job = jobs.get(jobId);
-        if (job != null) {
-            return getJsonForJob(job);
-        } else {
-            return null;
-        }
     }
 
     public static void submitJobDbOnly(Job job) {

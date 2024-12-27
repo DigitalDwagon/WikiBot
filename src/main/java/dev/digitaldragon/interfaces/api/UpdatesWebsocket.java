@@ -1,7 +1,8 @@
 package dev.digitaldragon.interfaces.api;
 
+import com.google.gson.JsonObject;
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
@@ -10,7 +11,6 @@ import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,10 +23,10 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
 
     // Method to send a job event message to all connected clients.
     public void sendLogMessageToClients(Job job, String event) {
-        JSONObject json = new JSONObject();
-        json.put("jobId", job.getId());
-        json.put("event", event);
-        json.put("info", JobManager.getJsonForJob(job));
+        JsonObject json = new JsonObject();
+        json.addProperty("jobId", job.getId());
+        json.addProperty("event", event);
+        json.add("info", WikiBot.getGson().toJsonTree(job));
 
         for (Session session : connectedClients.keySet()) {
             try {

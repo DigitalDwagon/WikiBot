@@ -28,14 +28,14 @@ public class WikiTeam3Job extends Job {
     private String runningTask = null;
     private Instant startTime = null;
     private File directory = null;
-    private RunCommand downloadCommand = null;
-    private RunCommand uploadCommand = null;
+    private transient RunCommand downloadCommand = null;
+    private transient RunCommand uploadCommand = null;
     private String explanation = null;
     @Setter
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    private GenericLogsHandler handler;
+    private transient GenericLogsHandler handler;
     private int failedTaskCode;
     private boolean aborted;
     private WikiTeam3Args args;

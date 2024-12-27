@@ -3,6 +3,8 @@ package dev.digitaldragon;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.digitaldragon.db.SqliteManager;
 import dev.digitaldragon.interfaces.api.JavalinAPI;
 import dev.digitaldragon.interfaces.discord.DiscordClient;
@@ -11,7 +13,7 @@ import dev.digitaldragon.interfaces.telegram.TelegramClient;
 import dev.digitaldragon.jobs.CleanupListener;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.LogFiles;
-import dev.digitaldragon.util.Config;
+import dev.digitaldragon.util.*;
 import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
@@ -19,7 +21,10 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -35,6 +40,12 @@ public class WikiBot {
     private static DiscordClient discordClient = null;
     @Getter
     private static LogFiles logFiles = new LogFiles();
+    @Getter
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+            .registerTypeAdapter(File.class, new FileTypeAdapter())
+            .registerTypeAdapter(Optional.class, new OptionalSerializer<>())
+            .create();
     public static String getVersion() {
         return "1.6.2";
     }

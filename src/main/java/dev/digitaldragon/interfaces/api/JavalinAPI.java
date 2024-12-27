@@ -136,10 +136,7 @@ public class JavalinAPI {
             String jobId = ctx.pathParam("id");
             Job job = JobManager.get(jobId);
             if (job != null) {
-                JSONObject jsonObject = JobManager.getJsonForJob(job);
-                jsonObject.put("jobId", jobId);
-
-                ctx.result(jsonObject.toString());
+                ctx.result(WikiBot.getGson().toJson(job));
             } else {
                 ctx.status(404).result(error("Job not found"));
             }

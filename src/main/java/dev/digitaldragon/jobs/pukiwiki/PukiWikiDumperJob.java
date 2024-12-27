@@ -29,14 +29,14 @@ public class PukiWikiDumperJob extends Job {
     private String runningTask = null;
     private Instant startTime = null;
     private final File directory;
-    private RunCommand downloadCommand = null;
-    private RunCommand uploadCommand = null;
+    private transient RunCommand downloadCommand = null;
+    private transient RunCommand uploadCommand = null;
     private String explanation;
     @Setter
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    private GenericLogsHandler handler;
+    private transient GenericLogsHandler handler;
     private int failedTaskCode;
     private PukiWikiDumperArgs args;
     private JobMeta meta;
