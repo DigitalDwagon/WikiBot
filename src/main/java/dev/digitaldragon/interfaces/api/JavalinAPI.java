@@ -2,9 +2,6 @@ package dev.digitaldragon.interfaces.api;
 
 import com.google.gson.Gson;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.generic.AbortHelper;
-import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
-import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
@@ -35,7 +32,6 @@ public class JavalinAPI {
         //register routes
         getAllJobs(); //GET /api/jobs
         getJob(); //GET /api/jobs/:id
-        runCommand(); //POST /api/command
         createJob(); //POST /api/jobs
 
         WikiBot.getBus().register(updatesWebsocket);
@@ -140,33 +136,6 @@ public class JavalinAPI {
             } else {
                 ctx.status(404).result(error("Job not found"));
             }
-        });
-    }
-
-    private static void runCommand() {
-        app.post("/api/command", (ctx) -> {
-            JSONObject json = new JSONObject(ctx.body());
-            if (!json.has("command") || !json.has("body")) {
-                ctx.status(400).result(error("You must include the \"command\" and \"body\" keys in your request."));
-            }
-
-            String body = json.getString("body");
-            String username = ctx.req().getHeader("X-Platform-User");
-            String successMessage;
-            successMessage = switch (json.getString("command")) {
-                case "mediawikisingle" -> WikiTeam3Helper.beginJob(body, username);
-                case "dokuwikisingle" -> DokuWikiDumperHelper.beginJob(body, username);
-                case "abort" -> AbortHelper.abortJob(body);
-                case "status" -> StatusHelper.getStatus(body);
-                default -> null;
-            };
-
-            if (successMessage == null) {
-                ctx.status(400).result(error("Invalid command"));
-            }
-            ctx.result(success(successMessage));
-
-
         });
     }
 
