@@ -1,6 +1,7 @@
 package dev.digitaldragon.jobs.mediawiki;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
@@ -9,11 +10,14 @@ import dev.digitaldragon.util.Config;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a WikiTeam3 job, which implements the Job interface.
@@ -21,55 +25,62 @@ import java.util.List;
  */
 @Getter
 public class WikiTeam3Job extends Job {
-    private String id = null;
-    private String name = "undefined";
-    private String userName = "undefined";
-    private JobStatus status = null;
+    private String id;
+
+    private JobStatus status = JobStatus.QUEUED;
     private String runningTask = null;
-    private Instant startTime = null;
-    private File directory = null;
+    @Nullable private Instant startTime = null;
+    private File directory;
+
     private transient RunCommand downloadCommand = null;
     private transient RunCommand uploadCommand = null;
-    private String explanation = null;
-    @Setter
-    private String archiveUrl = null;
-    @Setter
-    private String logsUrl = null;
-    private transient GenericLogsHandler handler;
+
+    @Setter private String archiveUrl = null;
+    @Setter private String logsUrl = null;
     private int failedTaskCode;
     private boolean aborted;
     private WikiTeam3Args args;
     private JobMeta meta;
 
+    public WikiTeam3Job(WikiTeam3Args args, JobMeta meta, String id) throws JobLaunchException {
+        String targetUrl = Optional.ofNullable(args.getUrl())
+                .or(() -> Optional.ofNullable(args.getApi()))
+                .or(() -> Optional.ofNullable(args.getIndex()))
+                .orElseThrow(() -> new JobLaunchException("You need to specify the URL, api.php URL, or index.php URL."));
 
-    public WikiTeam3Job(String userName, String id, WikiTeam3Args args) {
-        String targetUrl = args.getUrl();
-        if (targetUrl == null)
-            targetUrl = args.getApi();
-        if (targetUrl == null)
-            targetUrl = args.getIndex();
+        meta.setTargetUrl(targetUrl);
 
-        this.userName = userName;
+        // TODO: There should be a better system for setting these values
+        if (args.getExplain() != null && meta.getExplain().isEmpty()) {
+            meta.setExplain(args.getExplain());
+        }
+        if (args.getSilentMode() != null && meta.getSilentMode() == null) {
+            meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
+        }
+        if (args.getQueue() != null && meta.getQueue().isEmpty()) {
+            meta.setQueue(args.getQueue());
+        }
+
+        this.args = args;
+        this.meta = meta;
         this.id = id;
-        this.name = targetUrl;
-        this.status = JobStatus.QUEUED;
+
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.explanation = args.getExplain();
-        this.handler = new GenericLogsHandler(this);
-        this.args = args;
-        this.meta = new JobMeta(userName);
-        meta.setExplain(args.getExplain());
-        meta.setTargetUrl(targetUrl);
-        if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
-        if (args.getQueue() != null) meta.setQueue(args.getQueue());
+    }
+
+    public WikiTeam3Job(String unparsedArgs, JobMeta meta, String id) throws JobLaunchException, ParseException {
+        this(
+                new WikiTeam3Args(Command.shellSplit(unparsedArgs).toArray(new String[0])),
+                meta,
+                id
+        );
     }
 
     private void failure(int code) {
         logsUrl = WikiBot.getLogFiles().uploadLogs(this);
         status = JobStatus.FAILED;
         failedTaskCode = code;
-        handler.end();
         if (aborted) {
             status = JobStatus.ABORTED;
             WikiBot.getBus().post(new JobAbortEvent(this));
@@ -171,7 +182,6 @@ public class WikiTeam3Job extends Job {
 
         status = JobStatus.COMPLETED;
         runningTask = null;
-        handler.end();
         WikiBot.getBus().post(new JobSuccessEvent(this));
     }
 

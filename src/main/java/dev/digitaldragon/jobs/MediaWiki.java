@@ -87,7 +87,7 @@ public class MediaWiki extends Wiki {
         } else {
             args.setXmlApiExport(true);
         }
-        Job job = new WikiTeam3Job(username, UUID.randomUUID().toString(), args);
+        Job job = new WikiTeam3Job(args, new JobMeta(username), UUID.randomUUID().toString());
         JobManager.submit(job);
         return job.getId();
     }

@@ -2,10 +2,12 @@ package dev.digitaldragon.interfaces.api;
 
 import com.google.gson.Gson;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import io.javalin.Javalin;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
@@ -153,12 +155,18 @@ public class JavalinAPI {
                 if (json.getString("jobType").equalsIgnoreCase("wikiteam3")) {
                     System.out.println(clean);
                     WikiTeam3Args args = new Gson().fromJson(clean.toString(), WikiTeam3Args.class);
+                    JobMeta meta = new JobMeta(username);
+                    meta.setExplain(args.getExplain());
+                    meta.setPlatform(JobMeta.JobPlatform.API);
                     System.out.println(args.getExplain());
                     System.out.println(args.getUrl());
                     String jobId = UUID.randomUUID().toString();
-                    String message = WikiTeam3Helper.beginJob(args, username, jobId);
-                    if (message != null) {
-                        ctx.status(400).result(error(message));
+                    try {
+                        JobManager.submit(
+                                new WikiTeam3Job(args, meta, jobId)
+                        );
+                    } catch (JobLaunchException e) {
+                        ctx.status(400).result(error(e.getMessage()));
                         return;
                     }
                     JSONObject response = new JSONObject();

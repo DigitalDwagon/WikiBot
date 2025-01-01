@@ -40,37 +40,6 @@ public abstract class Job {
      */
     public abstract String getId();
     /**
-     * Returns the name of the job. This is a user-friendly name, usually the target URL.
-     *
-     * @return the name of the job as a string.
-     */
-    @Deprecated
-    public abstract String getName();
-    /**
-     * Returns the username associated with the job.
-     *
-     * @return the username associated with the job as a string.
-     */
-    @Deprecated
-    public abstract String getUserName();
-    /**
-     * Gets the user's platform (IRC, Telegram, Discord, etc.)
-     *
-     */
-    //public String getUserPlatform();
-    /**
-     * Gets the user's ID from their platform (ie Discord User ID, IRC NickServ account name, etc.)
-     *
-     */
-    //public String getUserPlatformId();
-    /**
-     * Returns the user's explanation for starting a job.
-     *
-     * @return the explanation of the job as a string.
-     */
-    @Deprecated
-    public abstract String getExplanation();
-    /**
      * Returns the status of the job.
      *
      * @return the status of the job as a JobStatus object.

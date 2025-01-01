@@ -1,10 +1,20 @@
 package dev.digitaldragon.interfaces.telegram;
 
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.generic.*;
+import dev.digitaldragon.interfaces.generic.AbortHelper;
+import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
+import dev.digitaldragon.interfaces.generic.ReuploadHelper;
+import dev.digitaldragon.interfaces.generic.StatusHelper;
+import dev.digitaldragon.jobs.JobLaunchException;
+import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+
+import java.text.ParseException;
+import java.util.UUID;
 
 import static org.telegram.abilitybots.api.objects.Locality.ALL;
 import static org.telegram.abilitybots.api.objects.Privacy.PUBLIC;
@@ -62,11 +72,19 @@ public class TelegramCommandsBot extends AbilityBot {
                 .action(ctx -> {
                     String message = null;
                     System.out.println(arrayToString(ctx.arguments()));
-                    message = WikiTeam3Helper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
-                    if (message != null)
-                        reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
-                    else
-                        reply_silent.sendReplyMessage(THANKS_MESSAGE, ctx.chatId(), ctx.update().getMessage().getMessageId());
+                    JobMeta meta = new JobMeta(ctx.user().getUserName());
+                    meta.setPlatform(JobMeta.JobPlatform.TELEGRAM);
+                    try {
+                        WikiTeam3Job job = new WikiTeam3Job(arrayToString(ctx.arguments()), meta, UUID.randomUUID().toString());
+                        JobManager.submit(job);
+                    } catch (JobLaunchException e) {
+                        message = e.getMessage();
+                    } catch (ParseException e) {
+                        message = "Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")";
+                    }
+                    if (message == null) message = THANKS_MESSAGE;
+
+                    reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();

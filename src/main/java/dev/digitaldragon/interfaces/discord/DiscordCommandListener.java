@@ -126,7 +126,9 @@ public class DiscordCommandListener extends ListenerAdapter {
 
     public void onMediaWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         WikiTeam3Args args = processArgs(new WikiTeam3Args(), event);
-        Job job = new WikiTeam3Job(event.getUser().getName(), UUID.randomUUID().toString(), args);
+        JobMeta meta = new JobMeta(event.getUser().getName());
+        meta.setPlatform(JobMeta.JobPlatform.DISCORD);
+        Job job = new WikiTeam3Job(args, meta, UUID.randomUUID().toString());
         submitJob(event, job);
     }
 

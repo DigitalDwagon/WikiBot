@@ -2,8 +2,10 @@ package dev.digitaldragon.interfaces.irc;
 
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
-import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
+import dev.digitaldragon.jobs.JobLaunchException;
+import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
@@ -11,6 +13,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.ParseException;
+import java.util.UUID;
 
 public class IRCBulkCommand {
     @Handler
@@ -68,9 +72,17 @@ public class IRCBulkCommand {
                             line = line.substring(4).trim();
                             if (!line.contains("--silent-mode")) line += " --silent-mode " + JobMeta.SilentMode.FAIL.name(); // references the enum directly to cause a compile error in case END is removed from the enum
                             String result = null;
+                            JobMeta meta = new JobMeta(nick);
+                            meta.setPlatform(JobMeta.JobPlatform.IRC);
                             switch (command) {
                                 case "!mw" ->  {
-                                    WikiTeam3Helper.beginJob(line, nick);
+                                    try {
+                                        JobManager.submit(new WikiTeam3Job(line, meta, UUID.randomUUID().toString()));
+                                    } catch (JobLaunchException e) {
+                                        result = e.getMessage();
+                                    } catch (ParseException e) {
+                                        result = "Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")";
+                                    }
                                     jobs++;
                                 }
                                 case "!dw" -> {

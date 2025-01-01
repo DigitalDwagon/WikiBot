@@ -3,7 +3,6 @@ package dev.digitaldragon.db;
 import com.google.gson.Gson;
 import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
-import dev.digitaldragon.interfaces.generic.WikiTeam3Helper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -214,7 +213,11 @@ public class SqliteManager {
                             if (args.getSilentMode() == null) {
                                 args.setSilentMode(JobMeta.SilentMode.END.name());
                             }
-                            WikiTeam3Helper.beginJob(args, job.getMeta().getUserName(), job.getId());
+                            JobManager.submit(new WikiTeam3Job(
+                                    args,
+                                    job.getMeta(),
+                                    job.getId()
+                            ));
 
                         } else if (job.getType() == JobType.PUKIWIKIDUMPER) {
                             //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));

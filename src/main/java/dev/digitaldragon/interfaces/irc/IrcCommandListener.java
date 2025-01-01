@@ -1,12 +1,15 @@
 package dev.digitaldragon.interfaces.irc;
 
+import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.*;
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -14,6 +17,7 @@ import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -34,6 +38,7 @@ public class IrcCommandListener {
         String message = (parts.length > 1 && !parts[1].isBlank()) ? parts[1].trim() : null;
 
         Map<String, Runnable> commands = new HashMap<>();
+        Map<String, String> aliases = new HashMap<>();
         // !bulk has its own listener for now, so skipped here.
 
         // --- Non-job specific commands ---
@@ -141,13 +146,28 @@ public class IrcCommandListener {
                 channel.sendMessage(nick + ": " + reply);
         });
 
-        commands.put("mediawikisingle", () -> runHelper(channel, user, message, WikiTeam3Helper::beginJob));
-        commands.put("mw", () -> runHelper(channel, user, message, WikiTeam3Helper::beginJob));
+        commands.put("mediawikisingle", () -> {
+            try {
+                checkUserPermissions(channel, user, true);
+                JobMeta meta = new JobMeta(user.getNick());
+                meta.setPlatform(JobMeta.JobPlatform.IRC);
+                JobManager.submit(new WikiTeam3Job(message, meta, UUID.randomUUID().toString()));
+            } catch (UserErrorException | JobLaunchException e) {
+                channel.sendMessage(user.getNick() + ": " + e.getMessage());
+            } catch (ParseException | ParameterException e) {
+                channel.sendMessage(user.getNick() + ": Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")");
+            }
+        });
+        aliases.put("mw", "mediawikisingle");
         commands.put("dokusingle", () -> runHelper(channel, user, message, DokuWikiDumperHelper::beginJob));
         commands.put("dw", () -> runHelper(channel, user, message, DokuWikiDumperHelper::beginJob));
         commands.put("pukisingle", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
         commands.put("pw", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
         commands.put("reupload", () -> runHelper(channel, user, message, ReuploadHelper::beginJob));
+
+        if (aliases.containsKey(command)) {
+            command = aliases.get(command);
+        }
 
         if (commands.get(command) != null) {
             commands.get(command).run();

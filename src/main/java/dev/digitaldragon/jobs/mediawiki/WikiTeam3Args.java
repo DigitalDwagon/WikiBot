@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class WikiTeam3Args {
 
     public WikiTeam3Args() {}
 
-    public WikiTeam3Args(String[] args) throws ParameterException {
+    public WikiTeam3Args(String[] args) throws ParameterException, ParseException {
         JCommander commander = JCommander.newBuilder()
                 .addObject(this)
                 .build();

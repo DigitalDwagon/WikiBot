@@ -127,16 +127,6 @@ public class MediaWikiWARCJob extends Job {
     }
 
     @Override
-    public String getUserName() {
-        return meta.getUserName();
-    }
-
-    @Override
-    public String getExplanation() {
-        return meta.getExplain().orElse(null);
-    }
-
-    @Override
     public JobType getType() {
         return JobType.MEDIAWIKIWARC;
     }
