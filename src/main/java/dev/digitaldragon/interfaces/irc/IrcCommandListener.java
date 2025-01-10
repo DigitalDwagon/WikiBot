@@ -85,6 +85,15 @@ public class IrcCommandListener {
             }
         });
 
+        commands.put("savedb", () -> {
+            if (!isOped(event.getChannel(), event.getActor())) {
+                channel.sendMessage(nick + ": You don't have permission to do that! Please ask an op.");
+                return;
+            }
+            JobManager.getJobs().forEach((job) -> WikiBot.getSqliteManager().saveJob(job));
+            channel.sendMessage(nick + ": Done");
+        });
+
         commands.put("getqueue", () -> {
            Integer concurrency = JobManager.getQueueConcurrency(message);
            Integer priority = JobManager.getQueuePriority(message);
