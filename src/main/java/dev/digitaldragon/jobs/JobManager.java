@@ -75,6 +75,10 @@ public class JobManager {
         return jobs.values().stream().filter(job -> job.getStatus() == JobStatus.QUEUED).collect(Collectors.toList());
     }
 
+    public static List<Job> getJobs() {
+        return new ArrayList<>(jobs.values());
+    }
+
     public static Integer getQueueConcurrency(String queue) {
         queue = queue.toLowerCase();
         return queueConcurrency.get(queue) == null ? 0 : queueConcurrency.get(queue);
