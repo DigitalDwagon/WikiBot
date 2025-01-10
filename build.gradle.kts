@@ -32,7 +32,7 @@ dependencies {
 
     //used to decompress zstd streams
     // https://mvnrepository.com/artifact/com.github.luben/zstd-jni
-    implementation("com.github.luben:zstd-jni:1.5.5-5")
+    implementation("com.github.luben:zstd-jni:1.5.6-9")
 
     //web library for dashboard
     implementation("io.javalin:javalin:5.6.3")
