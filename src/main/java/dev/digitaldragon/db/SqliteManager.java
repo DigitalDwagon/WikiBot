@@ -26,7 +26,11 @@ public class SqliteManager {
     private static final Object lock = new Object();
 
 
-    private static void saveJob(Job job) {
+    public void saveJob(Job job) {
+        if (job instanceof LoadedJob) {
+            return;
+        }
+
         synchronized (lock) {
             try {
 

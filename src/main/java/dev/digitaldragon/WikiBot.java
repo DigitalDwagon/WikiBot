@@ -39,6 +39,8 @@ public class WikiBot {
     @Getter
     private static DiscordClient discordClient = null;
     @Getter
+    private static SqliteManager sqliteManager = null;
+    @Getter
     private static LogFiles logFiles = new LogFiles();
     @Getter
     private static final Gson gson = new GsonBuilder()
@@ -54,6 +56,9 @@ public class WikiBot {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down...");
             WarcproxManager.stopCleanly();
+            JobManager.getJobs().forEach((job) -> {
+                sqliteManager.saveJob(job);
+            });
         }));
         Logger logger = LoggerFactory.getLogger(WikiBot.class);
         try {
@@ -73,9 +78,9 @@ public class WikiBot {
         logFiles = new LogFiles();
         bus.register(logFiles);
         bus.register(new CleanupListener());
-        SqliteManager manager = new SqliteManager();
-        bus.register(manager);
-        manager.load();
+        sqliteManager = new SqliteManager();
+        bus.register(sqliteManager);
+        sqliteManager.load();
 
         Storage storage = StorageOptions.getDefaultInstance().getService();
         Bucket bucket = storage.get("cdn.digitaldragon.dev");
