@@ -49,7 +49,7 @@ public class WikiBot {
             .registerTypeAdapter(Optional.class, new OptionalSerializer<>())
             .create();
     public static String getVersion() {
-        return "1.6.2";
+        return "1.6.3";
     }
 
     public static void main (String[] args) {
