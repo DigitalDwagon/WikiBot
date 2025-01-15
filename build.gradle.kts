@@ -57,7 +57,7 @@ dependencies {
 
     // sqlite for database
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    implementation("org.xerial:sqlite-jdbc:3.46.0.0")
+    implementation("org.xerial:sqlite-jdbc:3.48.0.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
