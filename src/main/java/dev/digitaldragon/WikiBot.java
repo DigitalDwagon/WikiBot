@@ -17,7 +17,6 @@ import dev.digitaldragon.util.Config;
 import dev.digitaldragon.util.FileTypeAdapter;
 import dev.digitaldragon.util.InstantTypeAdapter;
 import dev.digitaldragon.util.OptionalSerializer;
-import dev.digitaldragon.warcs.WarcproxManager;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -58,7 +57,6 @@ public class WikiBot {
     public static void main (String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down...");
-            WarcproxManager.stopCleanly();
             JobManager.getJobs().forEach((job) -> {
                 sqliteManager.saveJob(job);
             });
@@ -74,7 +72,6 @@ public class WikiBot {
         JobManager.setQueueConcurrency("default", 15);
         JobManager.setQueuePriority("default", 0);
 
-        WarcproxManager.run();
         IRCClient.enable();
         DiscordClient.enable();
         TelegramClient.enable();
