@@ -70,9 +70,10 @@ public class MediaWiki extends Wiki {
         WikiTeam3Args args = new WikiTeam3Args();
         args.setImages(true);
         args.setXml(true);
-        args.setExplain(explain);
         args.setApi(apiUrl);
         args.setIndex(indexUrl);
+        JobMeta meta = new JobMeta(username);
+        meta.setExplain(explain);
 
         String version = getVersion();
         if (version == null) {
@@ -87,7 +88,7 @@ public class MediaWiki extends Wiki {
         } else {
             args.setXmlApiExport(true);
         }
-        Job job = new WikiTeam3Job(args, new JobMeta(username), UUID.randomUUID().toString());
+        Job job = new WikiTeam3Job(args, meta, UUID.randomUUID().toString());
         JobManager.submit(job);
         return job.getId();
     }
@@ -108,7 +109,6 @@ public class MediaWiki extends Wiki {
         WikiTeam3Args args = new WikiTeam3Args();
         args.setImages(true);
         args.setXml(true);
-        args.setExplain("Test");
         args.setApi(apiUrl);
         args.setIndex(indexUrl);
 

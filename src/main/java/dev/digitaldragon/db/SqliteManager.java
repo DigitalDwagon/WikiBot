@@ -214,8 +214,8 @@ public class SqliteManager {
                                 args.setResume(job.getId());
                             }
                             setFailed(job.getId());
-                            if (args.getSilentMode() == null) {
-                                args.setSilentMode(JobMeta.SilentMode.END.name());
+                            if (job.getMeta().getSilentMode() == null) {
+                                job.getMeta().setSilentMode(JobMeta.SilentMode.END);
                             }
                             JobManager.submit(new WikiTeam3Job(
                                     args,
