@@ -1,9 +1,9 @@
 package dev.digitaldragon.interfaces.discord;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
@@ -19,8 +19,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,62 +83,39 @@ public class DiscordCommandListener extends ListenerAdapter {
 
         }
 
-
-        if (event.getName().equals("mediawiki_dump")) onMediaWikiSlashCommandInteraction(event);
-        if (event.getName().equals("dokuwiki_dump")) onDokuWikiSlashCommandInteraction(event);
-        if (event.getName().equals("pukiwiki_dump")) onPukiWikiSlashCommandInteraction(event);
-        if (event.getName().equals("status") || event.getName().equals("abort")) onStatusOrAbortSlashCommandInteraction(event);
-    }
-
-
-    public <T> T processArgs(T args, SlashCommandInteractionEvent event) {
-        try {
-            System.out.println(Arrays.toString(getArgsFromOptions(event)));
-            JCommander.newBuilder()
-                    .addObject(args)
-                    .build()
-                    .parse(getArgsFromOptions(event));
-        } catch (ParameterException e) {
-            event.reply("Invalid parameters or options! Double check your extra-args").setEphemeral(true).queue();
-            return null;
+        if (event.getName().equals("status") || event.getName().equals("abort")) {
+            onStatusOrAbortSlashCommandInteraction(event);
+            return;
         }
-        return args;
-    }
 
-    private void submitJob(SlashCommandInteractionEvent event, Job job) {
-        job.getMeta().setPlatform(JobMeta.JobPlatform.DISCORD);
-        job.getMeta().setDiscordUserId(event.getUser().getId());
-        WikiBot.getDiscordClient().getJobListener().setJobChannel(job.getId(), event.getChannel());
 
-        JobManager.submit(job);
-        event.reply("Done! Running job `" + job.getId() + "`. I will notify you when it updates. Use `/status` with the job ID or use the `Info` button to manually check the job.")
-                .addEmbeds(DiscordClient.getStatusEmbed(job).build())
-                .addActionRow(DiscordClient.getJobActionRow(job))
-                .setEphemeral(false).queue();
-    }
+        try {
+            JobMeta meta = new JobMeta(event.getUser().getName());
+            meta.setPlatform(JobMeta.JobPlatform.DISCORD);
+            meta.setDiscordUserId(event.getUser().getId());
 
-    public void onMediaWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        WikiTeam3Args args = processArgs(new WikiTeam3Args(), event);
-        JobMeta meta = new JobMeta(event.getUser().getName());
-        meta.setPlatform(JobMeta.JobPlatform.DISCORD);
-        Job job = new WikiTeam3Job(args, meta, UUID.randomUUID().toString());
-        submitJob(event, job);
-    }
+            String[] args = getArgsFromOptions(event);
 
-    public void onDokuWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        DokuWikiDumperArgs args = processArgs(new DokuWikiDumperArgs(), event);
-        JobMeta meta = new JobMeta(event.getUser().getName());
-        meta.setPlatform(JobMeta.JobPlatform.DISCORD);
-        Job job = new DokuWikiDumperJob(args, meta, UUID.randomUUID().toString());
-        submitJob(event, job);
-    }
+            Job job = null;
+            switch (event.getName()) {
+                case "mediawiki_dump" -> job = new WikiTeam3Job(new WikiTeam3Args(args, meta), meta, UUID.randomUUID().toString());
+                case "dokuwiki_dump" -> job = new DokuWikiDumperJob(new DokuWikiDumperArgs(args, meta), meta, UUID.randomUUID().toString());
+                case "pukiwiki_archive" -> job = new PukiWikiDumperJob(new PukiWikiDumperArgs(args, meta), meta, UUID.randomUUID().toString());
+            }
+            assert job != null;
+            JobManager.submit(job);
+            WikiBot.getDiscordClient().getJobListener().setJobChannel(job.getId(), event.getChannel());
 
-    public void onPukiWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        PukiWikiDumperArgs args = processArgs(new PukiWikiDumperArgs(), event);
-        JobMeta meta = new JobMeta(event.getUser().getName());
-        meta.setPlatform(JobMeta.JobPlatform.DISCORD);
-        Job job = new PukiWikiDumperJob(args, meta, UUID.randomUUID().toString());
-        submitJob(event, job);
+            event.reply("Done! Running job `" + job.getId() + "`. I will notify you when it updates. Use `/status` with the job ID or use the `Info` button to manually check the job.")
+                    .addEmbeds(DiscordClient.getStatusEmbed(job).build())
+                    .addActionRow(DiscordClient.getJobActionRow(job))
+                    .setEphemeral(false).queue();
+        } catch (JobLaunchException e) {
+            event.reply(e.getMessage()).setEphemeral(true).queue();
+        } catch (ParseException | ParameterException e) {
+            event.reply("Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")").setEphemeral(true).queue();
+        }
+
     }
 
     public void onStatusOrAbortSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
