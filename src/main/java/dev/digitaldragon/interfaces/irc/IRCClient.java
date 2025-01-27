@@ -62,7 +62,7 @@ public class IRCClient {
                 .server().host(config.server()).port(config.port()).secure(true).then()
                 .buildAndConnect();
 
-        client.getEventManager().registerEventListener(new IrcCommandListener());
+        client.getEventManager().registerEventListener(new IRCCommandListener());
         client.getEventManager().registerEventListener(new IRCBulkCommand());
         client.addChannel(config.channel());
     }

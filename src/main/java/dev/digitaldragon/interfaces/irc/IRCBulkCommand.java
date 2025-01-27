@@ -22,7 +22,7 @@ public class IRCBulkCommand {
         String message = event.getMessage();
         String nick = event.getActor().getNick();
         if (!message.startsWith("!bulk")) return;
-        if (!IrcCommandListener.isVoiced(event.getChannel(), event.getActor())) {
+        if (!IRCCommandListener.isVoiced(event.getChannel(), event.getActor())) {
             event.getChannel().sendMessage(String.format("%s: You don't have permission to do that! Please ask someone else to run this for you.", nick));
             return;
         }

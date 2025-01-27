@@ -26,7 +26,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.function.BiFunction;
 
-public class IrcCommandListener {
+public class IRCCommandListener {
     private boolean submissionsEnabled = true;
 
     @Handler
