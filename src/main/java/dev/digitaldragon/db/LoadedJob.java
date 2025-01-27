@@ -1,7 +1,9 @@
 package dev.digitaldragon.db;
 
-import dev.digitaldragon.jobs.*;
-import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
+import dev.digitaldragon.jobs.Job;
+import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.JobStatus;
+import dev.digitaldragon.jobs.JobType;
 import lombok.Getter;
 import lombok.Setter;
 
