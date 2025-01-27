@@ -50,17 +50,6 @@ public class WikiTeam3Job extends Job {
 
         meta.setTargetUrl(targetUrl);
 
-        // TODO: There should be a better system for setting these values
-        /*if (args.getExplain() != null && meta.getExplain().isEmpty()) {
-            meta.setExplain(args.getExplain());
-        }
-        if (args.getSilentMode() != null && meta.getSilentMode() == null) {
-            meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
-        }
-        if (args.getQueue() != null && meta.getQueue().isEmpty()) {
-            meta.setQueue(args.getQueue());
-        }*/
-
         this.args = args;
         this.meta = meta;
         this.id = id;
