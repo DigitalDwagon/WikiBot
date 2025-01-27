@@ -115,8 +115,4 @@ public abstract class Job {
     public void log(String message) {
         WikiBot.getBus().post(new JobLogEvent(this, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now().atZone(ZoneOffset.UTC)) + " | " + message));
     }
-
-    public void uploadLogs() {
-
-    }
 }

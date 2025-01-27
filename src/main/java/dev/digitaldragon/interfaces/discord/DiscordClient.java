@@ -48,7 +48,7 @@ public class DiscordClient {
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
-                    .addEventListeners(new DiscordDokuWikiListener(), new DiscordMediaWikiListener(), new DiscordAdminListener(), new DiscordReuploadListener(), new DiscordButtonListener(), new DiscordCommandListener())
+                    .addEventListeners(new DiscordAdminListener(), new DiscordButtonListener(), new DiscordCommandListener())
                     .build();
         } catch (LoginException loginException) {
             instance.shutdownNow();

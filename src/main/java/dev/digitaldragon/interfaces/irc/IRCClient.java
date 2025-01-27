@@ -64,10 +64,6 @@ public class IRCClient {
 
         client.getEventManager().registerEventListener(new IrcCommandListener());
         client.getEventManager().registerEventListener(new IRCBulkCommand());
-
-        /*if (Boolean.parseBoolean(EnvConfig.getConfigs().get("irclogin"))) {
-            client.getAuthManager().addProtocol(new GameSurge(client, EnvConfig.getConfigs().get("ircnick").trim(), EnvConfig.getConfigs().get("ircpass").trim()));
-        }*/
         client.addChannel(config.channel());
     }
 }
