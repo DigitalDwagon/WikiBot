@@ -1,20 +1,13 @@
 package dev.digitaldragon.interfaces.api;
 
-import com.google.gson.Gson;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.JobMeta;
-import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
-import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import io.javalin.Javalin;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.UUID;
 
 
 public class JavalinAPI {
@@ -34,7 +27,7 @@ public class JavalinAPI {
         //register routes
         getAllJobs(); //GET /api/jobs
         getJob(); //GET /api/jobs/:id
-        createJob(); //POST /api/jobs
+        //createJob(); //POST /api/jobs
 
         WikiBot.getBus().register(updatesWebsocket);
         WikiBot.getBus().register(logWebsocket);
@@ -141,7 +134,7 @@ public class JavalinAPI {
         });
     }
 
-    private static void createJob() {
+    /*private static void createJob() {
         app.post("/api/jobs", (ctx) -> {
             try {
                 JSONObject json = new JSONObject(ctx.body());
@@ -184,7 +177,7 @@ public class JavalinAPI {
 
             ctx.status(500).result("oops");
         });
-    }
+    }*/
 
 
     private static String error(String message) {
