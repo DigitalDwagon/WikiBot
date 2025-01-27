@@ -3,7 +3,6 @@ package dev.digitaldragon.interfaces.discord;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
@@ -99,13 +98,8 @@ public class DiscordCommandListener extends ListenerAdapter {
                     .addObject(args)
                     .build()
                     .parse(getArgsFromOptions(event));
-            // Assuming args has a check() method
-            if (args instanceof PukiWikiDumperArgs) ((PukiWikiDumperArgs) args).check();
         } catch (ParameterException e) {
             event.reply("Invalid parameters or options! Double check your extra-args").setEphemeral(true).queue();
-            return null;
-        } catch (UserErrorException e) {
-            event.reply(e.getMessage()).setEphemeral(true).queue();
             return null;
         }
         return args;
@@ -141,7 +135,9 @@ public class DiscordCommandListener extends ListenerAdapter {
 
     public void onPukiWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         PukiWikiDumperArgs args = processArgs(new PukiWikiDumperArgs(), event);
-        Job job = new PukiWikiDumperJob(event.getUser().getName(), UUID.randomUUID().toString(), args);
+        JobMeta meta = new JobMeta(event.getUser().getName());
+        meta.setPlatform(JobMeta.JobPlatform.DISCORD);
+        Job job = new PukiWikiDumperJob(args, meta, UUID.randomUUID().toString());
         submitJob(event, job);
     }
 

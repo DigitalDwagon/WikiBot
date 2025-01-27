@@ -1,7 +1,6 @@
 package dev.digitaldragon.db;
 
 import com.google.gson.Gson;
-import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -228,11 +227,11 @@ public class SqliteManager {
                             if (dir.exists() && CommonTasks.findDumpDir(job.getId()) != null && args.getResume() == null) {
                                 args.setResume(job.getId());
                             }
-                            if (args.getSilentMode() == null) {
-                                args.setSilentMode(JobMeta.SilentMode.END.name());
+                            if (job.getMeta().getSilentMode() == null) {
+                                job.getMeta().setSilentMode(JobMeta.SilentMode.END);
                             }
                             setFailed(job.getId());
-                            PukiWikiDumperHelper.beginJob(args, job.getMeta().getUserName(), job.getId());
+                            JobManager.submit(new PukiWikiDumperJob(args, job.getMeta(), job.getId()));
                         } else if (job.getType() == JobType.DOKUWIKIDUMPER) {
                             //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
                             DokuWikiDumperArgs args = (DokuWikiDumperArgs) getArgs(job.getId());

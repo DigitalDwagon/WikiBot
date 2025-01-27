@@ -1,6 +1,7 @@
 package dev.digitaldragon.jobs.pukiwiki;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
@@ -9,8 +10,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.File;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The DokuWikiDumperJob class represents a job for dumping a DokuWiki instance.
@@ -23,40 +26,37 @@ import java.util.List;
 @Getter
 public class PukiWikiDumperJob extends Job {
     private final String id;
-    private final String name;
-    private final String userName;
-    private JobStatus status;
+    private JobStatus status = JobStatus.QUEUED;
     private String runningTask = null;
     private Instant startTime = null;
     private final File directory;
     private transient RunCommand downloadCommand = null;
     private transient RunCommand uploadCommand = null;
-    private String explanation;
     @Setter
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    private transient GenericLogsHandler handler;
     private int failedTaskCode;
     private PukiWikiDumperArgs args;
     private JobMeta meta;
 
+    public PukiWikiDumperJob(PukiWikiDumperArgs args, JobMeta meta, String id) throws JobLaunchException {
+        meta.setTargetUrl(Optional.ofNullable(args.getUrl()).orElseThrow(() -> new JobLaunchException("You need to specify the wiki URL.")));
 
-    public PukiWikiDumperJob(String userName, String id, PukiWikiDumperArgs args) {
-        name = args.getUrl();
-        this.userName = userName;
+        this.args = args;
+        this.meta = meta;
         this.id = id;
-        this.status = JobStatus.QUEUED;
+
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.explanation = args.getExplain();
-        this.handler = new GenericLogsHandler(this);
-        this.args = args;
-        this.meta = new JobMeta(userName);
-        meta.setExplain(args.getExplain());
-        meta.setTargetUrl(args.getUrl());
-        if (args.getSilentMode() != null) meta.setSilentMode(JobMeta.SilentMode.valueOf(args.getSilentMode()));
-        if (args.getQueue() != null) meta.setQueue(args.getQueue());
+    }
+
+    public PukiWikiDumperJob(String unparsedArgs, JobMeta meta, String id) throws JobLaunchException, ParseException {
+        this(
+                new PukiWikiDumperArgs(Command.shellSplit(unparsedArgs).toArray(new String[0]), meta),
+                meta,
+                id
+        );
     }
 
     private void failure(int code) {
@@ -148,7 +148,6 @@ public class PukiWikiDumperJob extends Job {
 
         status = JobStatus.COMPLETED;
         runningTask = null;
-        handler.end();
         WikiBot.getBus().post(new JobSuccessEvent(this));
     }
 

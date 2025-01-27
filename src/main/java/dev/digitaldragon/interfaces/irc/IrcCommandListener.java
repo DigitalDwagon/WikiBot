@@ -11,6 +11,7 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
+import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -164,12 +165,9 @@ public class IrcCommandListener {
 
                 Job job = null;
                 switch (command) {
-                    case "mediawikisingle", "mw" -> {
-                        job = new WikiTeam3Job(message, meta, UUID.randomUUID().toString());
-                    }
-                    case "dokusingle", "dw" -> {
-                        job = new DokuWikiDumperJob(message, meta, UUID.randomUUID().toString());
-                    }
+                    case "mediawikisingle", "mw" -> job = new WikiTeam3Job(message, meta, UUID.randomUUID().toString());
+                    case "dokusingle", "dw" -> job = new DokuWikiDumperJob(message, meta, UUID.randomUUID().toString());
+                    case "pukisingle", "pw" -> job = new PukiWikiDumperJob(message, meta, UUID.randomUUID().toString());
                 }
                 assert job != null;
 
@@ -183,9 +181,9 @@ public class IrcCommandListener {
         aliases.put("mediawikisingle", "mw");
         aliases.put("dokusingle", "mw");
         aliases.put("dw", "mw");
+        aliases.put("pukisingle", "mw");
+        aliases.put("pw", "mw");
 
-        commands.put("pukisingle", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
-        commands.put("pw", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
         commands.put("reupload", () -> runHelper(channel, user, message, ReuploadHelper::beginJob));
 
         if (aliases.containsKey(command)) {

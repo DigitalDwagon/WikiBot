@@ -1,11 +1,11 @@
 package dev.digitaldragon.interfaces.irc;
 
-import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
 import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
+import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
@@ -96,7 +96,13 @@ public class IRCBulkCommand {
                                     jobs++;
                                 }
                                 case "!pw" -> {
-                                    PukiWikiDumperHelper.beginJob(line, nick);
+                                    try {
+                                        JobManager.submit(new PukiWikiDumperJob(line, meta, UUID.randomUUID().toString()));
+                                    } catch (JobLaunchException e) {
+                                        result = e.getMessage();
+                                    } catch (ParseException e) {
+                                        result = "Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")";
+                                    }
                                     jobs++;
                                 }
                                 default -> {
