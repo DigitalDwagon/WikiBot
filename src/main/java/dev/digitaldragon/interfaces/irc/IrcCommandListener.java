@@ -8,6 +8,7 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import net.engio.mbassy.listener.Handler;
@@ -155,27 +156,40 @@ public class IrcCommandListener {
                 channel.sendMessage(nick + ": " + reply);
         });
 
-        commands.put("mediawikisingle", () -> {
+        commands.put("mw", () -> {
             try {
                 checkUserPermissions(channel, user, true);
                 JobMeta meta = new JobMeta(user.getNick());
                 meta.setPlatform(JobMeta.JobPlatform.IRC);
-                JobManager.submit(new WikiTeam3Job(message, meta, UUID.randomUUID().toString()));
+
+                Job job = null;
+                switch (command) {
+                    case "mediawikisingle", "mw" -> {
+                        job = new WikiTeam3Job(message, meta, UUID.randomUUID().toString());
+                    }
+                    case "dokusingle", "dw" -> {
+                        job = new DokuWikiDumperJob(message, meta, UUID.randomUUID().toString());
+                    }
+                }
+                assert job != null;
+
+                JobManager.submit(job);
             } catch (UserErrorException | JobLaunchException e) {
                 channel.sendMessage(user.getNick() + ": " + e.getMessage());
             } catch (ParseException | ParameterException e) {
                 channel.sendMessage(user.getNick() + ": Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")");
             }
         });
-        aliases.put("mw", "mediawikisingle");
-        commands.put("dokusingle", () -> runHelper(channel, user, message, DokuWikiDumperHelper::beginJob));
-        commands.put("dw", () -> runHelper(channel, user, message, DokuWikiDumperHelper::beginJob));
+        aliases.put("mediawikisingle", "mw");
+        aliases.put("dokusingle", "mw");
+        aliases.put("dw", "mw");
+
         commands.put("pukisingle", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
         commands.put("pw", () -> runHelper(channel, user, message, PukiWikiDumperHelper::beginJob));
         commands.put("reupload", () -> runHelper(channel, user, message, ReuploadHelper::beginJob));
 
         if (aliases.containsKey(command)) {
-            command = aliases.get(command);
+            commands.get(aliases.get(command)).run();
         }
 
         if (commands.get(command) != null) {

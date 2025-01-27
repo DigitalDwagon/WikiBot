@@ -1,7 +1,6 @@
 package dev.digitaldragon.db;
 
 import com.google.gson.Gson;
-import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.PukiWikiDumperHelper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
@@ -240,11 +239,11 @@ public class SqliteManager {
                             if (dir.exists() && CommonTasks.findDumpDir(job.getId()) != null && args.getResume() == null) {
                                 args.setResume(job.getId());
                             }
-                            if (args.getSilentMode() == null) {
-                                args.setSilentMode(JobMeta.SilentMode.END.name());
+                            if (job.getMeta().getSilentMode() == null) {
+                                job.getMeta().setSilentMode(JobMeta.SilentMode.END);
                             }
                             setFailed(job.getId());
-                            DokuWikiDumperHelper.beginJob(args, job.getMeta().getUserName());
+                            JobManager.submit(new DokuWikiDumperJob(args, job.getMeta(), job.getId()));
                         } else {
                             //IRCClient.sendMessage("DigitalDragons: " + job.getId() + " died.");
                         }

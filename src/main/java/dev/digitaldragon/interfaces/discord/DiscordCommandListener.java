@@ -100,7 +100,6 @@ public class DiscordCommandListener extends ListenerAdapter {
                     .build()
                     .parse(getArgsFromOptions(event));
             // Assuming args has a check() method
-            if (args instanceof DokuWikiDumperArgs) ((DokuWikiDumperArgs) args).check();
             if (args instanceof PukiWikiDumperArgs) ((PukiWikiDumperArgs) args).check();
         } catch (ParameterException e) {
             event.reply("Invalid parameters or options! Double check your extra-args").setEphemeral(true).queue();
@@ -134,7 +133,9 @@ public class DiscordCommandListener extends ListenerAdapter {
 
     public void onDokuWikiSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         DokuWikiDumperArgs args = processArgs(new DokuWikiDumperArgs(), event);
-        Job job = new DokuWikiDumperJob(event.getUser().getName(), UUID.randomUUID().toString(), args);
+        JobMeta meta = new JobMeta(event.getUser().getName());
+        meta.setPlatform(JobMeta.JobPlatform.DISCORD);
+        Job job = new DokuWikiDumperJob(args, meta, UUID.randomUUID().toString());
         submitJob(event, job);
     }
 

@@ -2,12 +2,12 @@ package dev.digitaldragon.interfaces.telegram;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
-import dev.digitaldragon.interfaces.generic.DokuWikiDumperHelper;
 import dev.digitaldragon.interfaces.generic.ReuploadHelper;
 import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
@@ -100,12 +100,19 @@ public class TelegramCommandsBot extends AbilityBot {
                 .action(ctx -> {
                     String message = null;
                     System.out.println(arrayToString(ctx.arguments()));
-                    message = DokuWikiDumperHelper.beginJob(arrayToString(ctx.arguments()), ctx.user().getUserName());
+                    JobMeta meta = new JobMeta(ctx.user().getUserName());
+                    meta.setPlatform(JobMeta.JobPlatform.TELEGRAM);
+                    try {
+                        DokuWikiDumperJob job = new DokuWikiDumperJob(arrayToString(ctx.arguments()), meta, UUID.randomUUID().toString());
+                        JobManager.submit(job);
+                    } catch (JobLaunchException e) {
+                        message = e.getMessage();
+                    } catch (ParseException e) {
+                        message = "Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")";
+                    }
+                    if (message == null) message = THANKS_MESSAGE;
 
-                    if (message != null)
-                        reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
-                    else
-                        reply_silent.sendReplyMessage(THANKS_MESSAGE, ctx.chatId(), ctx.update().getMessage().getMessageId());
+                    reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)
                 .build();
