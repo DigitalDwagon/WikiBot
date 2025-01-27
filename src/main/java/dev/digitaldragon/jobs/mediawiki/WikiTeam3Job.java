@@ -51,7 +51,7 @@ public class WikiTeam3Job extends Job {
         meta.setTargetUrl(targetUrl);
 
         // TODO: There should be a better system for setting these values
-        if (args.getExplain() != null && meta.getExplain().isEmpty()) {
+        /*if (args.getExplain() != null && meta.getExplain().isEmpty()) {
             meta.setExplain(args.getExplain());
         }
         if (args.getSilentMode() != null && meta.getSilentMode() == null) {
@@ -59,7 +59,7 @@ public class WikiTeam3Job extends Job {
         }
         if (args.getQueue() != null && meta.getQueue().isEmpty()) {
             meta.setQueue(args.getQueue());
-        }
+        }*/
 
         this.args = args;
         this.meta = meta;
@@ -71,7 +71,7 @@ public class WikiTeam3Job extends Job {
 
     public WikiTeam3Job(String unparsedArgs, JobMeta meta, String id) throws JobLaunchException, ParseException {
         this(
-                new WikiTeam3Args(Command.shellSplit(unparsedArgs).toArray(new String[0])),
+                new WikiTeam3Args(Command.shellSplit(unparsedArgs).toArray(new String[0]), meta),
                 meta,
                 id
         );

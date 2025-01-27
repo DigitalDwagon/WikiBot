@@ -1,20 +1,29 @@
 package dev.digitaldragon.jobs;
 
+import com.beust.jcommander.Parameter;
+import dev.digitaldragon.util.SilentModeParser;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 @Getter
 @Setter
 public class JobMeta {
     private String userName;
-    private Optional<String> explain = Optional.empty();
-    private JobPlatform platform;
+    private JobPlatform platform = null;
+    @Parameter(names = {"--explain", "-e"})
+    @Nullable
+    private String explain = null;
+    @Parameter(names = {"--silent-mode"}, converter = SilentModeParser.class)
     private SilentMode silentMode = SilentMode.ALL;
+    @Parameter(names = {"--queue"})
     private String queue = "default";
-    private Optional<String> targetUrl = Optional.empty();
-    private Optional<String> discordUserId = Optional.empty();
+    @Nullable
+    private String targetUrl = null;
+    @Nullable
+    private String discordUserId = null;
 
     public JobMeta(String userName) {
         this.userName = userName;
@@ -34,19 +43,16 @@ public class JobMeta {
         SILENT
     }
 
-    public void setExplain(String explain) {
-        if (explain != null && !explain.isEmpty()) this.explain = Optional.of(explain);
+    public Optional<String> getTargetUrl() {
+        return Optional.ofNullable(targetUrl);
     }
 
-    public void setTargetUrl(String targetUrl) {
-        if (targetUrl != null && !targetUrl.isEmpty()) this.targetUrl = Optional.of(targetUrl);
+    public Optional<String> getDiscordUserId() {
+        return Optional.ofNullable(discordUserId);
     }
 
-    public void setDiscordUserId(String discordUserId) {
-        if (discordUserId != null && !discordUserId.isEmpty()) this.discordUserId = Optional.of(discordUserId);
+    public Optional<String> getExplain() {
+        return Optional.ofNullable(explain);
     }
-
-
-
 
 }

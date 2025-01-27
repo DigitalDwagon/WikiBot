@@ -4,7 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
-import dev.digitaldragon.util.SilentModeValidator;
+import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.util.URLValidator;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,8 +53,6 @@ public class WikiTeam3Args {
     private boolean warcPages;
     @Parameter(names = {"--warc-pages-history", "-p", "-X"})
     private boolean warcPagesHistory;
-    @Parameter(names = {"--explain", "-e"})
-    private String explain;
     @Parameter(names = {"--resume"})
     private String resume;
     @Parameter(names = {"--api", "-A"}, validateWith = URLValidator.class)
@@ -67,17 +65,14 @@ public class WikiTeam3Args {
     private boolean warc;
     @Parameter(names = {"--warconly"})
     private boolean warcOnly;
-    @Parameter(names = {"--silent-mode"}, validateWith = SilentModeValidator.class)
-    private String silentMode = null;
-    @Parameter(names = {"--queue"})
-    private String queue;
     @Parameter(names = {"--redirects"})
     private boolean redirects;
 
     public WikiTeam3Args() {}
 
-    public WikiTeam3Args(String[] args) throws ParameterException, ParseException {
+    public WikiTeam3Args(String[] args, JobMeta meta) throws ParameterException, ParseException {
         JCommander commander = JCommander.newBuilder()
+                .addObject(meta)
                 .addObject(this)
                 .build();
 
