@@ -17,22 +17,22 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("com.google.cloud:libraries-bom:23.1.0"))
-    implementation("com.google.cloud:google-cloud-storage:2.43.1")
+    implementation(platform("com.google.cloud:libraries-bom:26.53.0"))
+    implementation("com.google.cloud:google-cloud-storage:2.47.0")
     implementation("net.dv8tion:JDA:5.0.0-alpha.12")
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
-    implementation("org.kitteh.irc:client-lib:8.0.0")
+    implementation("org.kitteh.irc:client-lib:9.0.0")
     implementation("org.json:json:20240303")
     implementation("com.google.code.gson:gson:2.10.1") //yes there are two json libraries, one for receiving and one for sending. it's stupid but i'm lazy
     // https://mvnrepository.com/artifact/commons-io/commons-io
     //implementation("commons-io:commons-io:2.13.0")
 
     //used for XML parsing in link extractor.
-    implementation("org.jsoup:jsoup:1.18.1")
+    implementation("org.jsoup:jsoup:1.18.3")
 
     //used to decompress zstd streams
     // https://mvnrepository.com/artifact/com.github.luben/zstd-jni
-    implementation("com.github.luben:zstd-jni:1.5.5-5")
+    implementation("com.github.luben:zstd-jni:1.5.6-9")
 
     //web library for dashboard
     implementation("io.javalin:javalin:5.6.3")
@@ -57,7 +57,7 @@ dependencies {
 
     // sqlite for database
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    implementation("org.xerial:sqlite-jdbc:3.46.0.0")
+    implementation("org.xerial:sqlite-jdbc:3.48.0.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
