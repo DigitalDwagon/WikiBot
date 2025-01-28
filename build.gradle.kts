@@ -59,7 +59,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
     implementation("org.xerial:sqlite-jdbc:3.48.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     //compileOnly("org.projectlombok:lombok:1.18.26")
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
