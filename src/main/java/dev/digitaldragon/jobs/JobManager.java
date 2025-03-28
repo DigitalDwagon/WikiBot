@@ -131,6 +131,7 @@ public class JobManager {
                         if (runningJobsPerQueue.get(queue) >= getQueueConcurrency(queue)) return;
                         pendingJobs.remove(jobId);
                         runningJobs.add(jobId);
+                        runningJobsPerQueue.put(queue, runningJobsPerQueue.get(queue) + 1);
                         executorService.submit(() -> {
                             try {
                                 get(jobId).run();
