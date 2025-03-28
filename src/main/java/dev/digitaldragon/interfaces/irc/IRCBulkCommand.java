@@ -52,8 +52,12 @@ public class IRCBulkCommand {
                     .thenApply(response -> {
                         String contentType = response.headers()
                                 .firstValue("Content-Type")
-                                .orElse("");
+                                .orElse("")
+                                .toLowerCase();
                         if (contentType.contains("text/plain")) {
+                            return response.body();
+                        } else if (contentType.isEmpty()) {
+                            event.getChannel().sendMessage(nick + ": Server returned an empty Content-Type, trying to process anyways.");
                             return response.body();
                         } else {
                             event.getChannel().sendMessage(nick + ": Server returned invalid Content-Type " + contentType + ", expected text/plain");
