@@ -85,12 +85,10 @@ public class Config {
             wikiTeam3Config = new WikiTeam3Config(
                     wikiteam3.getBoolean("enabled"),
                     wikiteam3.getString("userAgent"),
-                    wikiteam3.getBoolean("warcEnabled"),
-                    wikiteam3.getBoolean("autoWarc"),
                     wikiteam3.getString("binZstd")
             );
         } else {
-            wikiTeam3Config = new WikiTeam3Config(false, null, false, false, null);
+            wikiTeam3Config = new WikiTeam3Config(false, null, null);
         }
 
         if (json.has("upload")) {
@@ -108,6 +106,6 @@ public class Config {
     public record DashboardConfig(boolean isEnabled, int port) {}
     public record IRCConfig(boolean isEnabled, String server, int port, String channel, String nick, String realName, IRCAuthOptions authOptions) {}
     public record IRCAuthOptions(boolean isEnabled, String password) {}
-    public record WikiTeam3Config(boolean isEnabled, String userAgent, boolean warcEnabled, boolean autoWarc, String binZstd) {}
+    public record WikiTeam3Config(boolean isEnabled, String userAgent, String binZstd) {}
     public record UploadConfig(String collection, boolean offloadEnabled, String offloadServer) {}
 }

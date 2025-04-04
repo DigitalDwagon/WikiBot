@@ -32,8 +32,6 @@
   "wikiteam3": {
     "enabled": true,
     "userAgent": "wikiteam3/4.1.7 Wikibot/1.2.0 (Wikibot preserves public wikis)",
-    "warcEnabled": true,
-    "autoWarc": false,
     "binZstd": "zstd"
   },
   "upload": {

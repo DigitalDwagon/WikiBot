@@ -47,12 +47,6 @@ public class WikiTeam3Args {
     private boolean insecure;
     @Parameter(names = {"--force", "-F"})
     private boolean force;
-    @Parameter(names = {"--warc-images", "-I"})
-    private boolean warcImages;
-    @Parameter(names = {"--warc-pages", "-P"})
-    private boolean warcPages;
-    @Parameter(names = {"--warc-pages-history", "-p", "-X"})
-    private boolean warcPagesHistory;
     @Parameter(names = {"--resume"})
     private String resume;
     @Parameter(names = {"--api", "-A"}, validateWith = URLValidator.class)
@@ -61,10 +55,6 @@ public class WikiTeam3Args {
     private String index;
     @Parameter(names = {"--url", "-u"}, variableArity = true, validateWith = URLValidator.class)
     private String url;
-    @Parameter(names = {"--warc-not-for-production"})
-    private boolean warc;
-    @Parameter(names = {"--warconly"})
-    private boolean warcOnly;
     @Parameter(names = {"--redirects"})
     private boolean redirects;
 
@@ -110,9 +100,6 @@ public class WikiTeam3Args {
         parseBooleanOption(args, currentOnly, "--curonly");
         parseBooleanOption(args, insecure, "--insecure");
         parseBooleanOption(args, force, "--force");
-        parseBooleanOption(args, warcImages, "--warc-images");
-        parseBooleanOption(args, warcPages, "--warc-pages");
-        parseBooleanOption(args, warcPagesHistory, "--warc-pages-history");
         parseBooleanOption(args, redirects, "--redirects");
 
         parseUrlOption(args, api, "--api");

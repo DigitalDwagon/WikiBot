@@ -12,7 +12,6 @@ import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
-import dev.digitaldragon.jobs.mediawiki.MediaWikiWARCJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 import net.engio.mbassy.listener.Handler;
@@ -130,10 +129,6 @@ public class IRCCommandListener {
             job.getMeta().setQueue(queue);
             JobManager.launchJobs();
             channel.sendMessage(String.format("%s: Moved job %s to queue %s", nick, jobId, queue));
-        });
-
-        if (WikiBot.getConfig().getWikiTeam3Config().warcEnabled()) commands.put("warctest", () -> {
-            JobManager.submit(new MediaWikiWARCJob(UUID.randomUUID().toString(), parts[1], new JobMeta(nick)));
         });
 
         // --- Job-specific commands ---

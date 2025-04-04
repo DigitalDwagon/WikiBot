@@ -99,70 +99,68 @@ public class WikiTeam3Job extends Job {
 
         }
 
-        if (!args.isWarcOnly()) {
-            WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
-            startTime = Instant.now();
-            status = JobStatus.RUNNING;
-            log("wikibot v" + WikiBot.getVersion() + " job " + id);
+        WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
+        startTime = Instant.now();
+        status = JobStatus.RUNNING;
+        log("wikibot v" + WikiBot.getVersion() + " job " + id);
 
-            runningTask = "DownloadMediaWiki";
-            log("Starting Task DownloadMediaWiki");
+        runningTask = "DownloadMediaWiki";
+        log("Starting Task DownloadMediaWiki");
 
-            downloadCommand = new RunCommand(null, parsedArgs.toArray(new String[0]), runDir, message -> {
-                log(message);
-                CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+        downloadCommand = new RunCommand(null, parsedArgs.toArray(new String[0]), runDir, message -> {
+            log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
-            });
+        });
 
-            downloadCommand.run();
-            int downloadExitCode = downloadCommand.waitFor();
-            if (downloadExitCode != 0) {
-                failure(downloadExitCode);
-                return;
-            }
-
-            log("Finished task DownloadMediaWiki");
-
-            runningTask = "UploadMediaWiki";
-            log("Starting Task UploadMediaWiki");
-
-            File dumpDir = CommonTasks.findDumpDir(runDir);
-            if (dumpDir == null) {
-                log("Failed to find the dump directory, aborting...");
-                failure(999);
-                return;
-            }
-            Config.UploadConfig uploadConfig = WikiBot.getConfig().getUploadConfig();
-
-            List<String> uploadParams = new ArrayList<>();
-            uploadParams.add("wikiteam3uploader");
-            uploadParams.add(dumpDir.getName());
-            uploadParams.add("--zstd-level");
-            uploadParams.add("22");
-            uploadParams.add("--parallel");
-            uploadParams.add("--bin-zstd");
-            uploadParams.add(WikiBot.getConfig().getWikiTeam3Config().binZstd());
-            uploadParams.add("--collection");
-            uploadParams.add(uploadConfig.collection());
-            if (uploadConfig.offloadEnabled()) {
-                uploadParams.add("--offload");
-                uploadParams.add(uploadConfig.offloadServer());
-            }
-
-            uploadCommand = new RunCommand(null, uploadParams.toArray(new String[0]), runDir, message -> {
-                log(message);
-                CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
-
-            });
-
-            uploadCommand.run();
-            if (uploadCommand.waitFor() != 0) {
-                failure(uploadCommand.waitFor());
-                return;
-            }
-
-            log("Finished task UploadMediaWiki");
+        downloadCommand.run();
+        int downloadExitCode = downloadCommand.waitFor();
+        if (downloadExitCode != 0) {
+            failure(downloadExitCode);
+            return;
         }
+
+        log("Finished task DownloadMediaWiki");
+
+        runningTask = "UploadMediaWiki";
+        log("Starting Task UploadMediaWiki");
+
+        File dumpDir = CommonTasks.findDumpDir(runDir);
+        if (dumpDir == null) {
+            log("Failed to find the dump directory, aborting...");
+            failure(999);
+            return;
+        }
+        Config.UploadConfig uploadConfig = WikiBot.getConfig().getUploadConfig();
+
+        List<String> uploadParams = new ArrayList<>();
+        uploadParams.add("wikiteam3uploader");
+        uploadParams.add(dumpDir.getName());
+        uploadParams.add("--zstd-level");
+        uploadParams.add("22");
+        uploadParams.add("--parallel");
+        uploadParams.add("--bin-zstd");
+        uploadParams.add(WikiBot.getConfig().getWikiTeam3Config().binZstd());
+        uploadParams.add("--collection");
+        uploadParams.add(uploadConfig.collection());
+        if (uploadConfig.offloadEnabled()) {
+            uploadParams.add("--offload");
+            uploadParams.add(uploadConfig.offloadServer());
+        }
+
+        uploadCommand = new RunCommand(null, uploadParams.toArray(new String[0]), runDir, message -> {
+            log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
+
+        });
+
+        uploadCommand.run();
+        if (uploadCommand.waitFor() != 0) {
+            failure(uploadCommand.waitFor());
+            return;
+        }
+
+        log("Finished task UploadMediaWiki");
 
         logsUrl = WikiBot.getLogFiles().uploadLogs(this);
 
