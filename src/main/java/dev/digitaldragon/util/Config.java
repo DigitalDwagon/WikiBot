@@ -93,9 +93,9 @@ public class Config {
 
         if (json.has("upload")) {
             JSONObject upload = json.getJSONObject("upload");
-            uploadConfig = new UploadConfig(upload.getString("collection"), upload.getBoolean("offloadEnabled"), upload.getString("offloadServer"));
+            uploadConfig = new UploadConfig(upload.getString("collection"), upload.getBoolean("offloadEnabled"), upload.getString("offloadServer"), upload.getString("transferProvider"));
         } else {
-            uploadConfig = new UploadConfig("opensource", false, "");
+            uploadConfig = new UploadConfig("opensource", false, "", "");
         }
     }
 
@@ -107,5 +107,5 @@ public class Config {
     public record IRCConfig(boolean isEnabled, String server, int port, String channel, String nick, String realName, IRCAuthOptions authOptions) {}
     public record IRCAuthOptions(boolean isEnabled, String password) {}
     public record WikiTeam3Config(boolean isEnabled, String userAgent, String binZstd) {}
-    public record UploadConfig(String collection, boolean offloadEnabled, String offloadServer) {}
+    public record UploadConfig(String collection, boolean offloadEnabled, String offloadServer, String transferProvider) {}
 }

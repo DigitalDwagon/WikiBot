@@ -37,6 +37,7 @@
   "upload": {
     "collection": "opensource",
     "offloadEnabled": false,
-    "offloadServer": "username@target::some/directory/"
+    "offloadServer": "username@target::some/directory/",
+    "transferProvider": "transfer.sh"
   }
 }
