@@ -54,6 +54,9 @@ public class WikiBot {
         return "1.6.4";
     }
 
+    @Getter
+    private static File scriptDirectory = null;
+
     public static void main (String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down...");
@@ -68,6 +71,13 @@ public class WikiBot {
             logger.error("Failed to load config", e);
             System.exit(1);
         }
+
+        scriptDirectory = new File("wikibot-scripts");
+        if (!scriptDirectory.exists()) {
+            logger.error("Failed to find script directory");
+            System.exit(1);
+        }
+
         discordClient = new DiscordClient();
         JobManager.setQueueConcurrency("default", 15);
         JobManager.setQueuePriority("default", 0);

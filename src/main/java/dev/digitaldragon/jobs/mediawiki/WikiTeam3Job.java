@@ -7,11 +7,14 @@ import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobSuccessEvent;
 import dev.digitaldragon.util.Config;
+import dev.digitaldragon.util.TransferUploader;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ public class WikiTeam3Job extends Job {
 
     private transient RunCommand downloadCommand = null;
     private transient RunCommand uploadCommand = null;
+    private transient RunCommand itemCommand = null;
 
     @Setter private String archiveUrl = null;
     @Setter private String logsUrl = null;
@@ -155,12 +159,60 @@ public class WikiTeam3Job extends Job {
         });
 
         uploadCommand.run();
-        if (uploadCommand.waitFor() != 0) {
+        int uploadCommandExitCode = uploadCommand.waitFor();
+
+        log("Finished task UploadMediaWiki");
+
+        runningTask = "ItemDiscovery";
+        log("Starting item discovery for the wiki...");
+        String bestWikiURL = args.getApi() != null ? args.getApi() : this.getMeta().getTargetUrl().orElseThrow();
+        itemCommand = new RunCommand(null, new String[]{
+                "python3", new File(WikiBot.getScriptDirectory(), "mediawiki-item-discovery.py").getAbsolutePath(),
+                bestWikiURL,
+                "--delay", args.getDelay() != null ? args.getDelay().toString() : "1.5"
+        }, directory, this::log);
+        itemCommand.run();
+
+        int itemExitCode = itemCommand.waitFor();
+        if (itemExitCode != 0) {
+            log("Item discovery failed for this wiki!");
+            log("This will be ignored.");
+        }
+
+        File itemsFile = new File(directory, "items.txt");
+        File itemsDir = new File("items");
+        itemsDir.mkdirs();
+        File itemsDestination = new File(itemsDir, id + ".txt");
+        if (itemsFile.exists()) {
+
+            try {
+                Files.move(itemsFile.toPath(), itemsDestination.toPath());
+
+            } catch (IOException e) {
+                log("Failed to move the itemsFile into the items directory.");
+            }
+        }
+
+        String transferUrl = "Sorry, error uploading items file :(";
+        try {
+            transferUrl = TransferUploader.compressAndUpload("https://" + uploadConfig.transferProvider() + "/wikibot_" + id + "_items.txt.zst", itemsDestination);
+        } catch (IOException e) {
+            log("Error uploading items file to transfer.archivete.am");
+            e.printStackTrace();
+        }
+
+        log("");
+        log("---");
+        log("Job done!");
+        log("Items URL: " + transferUrl);
+        log("archive.org Item URL: " + archiveUrl);
+
+        if (uploadCommandExitCode != 0) {
+            log("---");
+            log("This job failed to upload, marking it failed...");
             failure(uploadCommand.waitFor());
             return;
         }
-
-        log("Finished task UploadMediaWiki");
 
         logsUrl = WikiBot.getLogFiles().uploadLogs(this);
 
@@ -178,10 +230,12 @@ public class WikiTeam3Job extends Job {
             status = JobStatus.ABORTED;
             return true;
         }
-        if (runningTask.equals("DownloadMediaWiki")) {
+        if (!runningTask.equals("UploadMediaWiki")) {
             log("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
             downloadCommand.getProcess().destroyForcibly();
+            itemCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
+            itemCommand.getProcess().destroyForcibly();
             status = JobStatus.ABORTED;
             log("----- Bot: Aborted task " + runningTask + " -----");
             aborted = true;
