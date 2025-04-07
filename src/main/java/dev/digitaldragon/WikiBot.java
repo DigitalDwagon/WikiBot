@@ -51,7 +51,7 @@ public class WikiBot {
             .registerTypeAdapter(Optional.class, new OptionalSerializer<>())
             .create();
     public static String getVersion() {
-        return "1.6.4";
+        return "1.7.0";
     }
 
     @Getter
