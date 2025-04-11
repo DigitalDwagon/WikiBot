@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -66,7 +67,9 @@ public class WikiBot {
         }));
         Logger logger = LoggerFactory.getLogger(WikiBot.class);
         try {
-            config = new Config("config.json");
+            File configFile = new File("config.json");
+            String json = Files.readString(configFile.toPath());
+            config = gson.fromJson(json, Config.class);
         } catch (IOException e) {
             logger.error("Failed to load config", e);
             System.exit(1);
