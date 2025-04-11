@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
@@ -42,23 +41,13 @@ public class DiscordClient {
         }
         enabled = true;
 
-        GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_EMOJIS };
-        try {
-            instance = JDABuilder.create(config.token(), Arrays.asList(INTENTS))
-                    .enableCache(CacheFlag.VOICE_STATE)
-                    .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                    //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
-                    .addEventListeners(new DiscordAdminListener(), new DiscordButtonListener(), new DiscordCommandListener())
-                    .build();
-        } catch (LoginException loginException) {
-            instance.shutdownNow();
-            logger.error("####################");
-            logger.error("Failed to log in to Discord. The Discord module will be disabled.", loginException);
-            logger.error("####################");
-
-            enabled = false;
-            return;
-        }
+        GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_EXPRESSIONS };
+        instance = JDABuilder.create(config.token(), Arrays.asList(INTENTS))
+                .enableCache(CacheFlag.VOICE_STATE)
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
+                .addEventListeners(new DiscordAdminListener(), new DiscordButtonListener(), new DiscordCommandListener())
+                .build();
 
         instance.updateCommands().addCommands(
                 Commands.slash("mediawiki_dump", "Dump a MediaWiki site with wikiteam3")

@@ -19,7 +19,6 @@ import dev.digitaldragon.util.InstantTypeAdapter;
 import dev.digitaldragon.util.OptionalSerializer;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,6 @@ public class WikiBot {
     public static ExecutorService executorService = Executors.newFixedThreadPool(10);
     @Getter
     public static EventBus bus = new EventBus();
-    public static final GatewayIntent[] INTENTS = { GatewayIntent.DIRECT_MESSAGES,GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_EMOJIS };
     @Getter
     private static Config config = null;
     @Getter
