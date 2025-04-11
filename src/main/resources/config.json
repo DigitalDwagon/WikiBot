@@ -39,5 +39,8 @@
     "offloadEnabled": false,
     "offloadServer": "username@target::some/directory/",
     "transferProvider": "transfer.sh"
+  },
+  "scripts": {
+    "pythonpath": "python3"
   }
 }

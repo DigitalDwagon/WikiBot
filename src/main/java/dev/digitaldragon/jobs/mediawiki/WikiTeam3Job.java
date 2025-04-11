@@ -167,7 +167,7 @@ public class WikiTeam3Job extends Job {
         log("Starting item discovery for the wiki...");
         String bestWikiURL = args.getApi() != null ? args.getApi() : this.getMeta().getTargetUrl().orElseThrow();
         itemCommand = new RunCommand(null, new String[]{
-                "python3", new File(WikiBot.getScriptDirectory(), "mediawiki-item-discovery.py").getAbsolutePath(),
+                WikiBot.getConfig().scriptConfig.pythonPath(), new File(WikiBot.getScriptDirectory(), "mediawiki-item-discovery.py").getAbsolutePath(),
                 bestWikiURL,
                 "--delay", args.getDelay() != null ? args.getDelay().toString() : "1.5"
         }, directory, this::log);
