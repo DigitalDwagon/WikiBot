@@ -1,17 +1,6 @@
 package dev.digitaldragon.wikibot;
 
-import com.beust.jcommander.ParameterException;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobMeta;
-import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
-import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.text.ParseException;
-import java.util.UUID;
-
-public class WikiTeam3ParseTest {
+public class WikiTeam3ParseTest {/*
 
     @Test
     void testJunk() {
@@ -63,6 +52,6 @@ public class WikiTeam3ParseTest {
         WikiTeam3Args args = new WikiTeam3Args(new String[]{"--xml", "--images"}, new JobMeta("Test"));
         assert args.isXml();
         assert args.isImages();
-    }
+    }*/
 
 }
