@@ -1,0 +1,111 @@
+[
+  {
+    "aliases": [
+      "chrome",
+      "chrome-windows"
+    ],
+    "name": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
+  },
+  {
+    "aliases": [
+      "chrome-linux",
+      "chrome-ubuntu"
+    ],
+    "name": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
+  },
+  {
+    "aliases": [
+      "chrome-android",
+      "mobile-chrome"
+    ],
+    "name": "Mozilla/5.0 (Linux; Android 5.0.2; Nexus 7 Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.61 Safari/537.36"
+  },
+  {
+    "aliases": [
+      "mobile-chrome-ios",
+      "chrome-ios"
+    ],
+    "name": "Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_1_2 like Mac OS X; en) AppleWebKit/600.1.4 (KHTML, like Gecko) CriOS/39.0.2171.50 Mobile/12B440 Safari/600.1.4"
+  },
+  {
+    "aliases": [
+      "chrome-mac",
+      "chrome-osx"
+    ],
+    "name": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
+  },
+  {
+    "aliases": [
+      "curl"
+    ],
+    "name": "curl/7.75.0"
+  },
+  {
+    "aliases": [
+      "edgewin10"
+    ],
+    "name": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/18.17763"
+  },
+  {
+    "aliases": [
+      "firefox",
+      "firefox-windows"
+    ],
+    "name": "Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0"
+  },
+  {
+    "aliases": [
+      "firefox-linux",
+      "firefox-ubuntu"
+    ],
+    "name": "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0"
+  },
+  {
+    "aliases": [
+      "firefox-android",
+      "mobile-firefox"
+    ],
+    "name": "Mozilla/5.0 (Android; Mobile; rv:66.0) Gecko/66.0 Firefox/66.0"
+  },
+  {
+    "aliases": [
+      "ie",
+      "ie10"
+    ],
+    "name": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)"
+  },
+  {
+    "aliases": [
+      "safari",
+      "safari-mac",
+      "safari-osx"
+    ],
+    "name": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15"
+  },
+  {
+    "aliases": [
+      "safari-windows"
+    ],
+    "name": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27"
+  },
+  {
+    "aliases": [
+      "mobile-safari",
+      "safari-ios",
+      "safari-iphone"
+    ],
+    "name": "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1"
+  },
+  {
+    "aliases": [
+      "safari-ipad"
+    ],
+    "name": "Mozilla/5.0 (iPad; CPU OS 9_2_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13D15 Safari/601.1"
+  },
+  {
+    "aliases": [
+      "wikibot-short"
+    ],
+    "name": "wikibot/1.7.0 - wikibot preserves public wikis (wikibot@digitaldragon.dev; +https://wikibot.digitaldragon.dev/)"
+  }
+]

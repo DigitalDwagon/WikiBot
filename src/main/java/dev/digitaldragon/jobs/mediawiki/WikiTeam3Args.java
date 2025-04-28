@@ -6,6 +6,7 @@ import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.util.URLValidator;
+import dev.digitaldragon.util.UserAgentParser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -53,10 +54,12 @@ public class WikiTeam3Args {
     private String api;
     @Parameter(names = {"--index", "-N"}, validateWith = URLValidator.class)
     private String index;
-    @Parameter(names = {"--url", "-u"}, variableArity = true, validateWith = URLValidator.class)
+    @Parameter(names = {"--url", "-U"}, variableArity = true, validateWith = URLValidator.class)
     private String url;
     @Parameter(names = {"--redirects"})
     private boolean redirects;
+    @Parameter(names = {"--user-agent", "-u"}, converter = UserAgentParser.class)
+    private String userAgent = WikiBot.getConfig().getWikiTeam3Config().userAgent();
 
     public WikiTeam3Args() {}
 
@@ -81,8 +84,6 @@ public class WikiTeam3Args {
         //parse the args into a string compatible with wikiteam3. Wikiteam3 only uses the long version of the args, so we have to convert the short versions to the long versions.
         List<String> args = new ArrayList<>();
         args.add("wikiteam3dumpgenerator");
-        args.add("--user-agent");
-        args.add(WikiBot.getConfig().getWikiTeam3Config().userAgent());
 
         parseDoubleOption(args, delay, "--delay");
         parseDoubleOption(args, indexCheckThreshold, "--index-check-threshold");
@@ -105,6 +106,8 @@ public class WikiTeam3Args {
         parseUrlOption(args, api, "--api");
         parseUrlOption(args, index, "--index");
         parseUrlOption(args, url, "");
+
+        parseStringOption(args, userAgent, "--user-agent");
 
         return args.toArray(new String[0]);
     }
@@ -144,6 +147,15 @@ public class WikiTeam3Args {
         if (!longOption.isEmpty()) {
             args.add(longOption);
         }
+        args.add(option);
+    }
+
+    private void parseStringOption(List<String> args, String option, String longOption) {
+        if (option == null || option.isEmpty()) {
+            return;
+        }
+
+        args.add(longOption);
         args.add(option);
     }
 }
