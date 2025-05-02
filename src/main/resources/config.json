@@ -34,6 +34,12 @@
     "userAgent": "wikiteam3/4.1.7 Wikibot/1.2.0 (Wikibot preserves public wikis)",
     "binZstd": "zstd"
   },
+  "dokuwiki-dumper": {
+    "userAgent": "dokuWikiDumper/0.1.47 Wikibot/x.x.x (Wikibot preserves public wikis)"
+  },
+  "pukiwiki-dumper": {
+    "userAgent": "pukiWikiDumper/0.1.47 Wikibot/x.x.x (Wikibot preserves public wikis)"
+  },
   "upload": {
     "collection": "opensource",
     "offloadEnabled": false,

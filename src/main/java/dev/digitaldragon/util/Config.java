@@ -17,6 +17,10 @@ public class Config {
     public IRCConfig ircConfig;
     @SerializedName("wikiteam3")
     public WikiTeam3Config wikiTeam3Config;
+    @SerializedName("dokuwiki-dumper")
+    public DokuWikiDumperConfig dokuWikiDumperConfig;
+    @SerializedName("pukiwiki-dumper")
+    public PukiWikiDumperConfig pukiWikiDumperConfig;
     @SerializedName("upload")
     public UploadConfig uploadConfig;
     @SerializedName("scripts")
@@ -28,6 +32,8 @@ public class Config {
     public record IRCConfig(@SerializedName("enabled") boolean isEnabled, String server, int port, String channel, String nick, String realName, IRCAuthOptions authOptions) {}
     public record IRCAuthOptions(@SerializedName("enabled") boolean isEnabled, String password) {}
     public record WikiTeam3Config(@SerializedName("enabled") boolean isEnabled, String userAgent, String binZstd) {}
+    public record DokuWikiDumperConfig(String userAgent) {}
+    public record PukiWikiDumperConfig(String userAgent) {}
     public record UploadConfig(String collection, boolean offloadEnabled, String offloadServer, String transferProvider) {}
     public record ScriptConfig(String pythonPath) {}
 }

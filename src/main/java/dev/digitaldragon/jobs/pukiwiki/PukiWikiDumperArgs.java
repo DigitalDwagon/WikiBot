@@ -3,7 +3,9 @@ package dev.digitaldragon.jobs.pukiwiki;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.util.UserAgentParser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,6 +46,8 @@ public class PukiWikiDumperArgs {
     private boolean auto;
     @Parameter(names = {"--force"})
     private boolean force;
+    @Parameter(names = {"--user-agent", "-u"}, converter = UserAgentParser.class)
+    private String userAgent = WikiBot.getConfig().getPukiWikiDumperConfig().userAgent();
 
     public PukiWikiDumperArgs() {}
 
@@ -74,6 +78,8 @@ public class PukiWikiDumperArgs {
         parseBooleanOption(args, auto, "--auto");
         parseBooleanOption(args, force, "--force");
         parseUrlOption(args, url, "");
+
+        parseStringOption(args, userAgent, "--user-agent");
 
 
         return args;
@@ -114,6 +120,15 @@ public class PukiWikiDumperArgs {
         if (!longOption.isEmpty()) {
             args.add(longOption);
         }
+        args.add(option);
+    }
+
+    private void parseStringOption(List<String> args, String option, String longOption) {
+        if (option == null || option.isEmpty()) {
+            return;
+        }
+
+        args.add(longOption);
         args.add(option);
     }
 

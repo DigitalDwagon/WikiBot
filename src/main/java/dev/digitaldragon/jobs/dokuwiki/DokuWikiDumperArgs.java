@@ -3,8 +3,10 @@ package dev.digitaldragon.jobs.dokuwiki;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.util.URLValidator;
+import dev.digitaldragon.util.UserAgentParser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,6 +52,8 @@ public class DokuWikiDumperArgs {
     private boolean pdf;
     @Parameter(names = {"--resume"})
     private String resume;
+    @Parameter(names = {"--user-agent", "-u"}, converter = UserAgentParser.class)
+    private String userAgent = WikiBot.getConfig().getDokuWikiDumperConfig().userAgent();
 
     public DokuWikiDumperArgs() {}
 
@@ -85,6 +89,8 @@ public class DokuWikiDumperArgs {
         parseBooleanOption(args, media, "--media");
         parseBooleanOption(args, html, "--html");
         parseBooleanOption(args, pdf, "--pdf");
+
+        parseStringOption(args, userAgent, "--user-agent");
 
         return args;
     }
@@ -127,4 +133,12 @@ public class DokuWikiDumperArgs {
         args.add(option);
     }
 
+    private void parseStringOption(List<String> args, String option, String longOption) {
+        if (option == null || option.isEmpty()) {
+            return;
+        }
+
+        args.add(longOption);
+        args.add(option);
+    }
 }
