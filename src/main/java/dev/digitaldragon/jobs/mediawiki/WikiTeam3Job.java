@@ -30,6 +30,7 @@ import java.util.Optional;
 public class WikiTeam3Job extends Job {
     private String id;
 
+    @Setter
     private JobStatus status = JobStatus.QUEUED;
     private String runningTask = null;
     @Nullable private Instant startTime = null;

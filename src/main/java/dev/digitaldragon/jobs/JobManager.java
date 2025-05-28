@@ -1,6 +1,7 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import lombok.Getter;
 
@@ -8,6 +9,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 public class JobManager {
     private static final int MAX_CONCURRENCY = 15;
@@ -103,47 +106,55 @@ public class JobManager {
     }
 
     public static void launchJobs() {
-        if (pendingJobs.isEmpty()) return;
-        if (runningJobs.size() >= MAX_CONCURRENCY) return;
-        Map<String, Integer> runningJobsPerQueue = new HashMap<>();
-        runningJobs.forEach(jobId -> {
-            String queue = get(jobId).getMeta().getQueue();
-            runningJobsPerQueue.computeIfAbsent(queue, (key) -> 0);
-            runningJobsPerQueue.put(queue, runningJobsPerQueue.get(queue) + 1);
-        });
+        if (pendingJobs.isEmpty() || runningJobs.size() >= MAX_CONCURRENCY) return;
 
-        Map<String, List<String>> pendingJobsPerQueue = new HashMap<>();
-        pendingJobs.forEach(jobId -> {
-            String queue = get(jobId).getMeta().getQueue();
-            pendingJobsPerQueue.computeIfAbsent(queue, (key) -> new ArrayList<>());
-            pendingJobsPerQueue.get(queue).add(jobId);
-        });
-        if (pendingJobsPerQueue.isEmpty()) return;
+        Map<Integer, List<String>> jobsByPriority = new HashMap<>();
+        for (String jobId : pendingJobs) {
+            Integer priority = getQueuePriority(get(jobId).getMeta().getQueue());
+            jobsByPriority.computeIfAbsent(priority, k -> new ArrayList<>()).add(jobId);
+        }
 
-        pendingJobsPerQueue.keySet().stream()
-                .sorted(Comparator.comparingInt((key) -> {
-                    return -getQueuePriority(key); // Sorts smallest to greatest by default, so flip the prio numbers around
-                })) // Sort by priority
-                .forEach(queue -> {
-                    pendingJobsPerQueue.get(queue).forEach(jobId -> {
-                        if (runningJobs.size() >= MAX_CONCURRENCY) return;
-                        runningJobsPerQueue.computeIfAbsent(queue, (key) -> 0);
-                        if (runningJobsPerQueue.get(queue) >= getQueueConcurrency(queue)) return;
-                        pendingJobs.remove(jobId);
-                        runningJobs.add(jobId);
-                        runningJobsPerQueue.put(queue, runningJobsPerQueue.get(queue) + 1);
-                        executorService.submit(() -> {
-                            try {
-                                get(jobId).run();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                //TODO - mark the job failed if this happens
-                            }
-                            runningJobs.remove(jobId);
-                            launchJobs();
-                        });
-                    });
-                });
+        jobsByPriority.entrySet().stream()
+                .sorted(comparing(Map.Entry::getKey))
+                .forEach(e -> e.getValue().forEach(jobId -> {
+                    String queue = get(jobId).getMeta().getQueue();
+                    if (getRunningJobsInQueue(queue) >= getQueueConcurrency(queue)) return;
+                    if (runningJobs.size() >= MAX_CONCURRENCY) return;
+
+                    startJob(jobId);
+                }));
+
+
+    }
+
+    private static void startJob(String jobId) {
+        pendingJobs.remove(jobId);
+        runningJobs.add(jobId);
+
+        Job job = get(jobId);
+        executorService.submit(() -> {
+            try {
+                job.run();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                job.setStatus(JobStatus.FAILED);
+                WikiBot.getBus().post(new JobFailureEvent(job));
+            } finally {
+                runningJobs.remove(jobId);
+                if (job.getStatus() == JobStatus.RUNNING) {
+                    job.setStatus(JobStatus.FAILED);
+                }
+            }
+        });
+    }
+
+    public static int getRunningJobsInQueue(String queue) {
+        queue = queue.toLowerCase();
+        int running = 0;
+        for (String jobId : runningJobs) {
+            if (get(jobId).getMeta().getQueue().equals(queue)) running++;
+        }
+        return running;
     }
 
     public static void submitJobDbOnly(Job job) {

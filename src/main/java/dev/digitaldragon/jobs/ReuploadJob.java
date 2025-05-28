@@ -20,6 +20,7 @@ public class ReuploadJob extends Job {
     private final String id;
     private final String name;
     private final String userName;
+    @Setter
     private JobStatus status = null;
     private String runningTask = null;
     private Instant startTime = null;

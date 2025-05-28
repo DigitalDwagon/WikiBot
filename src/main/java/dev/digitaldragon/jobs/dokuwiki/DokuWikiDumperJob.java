@@ -26,6 +26,7 @@ import java.util.Optional;
 @Getter
 public class DokuWikiDumperJob extends Job {
     private final String id;
+    @Setter
     private JobStatus status = JobStatus.QUEUED;
     private String runningTask = null;
     private Instant startTime = null;

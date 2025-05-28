@@ -29,6 +29,7 @@ public class DailyWikimediaDumpJob extends Job {
     private String id ;
     private final String name = "Wikimedia Incremental Dump";
     private final String userName = "AutomaticDragon";
+    @Setter
     private JobStatus status;
     private String runningTask = null;
     private Instant startTime = null;

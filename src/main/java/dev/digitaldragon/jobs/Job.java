@@ -45,6 +45,7 @@ public abstract class Job {
      * @return the status of the job as a JobStatus object.
      */
     public abstract JobStatus getStatus();
+    public abstract void setStatus(JobStatus status);
     /**
      * Returns the type of the job.
      *
