@@ -144,6 +144,7 @@ public class JobManager {
                 if (job.getStatus() == JobStatus.RUNNING) {
                     job.setStatus(JobStatus.FAILED);
                 }
+                launchJobs();
             }
         });
     }
