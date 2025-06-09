@@ -1,0 +1,8 @@
+when:
+  - event: [push, pull_request, manual]
+
+steps:
+  build:
+    image: gradle:8.7-jdk21
+    commands:
+      - gradle build
