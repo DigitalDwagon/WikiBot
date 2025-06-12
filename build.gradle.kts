@@ -35,7 +35,7 @@ dependencies {
     implementation("com.github.luben:zstd-jni:1.5.6-9")
 
     //web library for dashboard
-    implementation("io.javalin:javalin:5.6.3")
+    implementation("io.javalin:javalin:6.6.0")
 
     // https://mvnrepository.com/artifact/com.beust/jcommander
     implementation("com.beust:jcommander:1.82")
