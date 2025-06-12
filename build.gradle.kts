@@ -23,7 +23,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
     implementation("org.kitteh.irc:client-lib:9.0.0")
     implementation("org.json:json:20240303")
-    implementation("com.google.code.gson:gson:2.10.1") //yes there are two json libraries, one for receiving and one for sending. it's stupid but i'm lazy
+    implementation("com.google.code.gson:gson:2.13.1") //yes there are two json libraries, one for receiving and one for sending. it's stupid but i'm lazy
     // https://mvnrepository.com/artifact/commons-io/commons-io
     //implementation("commons-io:commons-io:2.13.0")
 
