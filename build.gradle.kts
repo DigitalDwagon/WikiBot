@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
     id("io.github.goooler.shadow") version "8.1.7"
     id("io.freefair.lombok") version "8.6"
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "2.2.0"
 }
 
 repositories {
