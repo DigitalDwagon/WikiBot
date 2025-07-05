@@ -58,7 +58,7 @@ public class IRCJobListener {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;
-        if (meta.getSilentMode() == JobMeta.SilentMode.END || meta.getSilentMode() == JobMeta.SilentMode.FAIL || meta.getSilentMode() == JobMeta.SilentMode.SILENT) return;
+        if (meta.getSilentMode() != JobMeta.SilentMode.ALL) return;
 
 
         IRCClient.sendMessage(meta.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
