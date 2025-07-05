@@ -14,7 +14,7 @@ public class IRCJobListener {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;
-        if (meta.getSilentMode() == JobMeta.SilentMode.FAIL || meta.getSilentMode() == JobMeta.SilentMode.SILENT) return;
+        if (meta.getSilentMode() != JobMeta.SilentMode.ALL && meta.getSilentMode() != JobMeta.SilentMode.END) return;
 
         IRCClient.sendMessage(meta.getUserName(), String.format("%sSuccess!%s Job for %s %s(%s)%s completed.", IRCFormat.LIGHT_GREEN, IRCFormat.RESET, meta.getTargetUrl().orElse("unknown"), IRCFormat.GREY, job.getId(), IRCFormat.RESET));
         IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
