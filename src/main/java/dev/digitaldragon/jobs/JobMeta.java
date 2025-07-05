@@ -40,7 +40,8 @@ public class JobMeta {
         ALL,
         FAIL,
         END,
-        SILENT
+        SILENT,
+        DONE
     }
 
     public Optional<String> getTargetUrl() {

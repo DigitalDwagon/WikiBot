@@ -30,6 +30,7 @@ public class IRCJobListener {
         if (meta.getSilentMode() == JobMeta.SilentMode.SILENT) return;
 
         if (job.getFailedTaskCode() == 88 && job.getArchiveUrl() != null) {
+            if (meta.getSilentMode() == JobMeta.SilentMode.DONE) return;
             IRCClient.sendMessage(meta.getUserName(), String.format("%s has %salready been archived%s in the past year! Use --force to override. %s(for %s)", meta.getTargetUrl().orElse("unknown"), IRCFormat.ORANGE, IRCFormat.RESET, IRCFormat.GREY, job.getId()));
             IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
             IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
