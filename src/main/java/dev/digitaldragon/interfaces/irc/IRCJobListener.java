@@ -14,7 +14,7 @@ public class IRCJobListener {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;
-        if (meta.getSilentMode() == JobMeta.SilentMode.FAIL || meta.getSilentMode() == JobMeta.SilentMode.SILENT) return;
+        if (meta.getSilentMode() != JobMeta.SilentMode.ALL && meta.getSilentMode() != JobMeta.SilentMode.END) return;
 
         IRCClient.sendMessage(meta.getUserName(), String.format("%sSuccess!%s Job for %s %s(%s)%s completed.", IRCFormat.LIGHT_GREEN, IRCFormat.RESET, meta.getTargetUrl().orElse("unknown"), IRCFormat.GREY, job.getId(), IRCFormat.RESET));
         IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
@@ -30,6 +30,7 @@ public class IRCJobListener {
         if (meta.getSilentMode() == JobMeta.SilentMode.SILENT) return;
 
         if (job.getFailedTaskCode() == 88 && job.getArchiveUrl() != null) {
+            if (meta.getSilentMode() == JobMeta.SilentMode.DONE) return;
             IRCClient.sendMessage(meta.getUserName(), String.format("%s has %salready been archived%s in the past year! Use --force to override. %s(for %s)", meta.getTargetUrl().orElse("unknown"), IRCFormat.ORANGE, IRCFormat.RESET, IRCFormat.GREY, job.getId()));
             IRCClient.sendMessage("Archive URL: " + job.getArchiveUrl());
             IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
@@ -58,7 +59,7 @@ public class IRCJobListener {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;
-        if (meta.getSilentMode() == JobMeta.SilentMode.END || meta.getSilentMode() == JobMeta.SilentMode.FAIL || meta.getSilentMode() == JobMeta.SilentMode.SILENT) return;
+        if (meta.getSilentMode() != JobMeta.SilentMode.ALL) return;
 
 
         IRCClient.sendMessage(meta.getUserName(), "Queued job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
