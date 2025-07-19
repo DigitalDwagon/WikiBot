@@ -42,7 +42,6 @@ public class DiscordCommandListener extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        System.out.println("got event");
         boolean permitted = false;
         if (!event.getName().equals("status")) {
             // check if user has the role in the guild they're in
