@@ -22,9 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 public class DiscordClient {
     @Getter
@@ -110,104 +109,68 @@ public class DiscordClient {
         builder.addField("User", meta.getUserName(), true);
         builder.addField("Job ID", "`" +  job.getId() + "`", true);
         builder.addField("Type", job.getType().name(), true);
-        String quickLinks = "";
 
-        if (job.getStatus() == JobStatus.QUEUED || job.getStatus() == JobStatus.RUNNING) {
-            //
+        if (job.isRunning() && job.getRunningTask() != null) {
+            builder.addField("Task", job.getRunningTask(), true);
         }
-        else if (job.getStatus() == JobStatus.FAILED || job.getStatus() == JobStatus.ABORTED) {
-            builder.setDescription("<:failed:1214681282626326528> Failed");
-            builder.setColor(Color.RED);
+
+        if (job.getFailedTaskCode() != 0) {
             builder.addField("Failed Task", String.format("`%s` (Exit Code `%s`)", job.getRunningTask(), job.getFailedTaskCode()), true);
         }
-        else if (job.getStatus() == JobStatus.COMPLETED) {
-            builder.setDescription("<:done:1214681284778000504> Done!");
-            builder.setColor(Color.GREEN);
-        }
 
-        if (job.getLogsUrl() != null) {
-            quickLinks += "[Logs](" + job.getLogsUrl() + ") ";
-        }
-        if (job.getArchiveUrl() != null) {
-            quickLinks += "[Archive](" + job.getArchiveUrl() + ") ";
-        }
+        Map<JobStatus, String> statusEmojis = Map.of(
+                JobStatus.QUEUED, "<:inprogress:1214681283771375706>",
+                JobStatus.RUNNING, "<:inprogress:1214681283771375706>",
+                JobStatus.FAILED, "<:failed:1214681282626326528>",
+                JobStatus.ABORTED, "<:failed:1214681282626326528>",
+                JobStatus.COMPLETED, "<:done:1214681284778000504>"
+                );
+        Map<JobStatus, Color> statusColors = Map.of(
+                JobStatus.QUEUED, Color.YELLOW,
+                JobStatus.RUNNING, Color.YELLOW,
+                JobStatus.FAILED, Color.RED,
+                JobStatus.ABORTED, Color.ORANGE,
+                JobStatus.COMPLETED, Color.GREEN
+        );
 
-        if (!quickLinks.isEmpty()) {
-            builder.addField("Quick Links", quickLinks, true);
-        }
+        JobStatus status = job.getStatus();
+        builder.setColor(statusColors.get(status));
+        builder.setDescription(statusEmojis.get(status) + " " + status.toString().charAt(0) + status.toString().substring(1).toLowerCase());
 
-
-        switch (job.getStatus()) {
-            case QUEUED:
-                builder.setDescription("<:inprogress:1214681283771375706> In queue...");
-                builder.setColor(Color.YELLOW);
-                break;
-            case RUNNING:
-                builder.setDescription("<:inprogress:1214681283771375706> Running...");
-                builder.setColor(Color.YELLOW);
-                builder.addField("Task", job.getRunningTask() == null ? "Unknown" : job.getRunningTask(), true);
-                break;
-            case FAILED:
-                builder.setDescription("<:failed:1214681282626326528> Failed");
-                builder.setColor(Color.RED);
-                if (job.getFailedTaskCode() == 88) {
-                    builder.setDescription("<:inprogress:1214681283771375706> Cancelled\n\n**This job was automatically aborted because a dump of this wiki was made less than a year ago!**\nIf you still need a new dump, you should run the command again with `Force` set to `true`.");
-                    builder.setColor(Color.YELLOW);
-                }
-                break;
-            case ABORTED:
-                builder.setDescription("<:failed:1214681282626326528> Aborted");
-                builder.setColor(Color.ORANGE);
-                break;
-            case COMPLETED:
-                builder.setDescription("<:done:1214681284778000504> Done!");
-                builder.setColor(Color.GREEN);
-                break;
-        }
         if (meta.getExplain().isPresent()) {
             builder.addField("Explanation", meta.getExplain().get(), false);
         }
+
         return builder;
     }
 
 
     public static List<ItemComponent> getJobActionRow(Job job) {
-        return List.of(getAbortButton(job), getStatusButton(job), getLogsButton(job), getArchiveButton(job));
-    }
+        List<ItemComponent> buttons = new ArrayList<>();
 
-    public static Button getAbortButton(Job job) {
-        return Button.danger("abort_" + job.getId(), "Abort")
-                .withEmoji(Emoji.fromUnicode("✖"))
-                .withDisabled(!(job.getStatus() == JobStatus.QUEUED || job.getStatus() == JobStatus.RUNNING));
-    }
+        String id = job.getId();
 
-    public static Button getStatusButton(Job job) {
-        return Button.secondary("status_" + job.getId(), "Info")
-                .withEmoji(Emoji.fromUnicode("ℹ️"));
-    }
+        if (job.isRunning()) {
+            buttons.add(Button.danger("abort_" + id, "Abort")
+                            .withEmoji(Emoji.fromUnicode("✖")));
+        }
 
-    public static Button getLogsButton(Job job) {
-        if (job.getLogsUrl() == null) {
-            return Button.secondary("logs_" + job.getId(), "Logs")
-                    //.withUrl("about:blank")
+        buttons.add(Button.secondary("status_" + job.getId(), "Info")
+                .withEmoji(Emoji.fromUnicode("ℹ️")));
+
+        if (job.getLogsUrl() != null) {
+            buttons.add(Button.link("logs_" + job.getId(), "Logs")
                     .withEmoji(Emoji.fromUnicode("📄"))
-                    .withDisabled(true);
+                    .withUrl(job.getLogsUrl()));
         }
-        return Button.secondary("logs_" + job.getId(), "Logs")
-                .withEmoji(Emoji.fromUnicode("📄"))
-                .withUrl(job.getLogsUrl());
-    }
 
-    public static Button getArchiveButton(Job job) {
-        if (job.getArchiveUrl() == null) {
-            return Button.secondary("archive_" + job.getId(), "Archive")
-                    //.withUrl("about:blank")
+        if (job.getArchiveUrl() != null) {
+            buttons.add(Button.secondary("archive_" + job.getId(), "Archive")
                     .withEmoji(Emoji.fromUnicode("📁"))
-                    .withDisabled(true);
+                    .withUrl(job.getArchiveUrl()));
         }
-        return Button.secondary("archive_" + job.getId(), "Archive")
-                .withEmoji(Emoji.fromUnicode("📁"))
-                .withUrl(job.getArchiveUrl());
+
+        return buttons;
     }
 
     public Optional<User> getUserById(String id) {
