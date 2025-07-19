@@ -84,7 +84,7 @@ public class IRCCommandListener {
                 Queue queue = new Queue(queueName, concurrency, priority);
                 WikiBot.getQueueManager().addOrChangeQueue(queue);
 
-                channel.sendMessage(String.format("%s: Set queue %s to max concurrency: %s, priority: %s", nick, queue, concurrency, priority));
+                channel.sendMessage(String.format("%s: Set queue %s to max concurrency: %s, priority: %s", nick, queue.getName(), concurrency, priority));
             } catch (Exception e) {
                 channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <concurrency> <priority>");
             }
