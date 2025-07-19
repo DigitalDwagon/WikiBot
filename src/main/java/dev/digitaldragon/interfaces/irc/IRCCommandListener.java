@@ -14,6 +14,7 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
+import dev.digitaldragon.jobs.queues.Queue;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -77,12 +78,12 @@ public class IRCCommandListener {
                 return;
             }
             try {
-                String queue = args.get(0);
+                String queueName = args.get(0);
                 int concurrency = Integer.parseInt(args.get(1));
                 int priority = Integer.parseInt(args.get(2));
-                JobManager.setQueueConcurrency(queue, concurrency);
-                JobManager.setQueuePriority(queue, priority);
-                JobManager.launchJobs();
+                Queue queue = new Queue(queueName, concurrency, priority);
+                WikiBot.getQueueManager().addOrChangeQueue(queue);
+
                 channel.sendMessage(String.format("%s: Set queue %s to max concurrency: %s, priority: %s", nick, queue, concurrency, priority));
             } catch (Exception e) {
                 channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <concurrency> <priority>");
@@ -99,13 +100,13 @@ public class IRCCommandListener {
         });
 
         commands.put("getqueue", () -> {
-           Integer concurrency = JobManager.getQueueConcurrency(message);
-           Integer priority = JobManager.getQueuePriority(message);
-           if (concurrency == null || priority == null) {
+            Queue queue = WikiBot.getQueueManager().getQueue(message);
+            if (queue == null) {
                channel.sendMessage(nick + ": Queue does not exist");
                return;
-           }
-           channel.sendMessage(String.format("%s: Queue %s - max concurrency: %s, priority: %s", nick, message, concurrency, priority));
+            }
+
+            channel.sendMessage(String.format("%s: Queue %s - max concurrency: %s, priority: %s", nick, message, queue.getConcurrency(), queue.getPriority()));
         });
 
         commands.put("movejob", () -> {

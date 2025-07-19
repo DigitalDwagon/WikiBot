@@ -31,8 +31,7 @@ public class SqliteManager {
 
         synchronized (lock) {
             try {
-
-                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.db");
+                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.sqlite3");
                 // string id, string url, jobtype type, string explain, string user, JobPlatform platform, discorduserid
                 Statement statement = connection.createStatement();
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, url TEXT, type TEXT, explain TEXT, user TEXT, platform TEXT, discorduserid TEXT, args TEXT, status TEXT, startTime TEXT, archiveUrl TEXT, logsUrl TEXT, failedTaskCode INTEGER, runningTask TEXT)");
@@ -98,7 +97,7 @@ public class SqliteManager {
     public LoadedJob getJobInfo(String id) {
         synchronized (lock) {
             try {
-                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.db");
+                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.sqlite3");
                 Statement statement = connection.createStatement();
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM jobs WHERE id = ?");
                 preparedStatement.setString(1, id);
@@ -143,7 +142,7 @@ public class SqliteManager {
     public Object getArgs(String id) {
         synchronized (lock) {
             try {
-                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.db");
+                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.sqlite3");
                 Statement statement = connection.createStatement();
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT args FROM jobs WHERE id = ?");
                 preparedStatement.setString(1, id);
@@ -173,7 +172,7 @@ public class SqliteManager {
 
     private static void setFailed(String jobId) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.db");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.sqlite3");
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE jobs SET status = ? WHERE id = ?");
             preparedStatement.setString(1, JobStatus.FAILED.name());
             preparedStatement.setString(2, jobId);
@@ -187,7 +186,7 @@ public class SqliteManager {
     public void load() {
         synchronized (lock) {
             try {
-                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.db");
+                Connection connection = DriverManager.getConnection("jdbc:sqlite:jobs.sqlite3");
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM jobs");
                 List<String> jobIds = new ArrayList<>();

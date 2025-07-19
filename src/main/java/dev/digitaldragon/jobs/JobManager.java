@@ -3,14 +3,16 @@ package dev.digitaldragon.jobs;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
+import dev.digitaldragon.jobs.queues.Queue;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
 
 public class JobManager {
     private static final int MAX_CONCURRENCY = 15;
@@ -82,49 +84,24 @@ public class JobManager {
         return new ArrayList<>(jobs.values());
     }
 
-    public static Integer getQueueConcurrency(String queue) {
-        queue = queue.toLowerCase();
-        return queueConcurrency.get(queue) == null ? 0 : queueConcurrency.get(queue);
-    }
-
-    public static void setQueueConcurrency(String queue, int concurrency) {
-        queue = queue.toLowerCase();
-        queueConcurrency.put(queue, concurrency);
-        if (queuePriority.get(queue) == null) setQueuePriority(queue, 0);
-    }
-
-    public static Integer getQueuePriority(String queue) {
-        queue = queue.toLowerCase();
-        return queuePriority.get(queue) == null ? 0 : queuePriority.get(queue);
-    }
-
-    public static void setQueuePriority(String queue, int priority) {
-        queue = queue.toLowerCase();
-        queuePriority.put(queue, priority);
-        if (queueConcurrency.get(queue) == null) setQueueConcurrency(queue, 0);
-
-    }
-
     public static void launchJobs() {
         if (pendingJobs.isEmpty() || runningJobs.size() >= MAX_CONCURRENCY) return;
 
         Map<Integer, List<String>> jobsByPriority = new HashMap<>();
         for (String jobId : pendingJobs) {
-            Integer priority = getQueuePriority(get(jobId).getMeta().getQueue());
+            Integer priority = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue()).getPriority();
             jobsByPriority.computeIfAbsent(priority, k -> new ArrayList<>()).add(jobId);
         }
 
         jobsByPriority.entrySet().stream()
-                .sorted(comparing(Map.Entry::getKey))
+                .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> e.getValue().forEach(jobId -> {
-                    String queue = get(jobId).getMeta().getQueue();
-                    if (getRunningJobsInQueue(queue) >= getQueueConcurrency(queue)) return;
+                    Queue queue = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue());
+                    if (getRunningJobsInQueue(queue.getName()) >= queue.getConcurrency()) return;
                     if (runningJobs.size() >= MAX_CONCURRENCY) return;
 
                     startJob(jobId);
                 }));
-
-
     }
 
     private static void startJob(String jobId) {

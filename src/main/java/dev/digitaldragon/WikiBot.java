@@ -13,6 +13,7 @@ import dev.digitaldragon.interfaces.telegram.TelegramClient;
 import dev.digitaldragon.jobs.CleanupListener;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.LogFiles;
+import dev.digitaldragon.jobs.queues.QueueManager;
 import dev.digitaldragon.util.Config;
 import dev.digitaldragon.util.FileTypeAdapter;
 import dev.digitaldragon.util.InstantTypeAdapter;
@@ -55,6 +56,8 @@ public class WikiBot {
 
     @Getter
     private static File scriptDirectory = null;
+    @Getter
+    private static QueueManager queueManager = null;
 
     public static void main (String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -79,9 +82,9 @@ public class WikiBot {
             System.exit(1);
         }
 
+        queueManager = new QueueManager();
+
         discordClient = new DiscordClient();
-        JobManager.setQueueConcurrency("default", 15);
-        JobManager.setQueuePriority("default", 0);
 
         IRCClient.enable();
         DiscordClient.enable();
