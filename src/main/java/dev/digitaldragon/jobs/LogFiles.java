@@ -24,8 +24,6 @@ public class LogFiles {
 
     @EventHandler
     public void onJobLog(JobLogEvent event) {
-        System.out.println(event.getMessage());
-
         File logFile = logFiles.get(event.getJob().getId());
         if (logFile == null) {
             logFile = new File(event.getJob().getDirectory(), "log.txt");
