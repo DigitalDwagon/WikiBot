@@ -33,6 +33,7 @@ public class DiscordCommandListener extends ListenerAdapter {
             "407534159909748746", // Miraheze: Site Reliability Engineers
             "407534772542242816", // Miraheze: Stewards
             "407534909746577418", // Miraheze: MediaWiki Engineers
+            "1237117175555297413", // Miraheze: Technology Team
             "1112838174071324744", // !digiserver: wikibot
     };
 
