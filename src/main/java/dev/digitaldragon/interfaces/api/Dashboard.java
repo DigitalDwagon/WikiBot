@@ -65,9 +65,10 @@ public class Dashboard {
         } else {
             sb.append(String.format("<h3 class=\"job-url\">%s</h3>", "Unknown URL"));
         }
-        sb.append(String.format("<p class=\"job-details\">(for %s - job %s)</p>", job.getMeta().getUserName(), job.getId()));
+        sb.append(String.format("<p class=\"job-details\">(for %s - job %s)", job.getMeta().getUserName(), job.getId()));
+        if (meta.getExplain().isPresent()) sb.append(" ").append(meta.getExplain().get())
+        sb.append("</p>");
         sb.append(String.format("<p class=\"job-logs\" id=\"%s\">", job.getId()));
-        if (meta.getExplain().isPresent())  sb.append(meta.getExplain().get()).append("\n");
         sb.append("Logs will appear below as they are generated:" + "\n");
         sb.append("---- Web: Logs start ----" + "\n");
         sb.append("</p>");
