@@ -62,14 +62,44 @@
             font-weight: 200;
             border-width: 2px;
             border-style: solid;
-            border-color: #212780;
             border-radius: 10px;
             padding-inline: 20px;
             padding-block: 5px;
             width: 50vw;
             margin-inline: auto;
             margin-top: 50px;
+            /* indicates an error with grey */
+            border-color: #555555;
+            background-color: #111111;
+        }
+
+        .job-status-queued {
+            border-color: #ccaa55;
+            background-color: #000808;
+        }
+
+        .job-status-queued > .job-logs {
+            display: none;
+        }
+
+        .job-status-running {
+            border-color: #212780;
             background-color: #000000;
+        }
+
+        .job-status-completed {
+            border-color: #56b637;
+            background-color: #000800;
+        }
+
+        .job-status-failed {
+            border-color: #CC7676;
+            background-color: #090000;
+        }
+
+        .job-status-aborted {
+            border-color: #9B00D7;
+            background-color: #090009;
         }
 
         .job-url {
@@ -128,6 +158,9 @@
             // add the job card to the page
             const jobContainer = document.querySelector('.jobs');
             jobContainer.innerHTML += html;
+        } else {
+            const job = document.getElementById('job-container-' + jobId);
+            job.className = "job-container job-status-" + eventType.toLowerCase();
         }
     });
 

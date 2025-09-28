@@ -58,18 +58,39 @@ public class Dashboard {
 
     private static String getCard(Job job) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<div class=\"job-container\">");
+        sb.append("<div class=\"job-container");
+        sb.append(String.format(" job-status-%s", job.getStatus().toString().toLowerCase()));
+        sb.append("\"");
+        sb.append(String.format(" id=\"job-container-%s\"", job.getId()));
+        sb.append(">");
         JobMeta meta = job.getMeta();
-
         if (meta.getTargetUrl().isPresent()) {
             String jobUrl = meta.getTargetUrl().get();
             sb.append(String.format("<h3 class=\"job-url\"><a href=\"%s\">%s</a></h3>", jobUrl, jobUrl));
         } else {
             sb.append(String.format("<h3 class=\"job-url\">%s</h3>", "Unknown URL"));
         }
-        sb.append(String.format("<p class=\"job-details\">(for %s - job %s)</p>", job.getMeta().getUserName(), job.getId()));
+        sb.append("<p class=\"job-details\">");
+        sb.append("(");
+        if (meta.getUserName().isPresent()) {
+            sb.append("for ");
+            if (meta.getPlatform().isPresent()) {
+                sp.append(String.format("<span title=\"on %s\">", meta.getPlatform()));
+            }
+            sb.append(meta.getUserName());
+            if (meta.getPlatform().isPresent()) {
+                sb.append("</span>");
+            }
+            sb.append(" - ");
+        }
+        sb.append(String.format("job %s", job.getId()));
+        sb.append(")");
+        if (meta.getExplain().isPresent()) {
+            sb.append(" ");
+            sb.append(meta.getExplain().get());
+        }
+        sb.append("</p>");
         sb.append(String.format("<p class=\"job-logs\" id=\"%s\">", job.getId()));
-        if (meta.getExplain().isPresent())  sb.append(meta.getExplain().get()).append("\n");
         sb.append("Logs will appear below as they are generated:" + "\n");
         sb.append("---- Web: Logs start ----" + "\n");
         sb.append("</p>");
