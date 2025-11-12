@@ -1,0 +1,14 @@
+when:
+  event: deployment
+
+steps:
+  publish-docker-image:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      repo: ghcr.io/digitaldwagon/wikibot
+      auto_tag: true
+      registry: ghcr.io
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
