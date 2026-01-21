@@ -50,18 +50,6 @@ public class Dashboard {
 
     }
 
-    private static void cards() {
-        app.get("/cards/{id}", (ctx) -> {
-            ctx.res().setContentType("text/html");
-            String id = ctx.pathParam("id");
-            Job job = JobManager.get(id);
-            if (job == null) {
-                ctx.result("Job not found!");
-            }
-            ctx.result(getCard(job));
-        });
-    }
-
     private static String getCard(Job job) {
         StringBuilder sb = new StringBuilder();
         sb.append("<div class=\"job-container");
