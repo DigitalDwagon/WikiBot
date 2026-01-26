@@ -5,9 +5,9 @@ import lombok.Getter;
 import net.badbird5907.lightning.event.Event;
 
 @Getter
-public class JobSuccessEvent implements Event {
+public class JobCompletedEvent implements Event {
     private final Job job;
-    public JobSuccessEvent(Job job){
+    public JobCompletedEvent(Job job){
         this.job = job;
     }
 }

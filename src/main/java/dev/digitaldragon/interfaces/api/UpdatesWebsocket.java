@@ -6,7 +6,7 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.eclipse.jetty.websocket.api.Session;
@@ -45,8 +45,8 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
     }
 
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
-        sendLogMessageToClients(event.getJob(), "SUCCESS");
+    public void onJobCompleted(JobCompletedEvent event) {
+        sendLogMessageToClients(event.getJob(), "COMPLETED");
     }
 
     @EventHandler

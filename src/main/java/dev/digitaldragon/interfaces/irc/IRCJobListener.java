@@ -5,12 +5,12 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 
 public class IRCJobListener {
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
+    public void onJobCompleted(JobCompletedEvent event) {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;

@@ -6,13 +6,13 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 public class TelegramJobListener {
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
+    public void onJobCompleted(JobCompletedEvent event) {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         SendMessage sendMessage = new SendMessage();

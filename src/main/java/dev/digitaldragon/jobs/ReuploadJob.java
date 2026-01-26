@@ -3,7 +3,7 @@ package dev.digitaldragon.jobs;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -143,7 +143,7 @@ public class ReuploadJob extends Job {
         status = JobStatus.COMPLETED;
         runningTask = null;
         handler.end();
-        WikiBot.getBus().post(new JobSuccessEvent(this));
+        WikiBot.getBus().post(new JobCompletedEvent(this));
     }
 
     public boolean abort() {

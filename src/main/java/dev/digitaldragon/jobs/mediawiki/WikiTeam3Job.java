@@ -5,7 +5,7 @@ import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import dev.digitaldragon.util.Config;
 import dev.digitaldragon.util.TransferUploader;
 import lombok.Getter;
@@ -222,7 +222,7 @@ public class WikiTeam3Job extends Job {
 
         status = JobStatus.COMPLETED;
         runningTask = null;
-        WikiBot.getBus().post(new JobSuccessEvent(this));
+        WikiBot.getBus().post(new JobCompletedEvent(this));
     }
 
     public boolean abort() {

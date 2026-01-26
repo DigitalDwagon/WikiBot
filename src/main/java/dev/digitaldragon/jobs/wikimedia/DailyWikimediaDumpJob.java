@@ -3,7 +3,7 @@ package dev.digitaldragon.jobs.wikimedia;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import lombok.Getter;
 import lombok.Setter;
 import org.jsoup.Jsoup;
@@ -140,7 +140,7 @@ public class DailyWikimediaDumpJob extends Job {
         runningTask = null;
         archiveUrl = "https://archive.org/details/@digitaldragons";
         handler.end();
-        WikiBot.getBus().post(new JobSuccessEvent(this));
+        WikiBot.getBus().post(new JobCompletedEvent(this));
     }
 
     private void extractWikis(String incrementalDumpUrl) throws IOException {

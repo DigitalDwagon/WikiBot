@@ -6,7 +6,7 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
@@ -25,7 +25,7 @@ public class DiscordJobListener {
     }
 
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
+    public void onJobCompleted(JobCompletedEvent event) {
         onJobEnd(event.getJob());
     }
 
@@ -42,7 +42,7 @@ public class DiscordJobListener {
     private void onJobEnd(Job job) {
         JobMeta meta = job.getMeta();
         String message = switch (job.getStatus()) {
-            case COMPLETED -> "Job ended.";
+            case COMPLETED -> "Job completed.";
             case FAILED -> "Job failed.";
             case ABORTED -> "Job aborted.";
             default -> "";

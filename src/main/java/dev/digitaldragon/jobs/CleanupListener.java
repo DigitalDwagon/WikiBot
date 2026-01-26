@@ -1,6 +1,6 @@
 package dev.digitaldragon.jobs;
 
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import java.nio.file.Files;
 public class CleanupListener {
     private static Logger logger = LoggerFactory.getLogger(CleanupListener.class);
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
+    public void onJobCompleted(JobCompletedEvent event) {
         Job job = event.getJob();
 
         if (job.getDirectory() != null) {
