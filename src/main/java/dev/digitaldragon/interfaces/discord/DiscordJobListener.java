@@ -7,6 +7,7 @@ import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
@@ -88,6 +89,18 @@ public class DiscordJobListener {
         TextChannel channel = WikiBot.getDiscordClient().getInstance().getTextChannelById(channelId.get());
         if (channel == null) return;
         channel.sendMessageEmbeds(DiscordClient.getStatusEmbed(job).build()).queue();
+    }
+
+    @EventHandler
+    public void onJobRunning(JobRunningEvent event) {
+        // <:done:1214681284778000504><:inprogress:1214681283771375706><:failed:1214681282626326528>
+        Job job = event.getJob();
+        JDA instance = WikiBot.getDiscordClient().getInstance();
+        TextChannel channel = instance.getTextChannelById(WikiBot.getConfig().getDiscordConfig().channelId());
+        if (channel == null) {
+            LoggerFactory.getLogger(DiscordJobListener.class).error("Failed to access Discord channel " + WikiBot.getConfig().getDiscordConfig().channelId());
+            return;
+        }
     }
 
     @EventHandler

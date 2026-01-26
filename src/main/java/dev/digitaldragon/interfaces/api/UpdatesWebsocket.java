@@ -6,6 +6,7 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
@@ -60,6 +61,11 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
     @EventHandler
     public void onJobAbort(JobAbortEvent event) {
         sendLogMessageToClients(event.getJob(), "ABORTED");
+    }
+
+    @EventHandler
+    public void onJobRunning(JobRunningEvent event) {
+        sendLogMessageToClients(event.getJob(), "RUNNING");
     }
 
     @EventHandler

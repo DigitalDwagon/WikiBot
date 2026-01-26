@@ -4,6 +4,7 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -72,6 +73,7 @@ public class ReuploadJob extends Job {
 
         startTime = Instant.now();
         status = JobStatus.RUNNING;
+        WikiBot.getBus().post(new JobRunningEvent(job));
 
         runningTask = "DetectJobType";
         File directory;

@@ -7,6 +7,7 @@ import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -61,6 +62,18 @@ public class TelegramJobListener {
         if (meta.getExplain().isPresent()) messageBuilder.append("\nExplanation: ").append(meta.getExplain().get());
         sendMessage.setText(messageBuilder.toString());
 
+        TelegramClient.getBot().tryToExecute(sendMessage);
+    }
+
+    @EventHandler
+    public void onJobRunning(JobRunningEvent event) {
+        Job job = event.getJob();
+        JobMeta meta = job.getMeta();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(WikiBot.getConfig().getTelegramConfig().channelId());
+        //        IRCClient.sendMessage(job.getUserName(), "Running job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
+
+        sendMessage.setText(String.format("@%s Job for %s running!%nYou will be notified when it finishes. Use !status %s for details.", meta.getUserName(), meta.getTargetUrl().orElse("unknown"), job.getId()));
         TelegramClient.getBot().tryToExecute(sendMessage);
     }
 

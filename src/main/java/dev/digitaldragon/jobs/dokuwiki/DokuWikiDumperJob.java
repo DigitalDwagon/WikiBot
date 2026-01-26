@@ -6,6 +6,7 @@ import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -80,6 +81,7 @@ public class DokuWikiDumperJob extends Job {
         WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
         startTime = Instant.now();
         status = JobStatus.RUNNING;
+        WikiBot.getBus().post(new JobRunningEvent(job));
         log("wikibot v" + WikiBot.getVersion() + " job " + id);
 
         List<String> dumpArgs = args.get();

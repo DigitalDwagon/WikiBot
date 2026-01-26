@@ -7,6 +7,7 @@ import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
@@ -86,6 +87,11 @@ public class SqliteManager {
 
     @EventHandler
     public void onJobFailure(JobFailureEvent event) {
+        saveJob(event.getJob());
+    }
+
+    @EventHandler
+    public void onJobRunning(JobRunningEvent event) {
         saveJob(event.getJob());
     }
 

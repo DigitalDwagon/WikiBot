@@ -4,6 +4,7 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import lombok.Getter;
 import lombok.Setter;
 import org.jsoup.Jsoup;
@@ -71,6 +72,7 @@ public class DailyWikimediaDumpJob extends Job {
     public void run() {
         this.startTime = Instant.now();
         this.status = JobStatus.RUNNING;
+        WikiBot.getBus().post(new JobRunningEvent(job));
         this.runningTask = "DOWNLOAD";
         handler.onMessage("Parsing the wikis.txt file...");
         parseWikiNames();
