@@ -68,8 +68,8 @@ public class IRCCommandListener {
         });
 
         commands.put("setqueue", () -> {
-            if (!isOped(event.getChannel(), event.getActor())) {
-                channel.sendMessage(nick + ": You don't have permission to do that! Please ask an op.");
+            if (!isVoiced(event.getChannel(), event.getActor())) {
+                channel.sendMessage(nick + ": You don't have permission to do that! Please ask an opped or voiced user to do this for you.");
                 return;
             }
             List<String> args = message != null ? Command.shellSplit(message) : new ArrayList<>();
