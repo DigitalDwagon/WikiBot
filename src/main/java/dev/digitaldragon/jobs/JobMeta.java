@@ -53,6 +53,9 @@ public class JobMeta {
     }
 
     public Optional<String> getExplain() {
+        if (explain != null && explain.isEmpty()) {
+            explain = null;
+        }
         return Optional.ofNullable(explain);
     }
 

@@ -4,9 +4,6 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.JobMeta;
 
-import java.time.Duration;
-import java.time.Instant;
-
 public class StatusHelper {
     /**
      * Returns a user-friendly message about the status of the job with the given ID.
@@ -23,42 +20,13 @@ public class StatusHelper {
             return "Job " + jobId + " does not exist!";
         JobMeta meta = job.getMeta();
 
-
-        StringBuilder message = new StringBuilder();
-        message.append("Job ").append(jobId);
-        if (meta.getTargetUrl().isPresent()) {
-            message.append(String.format(" | %s (%s)", meta.getTargetUrl().get(), job.getId()));
-        } else {
-            message.append(" | ").append(job.getId());
-        }
-        message.append(" is ");
-
-        if (job.isRunning()) {
-            message.append("running");
-        } else {
-            message.append("not running");
-        }
-
-        if (job.getRunningTask() != null) {
-            message.append(" (task ").append(job.getRunningTask()).append("). ");
-        } else {
-            message.append(". ");
-        }
-
-        message.append("Status: ");
-        message.append(job.getStatus().toString());
-        message.append(". ");
-        if (job.getStartTime() != null) {
-            message.append("Started: ");
-            message.append(Duration.between(job.getStartTime(), Instant.now()).toSeconds()).append(" seconds ago. ");
-        }
-
-        if (!job.getMeta().getQueue().equals("default")) {
-            message.append("In queue \"").append(job.getMeta().getQueue()).append("\". ");
-        }
-
-        if (meta.getExplain().isPresent()) message.append("\"").append(meta.getExplain().get()).append("\"");
-
-        return message.toString();
+        return String.format("Job for %s (%s) is %s. In queue \"%s\". %s%s",
+                meta.getTargetUrl().orElse("unknown"),
+                job.getId(),
+                job.getStatus().name().toLowerCase(),
+                job.getMeta().getQueue(),
+                job.getMeta().getExplain().isPresent() ? "Explanation: \"" + job.getMeta().getExplain().get() + "\" " : "",
+                job.getLogsUrl() != null ? job.getLogsUrl() : ""
+                );
     }
 }
