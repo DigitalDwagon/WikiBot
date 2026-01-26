@@ -108,7 +108,7 @@ public class JavalinAPI {
         app.get("/api/jobs", (ctx) -> {
             JSONObject jsonObject = new JSONObject();
             JSONArray runningJobs = new JSONArray();
-            for (Job job : JobManager.getActiveJobs()) {
+            for (Job job : JobManager.getRunningJobs()) {
                 runningJobs.put(job.getId());
             }
             jsonObject.put("running", runningJobs);

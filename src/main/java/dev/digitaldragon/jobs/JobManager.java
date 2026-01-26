@@ -63,11 +63,11 @@ public class JobManager {
     }
 
     /**
-     * Retrieves a list of active jobs.
+     * Retrieves a list of running jobs.
      *
-     * @return a list of active jobs, or an empty list if no active jobs exist
+     * @return a list of running jobs, or an empty list if no running jobs exist
      */
-    public static List<Job> getActiveJobs() {
+    public static List<Job> getRunningJobs() {
         return jobs.values().stream().filter(Job::isRunning).collect(Collectors.toList());
     }
 

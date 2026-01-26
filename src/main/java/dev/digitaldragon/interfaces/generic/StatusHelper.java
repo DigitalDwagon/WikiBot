@@ -17,7 +17,7 @@ public class StatusHelper {
      */
     public static String getStatus(String jobId) {
         if (jobId == null)
-            return JobManager.getActiveJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.";
+            return JobManager.getRunningJobs().size() + " running jobs. " + JobManager.getQueuedJobs().size() + " jobs waiting to run.";
         Job job = JobManager.get(jobId);
         if (job == null)
             return "Job " + jobId + " does not exist!";

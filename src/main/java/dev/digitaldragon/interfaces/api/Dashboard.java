@@ -31,13 +31,13 @@ public class Dashboard {
         String content = new String(stream.readAllBytes());
         app.get("/", (ctx) -> {
             ctx.res().setContentType("text/html");
-            StringBuilder cards =new StringBuilder();
-            for (Job job : JobManager.getActiveJobs()) {
-                cards.append(getCard(job));
+            StringBuilder running_cards = new StringBuilder();
+            for (Job job : JobManager.getRunningJobs()) {
+                running_cards.append(getCard(job));
             }
-            ctx.result(content.replace("{active_jobs}", String.valueOf(JobManager.getActiveJobs().size()))
+            ctx.result(content.replace("{running_jobs}", String.valueOf(JobManager.getRunningJobs().size()))
                     .replace("{queued_jobs}", String.valueOf(JobManager.getQueuedJobs().size()))
-                    .replace("{job_cards}", cards));
+                    .replace("{running_cards}", running_cards));
         });
 
     }
