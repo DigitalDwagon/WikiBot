@@ -16,7 +16,10 @@ public class LogWebsocket implements Consumer<WsConfig> {
 
     @Override
     public void accept(WsConfig wsConfig) {
-        wsConfig.onConnect(ctx -> connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString()));
+        wsConfig.onConnect(ctx -> {
+            ctx.enableAutomaticPings();
+            connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString());
+        });
         wsConfig.onClose(ctx -> connectedClients.remove(ctx.session));
         wsConfig.onMessage(ctx -> {});
     }
