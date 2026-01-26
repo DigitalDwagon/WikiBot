@@ -60,6 +60,10 @@ public class WikiTeam3Args {
     private boolean redirects;
     @Parameter(names = {"--user-agent", "-u"}, converter = UserAgentParser.class)
     private String userAgent = WikiBot.getConfig().getWikiTeam3Config().userAgent();
+    @Parameter(names = {"--http-method"})
+    private String httpMethod = null;
+    @Parameter(names = {"--failfast"})
+    private boolean failFast;
 
     public WikiTeam3Args() {}
 
@@ -102,12 +106,14 @@ public class WikiTeam3Args {
         parseBooleanOption(args, insecure, "--insecure");
         parseBooleanOption(args, force, "--force");
         parseBooleanOption(args, redirects, "--redirects");
+        parseBooleanOption(args, failFast, "--failfast");
 
         parseUrlOption(args, api, "--api");
         parseUrlOption(args, index, "--index");
         parseUrlOption(args, url, "");
 
         parseStringOption(args, userAgent, "--user-agent");
+        parseStringOption(args, httpMethod, "--http-method");
 
         return args.toArray(new String[0]);
     }
