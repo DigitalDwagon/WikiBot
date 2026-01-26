@@ -97,7 +97,6 @@
 <noscript><p>Some features of this dashboard require JavaScript (like showing logs and fetching new jobs.)</p><br/><br/>
     <p>(hi JAA.)</p></noscript>
 <script>
-    const jobCards = [];
     const logSocket = new WebSocket('wss://wikibot.digitaldragon.dev/api/logfirehose');
 
     logSocket.addEventListener('message', async (event) => {
