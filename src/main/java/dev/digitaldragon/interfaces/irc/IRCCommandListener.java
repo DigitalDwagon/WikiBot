@@ -72,9 +72,9 @@ public class IRCCommandListener {
                 channel.sendMessage(nick + ": You don't have permission to do that! Please ask an op.");
                 return;
             }
-            List<String> args = Command.shellSplit(message);
+            List<String> args = message != null ? Command.shellSplit(message) : new ArrayList<>();
             if (args.size() != 3) {
-                channel.sendMessage(nick + ": invalid arguments! Usage: !setqueue <concurrency> <priority>");
+                channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <concurrency> <priority>");
                 return;
             }
             try {
