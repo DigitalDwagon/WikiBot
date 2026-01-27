@@ -35,8 +35,8 @@ public class Dashboard {
             for (Job job : JobManager.getRunningJobs()) {
                 running_cards.append(getCard(job));
             }
-            ctx.result(content.replace("{running_jobs}", String.valueOf(JobManager.getRunningJobs().size()))
-                    .replace("{queued_jobs}", String.valueOf(JobManager.getQueuedJobs().size()))
+            ctx.result(content.replace("{running_count}", String.valueOf(JobManager.getRunningJobs().size()))
+                    .replace("{queued_count}", String.valueOf(JobManager.getQueuedJobs().size()))
                     .replace("{running_cards}", running_cards));
         });
 
