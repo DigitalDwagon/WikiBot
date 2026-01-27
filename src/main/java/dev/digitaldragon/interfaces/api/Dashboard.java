@@ -6,6 +6,7 @@ import dev.digitaldragon.jobs.JobMeta;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
+import java.util.List;
 
 import static dev.digitaldragon.interfaces.api.JavalinAPI.app;
 
@@ -31,11 +32,12 @@ public class Dashboard {
         String content = new String(stream.readAllBytes());
         app.get("/", (ctx) -> {
             ctx.res().setContentType("text/html");
+            List<Job> running_jobs = JobManager.getRunningJobs();
             StringBuilder running_cards = new StringBuilder();
-            for (Job job : JobManager.getRunningJobs()) {
+            for (Job job : running_jobs) {
                 running_cards.append(getCard(job));
             }
-            ctx.result(content.replace("{running_count}", String.valueOf(JobManager.getRunningJobs().size()))
+            ctx.result(content.replace("{running_count}", String.valueOf(running_jobs.size()))
                     .replace("{queued_count}", String.valueOf(JobManager.getQueuedJobs().size()))
                     .replace("{running_cards}", running_cards));
         });
