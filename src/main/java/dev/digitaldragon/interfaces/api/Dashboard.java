@@ -32,13 +32,19 @@ public class Dashboard {
         String content = new String(stream.readAllBytes());
         app.get("/", (ctx) -> {
             ctx.res().setContentType("text/html");
+            List<Job> queued_jobs = JobManager.getQueuedJobs();
+            StringBuilder queued_cards = new StringBuilder();
+            for (Job job : queued_jobs) {
+                queued_cards.append(getCard(job));
+            }
             List<Job> running_jobs = JobManager.getRunningJobs();
             StringBuilder running_cards = new StringBuilder();
             for (Job job : running_jobs) {
                 running_cards.append(getCard(job));
             }
             ctx.result(content.replace("{running_count}", String.valueOf(running_jobs.size()))
-                    .replace("{queued_count}", String.valueOf(JobManager.getQueuedJobs().size()))
+                    .replace("{queued_count}", String.valueOf(queued_jobs.size()))
+                    .replace("{queued_cards}", queued_cards)
                     .replace("{running_cards}", running_cards));
         });
 

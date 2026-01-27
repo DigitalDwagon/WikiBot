@@ -44,17 +44,34 @@
             color: #91a7ff;
         }
 
-        .wikibot-intro {
+        .wikibot-intro, #queue {
             font-weight: 300;
             border-width: 2px;
             border-style: solid;
-            border-color: #212780;
             border-radius: 10px;
             padding-inline: 20px;
             padding-block: 10px;
-            width: 50vw;
             margin-inline: auto;
             margin-top: 50px;
+        }
+
+        .wikibot-intro {
+            width: 50vw;
+            border-color: #212780;
+        }
+
+        #queue {
+            width: 53vw;
+            border-color: #ccaa55;
+            background-color: #000808;
+        }
+
+        #queue {
+            display: none;
+        }
+
+        #queue:has(.job-container) {
+            display: block;
         }
 
         .job-container {
@@ -143,6 +160,10 @@
         const logBox = document.getElementById(jobId);
         logBox.textContent += logLine + '\n'; // Use '\n' to add line breaks
         logBox.scrollTop = logBox.scrollHeight; // Auto-scroll to the bottom
+
+        // Move the job out of the queue
+        const jobContainer = document.querySelector('.jobs');
+        jobContainer.prepend(logBox.parentElement);
     });
 
     const jobSocket = new WebSocket('wss://wikibot.digitaldragon.dev/api/jobevents');
@@ -156,11 +177,14 @@
             const html = await response.text();
 
             // add the job card to the page
-            const jobContainer = document.querySelector('.jobs');
+            const jobContainer = document.querySelector('.queued');
             jobContainer.innerHTML += html;
         } else {
             const job = document.getElementById('job-container-' + jobId);
             job.className = "job-container job-status-" + eventType.toLowerCase();
+
+            const jobContainer = document.querySelector('.jobs');
+            jobContainer.prepend(job);
         }
     });
 
@@ -188,6 +212,12 @@
         </details>
     </div>
 </div>
+<details id="queue">
+    <summary style="font-size: 20px; text-align: center;">Queue</summary>
+    <div class="queued">
+        {queued_cards}
+    </div>
+</details>
 <div class="jobs">
     {running_cards}
 </div>
