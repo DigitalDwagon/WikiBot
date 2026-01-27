@@ -155,6 +155,7 @@ public class PukiWikiDumperJob extends Job {
     public boolean abort() {
         if (status == JobStatus.QUEUED) {
             status = JobStatus.ABORTED;
+            WikiBot.getBus().post(new JobAbortEvent(this));
             return true;
         }
         if (runningTask.equals("Dump")) {

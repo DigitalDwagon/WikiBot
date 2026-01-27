@@ -231,6 +231,7 @@ public class WikiTeam3Job extends Job {
         if (status == JobStatus.QUEUED) {
             aborted = true;
             status = JobStatus.ABORTED;
+            WikiBot.getBus().post(new JobAbortEvent(this));
             return true;
         }
         if (!runningTask.equals("UploadMediaWiki")) {

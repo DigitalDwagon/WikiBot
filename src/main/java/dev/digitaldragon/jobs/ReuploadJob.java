@@ -152,6 +152,7 @@ public class ReuploadJob extends Job {
         if (isRunning())
             return false;
         aborted = true;
+        WikiBot.getBus().post(new JobAbortEvent(this));
         return true;
     }
 
