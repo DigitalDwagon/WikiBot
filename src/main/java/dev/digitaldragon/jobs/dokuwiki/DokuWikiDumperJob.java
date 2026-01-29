@@ -75,8 +75,6 @@ public class DokuWikiDumperJob extends Job {
 
     public void run() {
         if (status == JobStatus.ABORTED) return;
-        startTime = Instant.now();
-        status = JobStatus.RUNNING;
 
 
         WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
