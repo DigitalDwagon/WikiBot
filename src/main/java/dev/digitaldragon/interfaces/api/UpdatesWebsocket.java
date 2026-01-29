@@ -57,7 +57,6 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
     @EventHandler
     public void onJobAbort(JobAbortEvent event) {
         sendLogMessageToClients(event.getJob(), "ABORTED");
-
     }
 
     @EventHandler
