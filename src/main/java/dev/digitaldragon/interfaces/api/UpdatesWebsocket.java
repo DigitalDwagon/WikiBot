@@ -3,11 +3,7 @@ package dev.digitaldragon.interfaces.api;
 import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobRunningEvent;
-import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.*;
 import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.eclipse.jetty.websocket.api.Session;
@@ -42,7 +38,7 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
     public void accept(WsConfig wsConfig) {
         wsConfig.onConnect(ctx -> {
             ctx.enableAutomaticPings();
-            connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString())
+            connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString());
         });
         wsConfig.onClose(ctx -> connectedClients.remove(ctx.session));
         wsConfig.onMessage(ctx -> {});

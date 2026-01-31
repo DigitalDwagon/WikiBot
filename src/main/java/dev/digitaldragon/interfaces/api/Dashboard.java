@@ -14,7 +14,6 @@ public class Dashboard {
     public static void register() {
         help();
         index();
-        cards();
     }
 
     public static void help() {
@@ -66,17 +65,12 @@ public class Dashboard {
         }
         sb.append("<p class=\"job-details\">");
         sb.append("(");
-        if (meta.getUserName().isPresent()) {
-            sb.append("for ");
-            if (meta.getPlatform().isPresent()) {
-                sp.append(String.format("<span title=\"on %s\">", meta.getPlatform()));
-            }
-            sb.append(meta.getUserName());
-            if (meta.getPlatform().isPresent()) {
-                sb.append("</span>");
-            }
-            sb.append(" - ");
-        }
+        sb.append("for ");
+        sb.append(String.format("<span title=\"on %s\">", meta.getPlatform().name()));
+        sb.append(meta.getUserName());
+        sb.append("</span>");
+
+        sb.append(" - ");
         sb.append(String.format("job %s", job.getId()));
         sb.append(")");
         if (meta.getExplain().isPresent()) {
