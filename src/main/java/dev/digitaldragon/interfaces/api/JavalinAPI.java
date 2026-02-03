@@ -4,14 +4,19 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import io.javalin.Javalin;
+import io.javalin.http.ContentType;
+import io.javalin.http.Header;
 import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class JavalinAPI {
     public static Javalin app;
@@ -34,6 +39,80 @@ public class JavalinAPI {
 
         WikiBot.getBus().register(updatesWebsocket);
         WikiBot.getBus().register(logWebsocket);
+
+        app.get("/api/jobs/{id}/logs", (ctx) -> {
+            String jobId = ctx.pathParam("id");
+            int limit = -1;
+            if (ctx.queryParam("limit") != null) {
+                try {
+                    limit = Integer.parseInt(ctx.queryParam("limit"));
+                } catch (NumberFormatException e) {
+                    ctx.status(400);
+                    ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Invalid \"limit\" parameter - got " + ctx.queryParam("limit") + ", expected a valid number")));
+                    return;
+                }
+            }
+
+            File jobDir = new File("jobs/" + jobId);
+            if (!jobDir.exists() || !jobDir.isDirectory()) {
+                ctx.status(404);
+                ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Job not found")));
+                return;
+            }
+
+            File logFile = new File(jobDir, "log.txt");
+            if (!logFile.exists()) {
+                ctx.result();
+                return;
+            }
+
+            if (limit < 0) {
+                try {
+                    ctx.contentType(ContentType.TEXT_PLAIN);
+                    ctx.header(Header.CONTENT_DISPOSITION, "inline");
+                    ctx.result(Files.newInputStream(logFile.toPath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    ctx.status(500);
+                    ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
+                }
+                return;
+            }
+
+            long start;
+            try (RandomAccessFile raf = new RandomAccessFile(logFile, "r")) {
+                long pointer = raf.length() - 1;
+                int lines = 0;
+
+                limit++; //since the trailing \n will count as a line
+                while (pointer >= 0 && lines < limit) {
+                    raf.seek(pointer);
+                    int readByte = raf.read();
+
+                    if (readByte == '\n') {
+                        lines++;
+                    }
+
+                    pointer--;
+                }
+
+                // Position is now just before the last 2000 lines
+                raf.seek(pointer + 1);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = raf.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                ctx.contentType(ContentType.TEXT_PLAIN);
+                ctx.header(Header.CONTENT_DISPOSITION, "inline");
+                ctx.result(sb.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                ctx.status(500);
+                ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
+            }
+        });
     }
 
     private static void enableCORS(final String origin, final String methods, final String headers) {
@@ -143,4 +222,6 @@ public class JavalinAPI {
     private static String success(String message) {
         return new JSONObject().put("success", true).put("message", message).toString();
     }
+
+    private record ErrorResponse(String error) {}
 }
