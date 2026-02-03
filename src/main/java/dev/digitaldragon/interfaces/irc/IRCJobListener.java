@@ -5,12 +5,16 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import net.badbird5907.lightning.annotation.EventHandler;
+
+import java.time.Duration;
+import java.time.Instant;
 
 public class IRCJobListener {
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
+    public void onJobCompleted(JobCompletedEvent event) {
         Job job = event.getJob();
         JobMeta meta = job.getMeta();
         if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;
@@ -52,6 +56,17 @@ public class IRCJobListener {
         IRCClient.sendMessage(meta.getUserName(), String.format("Your job for %s %s(%s)%s was %saborted.", meta.getTargetUrl().orElse("unknown"), IRCFormat.GREY, job.getId(), IRCFormat.RESET, IRCFormat.ORANGE));
         if (meta.getExplain().isPresent()) IRCClient.sendMessage("Explanation: " + meta.getExplain().get());
         IRCClient.sendMessage("Logs URL: " + job.getLogsUrl());
+    }
+
+    @EventHandler
+    public void onJobRunning(JobRunningEvent event) {
+        Job job = event.getJob();
+        JobMeta meta = job.getMeta();
+        if (meta.getPlatform() != null && meta.getPlatform() != JobMeta.JobPlatform.IRC) return;
+        if (meta.getSilentMode() != JobMeta.SilentMode.ALL) return;
+        if (Duration.between(job.getStartTime(), Instant.now()).compareTo(Duration.ofSeconds(30)) < 0) return;
+
+        IRCClient.sendMessage(meta.getUserName(), "Running job! (" + job.getType() + "). You will be notified when it finishes. Use !status " + job.getId() + " for details.");
     }
 
     @EventHandler

@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Ubuntu+Mono&display=swap"
           rel="stylesheet">
-    <meta http-equiv="refresh" content="300">
+    <noscript><meta http-equiv="refresh" content="300"></noscript>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -44,28 +44,79 @@
             color: #91a7ff;
         }
 
-        .wikibot-intro {
+        .wikibot-intro, #queue {
             font-weight: 300;
-            border: 2px solid #212780;
+            border-width: 2px;
+            border-style: solid;
             border-radius: 10px;
             padding-inline: 20px;
             padding-block: 10px;
-            width: 50vw;
             margin-inline: auto;
             margin-top: 50px;
+        }
+
+        .wikibot-intro {
+            width: 50vw;
+            border-color: #212780;
+        }
+
+        #queue {
+            width: 53vw;
+            border-color: #ccaa55;
+            background-color: #000808;
+        }
+
+        #queue {
+            display: none;
+        }
+
+        #queue:has(.job-container) {
+            display: block;
         }
 
         .job-container {
             font-family: 'Ubuntu Mono', monospace;
             font-weight: 200;
-            border: 2px solid #212780;
+            border-width: 2px;
+            border-style: solid;
             border-radius: 10px;
             padding-inline: 20px;
             padding-block: 5px;
             width: 50vw;
             margin-inline: auto;
             margin-top: 50px;
+            /* indicates an error with grey */
+            border-color: #555555;
+            background-color: #111111;
+        }
+
+        .job-status-queued {
+            border-color: #ccaa55;
+            background-color: #000808;
+        }
+
+        .job-status-queued > .job-logs {
+            display: none;
+        }
+
+        .job-status-running {
+            border-color: #212780;
             background-color: #000000;
+        }
+
+        .job-status-completed {
+            border-color: #56b637;
+            background-color: #000800;
+        }
+
+        .job-status-failed {
+            border-color: #CC7676;
+            background-color: #090000;
+        }
+
+        .job-status-aborted {
+            border-color: #9B00D7;
+            background-color: #090009;
         }
 
         .job-url {
@@ -97,41 +148,259 @@
 <noscript><p>Some features of this dashboard require JavaScript (like showing logs and fetching new jobs.)</p><br/><br/>
     <p>(hi JAA.)</p></noscript>
 <script>
-    const jobCards = [];
-    const logSocket = new WebSocket('wss://wikibot.digitaldragon.dev/api/logfirehose');
+    const logs_sock = 'wss://wikibot.digitaldragon.dev/api/logfirehose';
+    const jobs_sock = 'wss://wikibot.digitaldragon.dev/api/jobevents';
+    const jobs_api = 'https://wikibot.digitaldragon.dev/api/jobs';
 
-    logSocket.addEventListener('message', async (event) => {
-        const data = JSON.parse(event.data);
+    const containerClass = 'job-container';
+    const containerPrefix = `${containerClass}-`;
+    const logBoxPrefix = '';
+    const statusPrefix = "job-status-";
 
-        // the WebSocket message format is { "jobId": "12345", "logLine": "Some log message" }
-        const jobId = data.jobId;
-        const logLine = data.logLine;
-        // Add log message to the log box of the job card.
-        const logBox = document.getElementById(jobId);
-        logBox.textContent += logLine + '\n'; // Use '\n' to add line breaks
-        logBox.scrollTop = logBox.scrollHeight; // Auto-scroll to the bottom
-    });
+    const endStatus = [
+        'COMPLETED',
+        'FAILED',
+        'ABORTED',
+    ];
+    const allStatus = ['QUEUED','RUNNING'] + endStatus;
 
-    const jobSocket = new WebSocket('wss://wikibot.digitaldragon.dev/api/jobevents');
-    jobSocket.addEventListener('message', async (event) => {
-        const data = JSON.parse(event.data);
-        const jobId = data.jobId;
-        const eventType = data.event;
-        if (eventType === 'QUEUED') {
-            // get the job card html from /cards/:id
-            const response = await fetch('/cards/' + jobId);
-            const html = await response.text();
+    let queue, queued_div, queued_span;
+    let jobs_div, running_span;
 
-            // add the job card to the page
-            const jobContainer = document.querySelector('.jobs');
-            jobContainer.innerHTML += html;
+    let jobs = {};
+    let logBoxes = {};
+    let lines = {};
+
+    let logSocket, jobSocket;
+
+    String.prototype.removePrefix = function (prefix) {
+        return this.startsWith(prefix) ? this.substr(prefix.length) : this.toString();
+    };
+
+    function update_count(span, change) {
+        span.innerText = (parseInt(span.innerText) || 0) + change;
+    }
+
+    function set_status(job, status) {
+        const status_classes = [...job.classList].filter((i) => i.startsWith(statusPrefix));
+        if (status_classes.length) job.classList.remove(status_classes);
+        job.classList.add(statusPrefix + status);
+    }
+
+    function add_job(parent, count, id, status, info) {
+        let container, url, a, details, user, logBox;
+
+        // Create container element
+        container = document.createElement('div');
+        container.classList.add(containerClass);
+        container.classList.add(statusPrefix + status);
+        container.id = containerPrefix + id;
+
+        // Create URL element
+        url = document.createElement('h3');
+        url.classList.add('job-url');
+        if (info?.meta?.targetUrl) {
+            a = document.createElement('a');
+            a.href = info.meta.targetUrl;
+            a.append(info.meta.targetUrl);
+            url.append(a);
+        } else {
+            url.append('Unknown URL');
         }
+        container.append(url);
+
+        // Create details element
+        details = document.createElement('p');
+        details.append('(');
+        if (info?.meta?.userName) {
+            details.append('for ');
+            if (info?.meta?.platform) {
+                user = document.createElement('span');
+                user.title = `on ${info.meta.platform}`;
+                user.append(info.meta.userName);
+            } else {
+                user = info.meta.userName;
+            }
+            details.append(user);
+            details.append(' - ');
+        }
+        details.append(`job ${id}`);
+        details.append(')');
+        if (info?.meta?.explain)
+            details.append(` ${info.meta.explain}`);
+        container.append(details);
+
+        // Create logs element
+        logBox = document.createElement('p');
+        logBox.classList.add('job-logs');
+        logBox.id = id;
+        logBox.append('Logs will appear below as they are generated:\n');
+        logBox.append('---- Web: Logs start ----\n');
+        container.append(logBox);
+
+        // Add container to the document
+        parent.append(container);
+
+        // Store some elements for future use
+        jobs[id] = container;
+        logBoxes[id] = logBox;
+
+        // Increment the count span text
+        update_count(count, 1);
+
+        // Add any job lines that were stashed
+        if (id in lines) {
+            while (lines[id].length) {
+                logBox.textContent += lines[id].shift() + '\n';
+                logBox.scrollTop = logBox.scrollHeight;
+            }
+        }
+    }
+
+    async function fetch_job(parent, count, id, status){
+        await fetch(`${jobs_api}/${id}`)
+            .then(r => r.json())
+            .then(info => {
+                add_job(parent, count, id, status, info);
+            });
+    }
+
+    async function fetch_jobs(parent, count, ids, status) {
+        for (const id of ids) {
+            fetch_job(parent, count, id, status);
+        }
+    }
+
+    async function load_jobs() {
+        console.debug('Loading queued and running jobs.');
+        await fetch(jobs_api)
+            .then(response => response.json())
+            .then(async data => {
+                fetch_jobs(queued_div, queued_span, data.queued, 'queued');
+                fetch_jobs(jobs_div, running_span, data.running, 'running');
+            })
+            .catch(error => console.error("Error fetching jobs:", error));
+    }
+
+    async function reload_jobs() {
+        jobs = {};
+        logBoxes = {};
+        queued_div.replaceChildren();
+        jobs_div.replaceChildren();
+        queued_span.innerText = 0;
+        running_span.innerText = 0;
+        load_jobs();
+    }
+
+    function connectWebSocket(type, url, reconnect) {
+        console.debug(`Connecting to the ${type} WebSocket: ${url}`);
+        const socket = new WebSocket(url);
+        socket.addEventListener('close', async (ev) => {
+            console.error('The', type, 'WebSocket was closed:', url, '=>', ev.close, ev.reason, ev.wasClean);
+            reconnect();
+        });
+        socket.addEventListener('error', async (ev) => {
+            console.error('The', type, 'WebSocket had an error:', url, '=>', ev);
+            reconnect();
+        });
+        return socket;
+    }
+
+    function connectLogSocket() {
+        const socket = connectWebSocket(
+            'log', logs_sock, () => { logSocket = connectLogSocket(); }
+        );
+        socket.addEventListener('message', async (event) => {
+            const data = JSON.parse(event.data);
+
+            // WebSocket messages are { "jobId": "12345", "logLine": "Some log message" }
+            const id = data.jobId;
+            const logLine = data.logLine;
+
+            // Add log message to the log box of the job.
+            const logBox = logBoxes[id];
+            if(logBox) {
+                logBox.textContent += logLine + '\n'; // Use '\n' to add line breaks
+                logBox.scrollTop = logBox.scrollHeight; // Auto-scroll to the bottom
+            } else {
+                // Stash lines for when the job arrives
+                if (!(id in lines))
+                    lines[id] = [];
+                lines[id].push(logLine);
+            }
+        });
+        return socket;
+    }
+
+    function connectJobSocket() {
+        const socket = connectWebSocket(
+            'job', jobs_sock, () => { jobSocket = connectJobSocket(); }
+        );
+        socket.addEventListener('message', async (ev) => {
+            const data = JSON.parse(ev.data);
+            const id = data.jobId;
+            const status = data.event;
+            const info = data.info;
+
+            if (!allStatus.includes(status)) {
+                console.error('Unknown event type: ' + status);
+                return;
+            }
+
+            if (status === 'QUEUED')
+                add_job(queued_div, queued_span, id, 'queued', info);
+
+            const job = jobs[id];
+
+            if (status !== 'QUEUED')
+                set_status(job, status.toLowerCase());
+
+            if (status === 'RUNNING') {
+                update_count(queued_span, -1);
+                update_count(running_span, 1);
+            } else if(endStatus.includes(status)) {
+                if (job.parentElement === queued_div)
+                    update_count(queued_span, -1);
+                else if (job.parentElement === jobs_div)
+                    update_count(running_span, -1);
+            }
+
+            // Move the job out of the queue
+            if (status !== 'QUEUED' && job.parentElement === queued_div)
+                jobs_div.prepend(job);
+        });
+        return socket;
+    }
+
+    function elementsByClassToDictById(cls, prefix) {
+        return [...document.getElementsByClassName(cls)]
+            .reduce((map, element) => {
+                const key = element.id.removePrefix(prefix);
+                map[key] = element;
+                return map;
+            }, new Map());
+    }
+
+    window.addEventListener('load', function() {
+        queue = document.getElementById('queue');
+        queued_div = document.querySelector('.queued');
+        jobs_div = document.querySelector('.jobs');
+        queued_span = document.getElementById('queued_count');
+        running_span = document.getElementById('running_count');
+        jobs = elementsByClassToDictById('job-container', containerPrefix);
+        logBoxes = elementsByClassToDictById('job-logs', logBoxPrefix);
+        // When using the template as a browser DevTools override
+        if (jobs.size === 0 && jobs_div.firstChild.textContent.trim()) {
+            reload_jobs();
+        }
+        logSocket = connectLogSocket();
+        jobSocket = connectJobSocket();
     });
 
 </script>
 <div>
     <h1 style="text-align: center;">Wikibot Dashboard</h1>
-    <h3 style="text-align: center;">Tracking {active_jobs} running and {queued_jobs} queued jobs.</h3>
+    <h3 style="text-align: center;">Tracking <span id="running_count">{running_count}</span> running and <span id="queued_count">{queued_count}</span> queued jobs.</h3>
     <div class="wikibot-intro">
         <details>
             <summary style="font-size: 20px; text-align: center;">What is Wikibot?</summary>
@@ -149,10 +418,17 @@
 
                     				<p>Wikibot is operated by DigitalDragon. Site operators that need to contact us can join our IRC channel, or reach out directly via email: wikibot (at) digitaldragon (dot) dev</p>
                     			</span>
+            <button onclick="reload_jobs();">Reload jobs</button>
         </details>
     </div>
 </div>
+<details id="queue">
+    <summary style="font-size: 20px; text-align: center;">Queue</summary>
+    <div class="queued">
+        {queued_cards}
+    </div>
+</details>
 <div class="jobs">
-    {job_cards}
+    {running_cards}
 </div>
 </body>

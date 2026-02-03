@@ -4,8 +4,9 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
+import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.JobRunningEvent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -74,13 +75,11 @@ public class PukiWikiDumperJob extends Job {
 
     public void run() {
         if (status == JobStatus.ABORTED) return;
-        startTime = Instant.now();
-        status = JobStatus.RUNNING;
-
 
         WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
         startTime = Instant.now();
         status = JobStatus.RUNNING;
+        WikiBot.getBus().post(new JobRunningEvent(this));
         log("wikibot v" + WikiBot.getVersion() + " job " + id);
 
         List<String> dumpArgs = args.get();
@@ -149,13 +148,14 @@ public class PukiWikiDumperJob extends Job {
 
         status = JobStatus.COMPLETED;
         runningTask = null;
-        WikiBot.getBus().post(new JobSuccessEvent(this));
+        WikiBot.getBus().post(new JobCompletedEvent(this));
     }
 
 
     public boolean abort() {
         if (status == JobStatus.QUEUED) {
             status = JobStatus.ABORTED;
+            WikiBot.getBus().post(new JobAbortEvent(this));
             return true;
         }
         if (runningTask.equals("Dump")) {

@@ -4,11 +4,19 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import io.javalin.Javalin;
+import io.javalin.http.ContentType;
+import io.javalin.http.Header;
 import jakarta.servlet.http.HttpServletRequest;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JavalinAPI {
     public static Javalin app;
@@ -31,6 +39,80 @@ public class JavalinAPI {
 
         WikiBot.getBus().register(updatesWebsocket);
         WikiBot.getBus().register(logWebsocket);
+
+        app.get("/api/jobs/{id}/logs", (ctx) -> {
+            String jobId = ctx.pathParam("id");
+            int limit = -1;
+            if (ctx.queryParam("limit") != null) {
+                try {
+                    limit = Integer.parseInt(ctx.queryParam("limit"));
+                } catch (NumberFormatException e) {
+                    ctx.status(400);
+                    ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Invalid \"limit\" parameter - got " + ctx.queryParam("limit") + ", expected a valid number")));
+                    return;
+                }
+            }
+
+            File jobDir = new File("jobs/" + jobId);
+            if (!jobDir.exists() || !jobDir.isDirectory()) {
+                ctx.status(404);
+                ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Job not found")));
+                return;
+            }
+
+            File logFile = new File(jobDir, "log.txt");
+            if (!logFile.exists()) {
+                ctx.result();
+                return;
+            }
+
+            if (limit < 0) {
+                try {
+                    ctx.contentType(ContentType.TEXT_PLAIN);
+                    ctx.header(Header.CONTENT_DISPOSITION, "inline");
+                    ctx.result(Files.newInputStream(logFile.toPath()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    ctx.status(500);
+                    ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
+                }
+                return;
+            }
+
+            long start;
+            try (RandomAccessFile raf = new RandomAccessFile(logFile, "r")) {
+                long pointer = raf.length() - 1;
+                int lines = 0;
+
+                limit++; //since the trailing \n will count as a line
+                while (pointer >= 0 && lines < limit) {
+                    raf.seek(pointer);
+                    int readByte = raf.read();
+
+                    if (readByte == '\n') {
+                        lines++;
+                    }
+
+                    pointer--;
+                }
+
+                // Position is now just before the last 2000 lines
+                raf.seek(pointer + 1);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = raf.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                ctx.contentType(ContentType.TEXT_PLAIN);
+                ctx.header(Header.CONTENT_DISPOSITION, "inline");
+                ctx.result(sb.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                ctx.status(500);
+                ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
+            }
+        });
     }
 
     private static void enableCORS(final String origin, final String methods, final String headers) {
@@ -106,19 +188,18 @@ public class JavalinAPI {
 
     private static void getAllJobs() {
         app.get("/api/jobs", (ctx) -> {
-            JSONObject jsonObject = new JSONObject();
-            JSONArray runningJobs = new JSONArray();
-            for (Job job : JobManager.getActiveJobs()) {
-                runningJobs.put(job.getId());
+            if (ctx.queryParam("details") != null && ctx.queryParam("details").equalsIgnoreCase("true")) {
+                Map<String, List<Job>> response = new HashMap<>();
+                response.put("queued", JobManager.getQueuedJobs());
+                response.put("running", JobManager.getRunningJobs());
+                ctx.result(WikiBot.getGson().toJson(response));
+                return;
             }
-            jsonObject.put("running", runningJobs);
 
-            JSONArray queuedJobs = new JSONArray();
-            for (Job job : JobManager.getQueuedJobs()) {
-                queuedJobs.put(job.getId());
-            }
-            jsonObject.put("queued", queuedJobs);
-            ctx.result(jsonObject.toString());
+            Map<String, List<String>> response = new HashMap<>();
+            response.put("queued", JobManager.getQueuedJobs().stream().map(Job::getId).toList());
+            response.put("running", JobManager.getRunningJobs().stream().map(Job::getId).toList());
+            ctx.result(WikiBot.getGson().toJson(response));
         });
     }
 
@@ -134,52 +215,6 @@ public class JavalinAPI {
         });
     }
 
-    /*private static void createJob() {
-        app.post("/api/jobs", (ctx) -> {
-            try {
-                JSONObject json = new JSONObject(ctx.body());
-                if (!json.has("jobType")) {
-                    ctx.status(400).result(error("You must include a valid \"jobType\" in your request. It may be one of: WIKITEAM3"));
-                }
-                JSONObject clean = new JSONObject(ctx.body());
-                clean.remove("jobType");
-                String username = ctx.req().getHeader("X-Platform-User");
-
-                if (json.getString("jobType").equalsIgnoreCase("wikiteam3")) {
-                    System.out.println(clean);
-                    WikiTeam3Args args = new Gson().fromJson(clean.toString(), WikiTeam3Args.class);
-                    JobMeta meta = new JobMeta(username);
-                    meta.setExplain(args.getExplain());
-                    meta.setPlatform(JobMeta.JobPlatform.API);
-                    System.out.println(args.getExplain());
-                    System.out.println(args.getUrl());
-                    String jobId = UUID.randomUUID().toString();
-                    try {
-                        JobManager.submit(
-                                new WikiTeam3Job(args, meta, jobId)
-                        );
-                    } catch (JobLaunchException e) {
-                        ctx.status(400).result(error(e.getMessage()));
-                        return;
-                    }
-                    JSONObject response = new JSONObject();
-                    response.put("jobId", jobId);
-                    response.put("success", true);
-                    ctx.result(response.toString());
-                    return;
-                } else {
-                    ctx.status(400).result(error("Invalid job type"));
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            ctx.status(500).result("oops");
-        });
-    }*/
-
-
     private static String error(String message) {
         return new JSONObject().put("error", message).put("success", false).toString();
     }
@@ -187,4 +222,6 @@ public class JavalinAPI {
     private static String success(String message) {
         return new JSONObject().put("success", true).put("message", message).toString();
     }
+
+    private record ErrorResponse(String error) {}
 }

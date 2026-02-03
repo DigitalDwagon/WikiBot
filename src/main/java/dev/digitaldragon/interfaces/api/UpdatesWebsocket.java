@@ -3,10 +3,7 @@ package dev.digitaldragon.interfaces.api;
 import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobSuccessEvent;
+import dev.digitaldragon.jobs.events.*;
 import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.eclipse.jetty.websocket.api.Session;
@@ -39,14 +36,17 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
 
     @Override
     public void accept(WsConfig wsConfig) {
-        wsConfig.onConnect(ctx -> connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString()));
+        wsConfig.onConnect(ctx -> {
+            ctx.enableAutomaticPings();
+            connectedClients.put(ctx.session, ctx.session.getRemoteAddress().toString());
+        });
         wsConfig.onClose(ctx -> connectedClients.remove(ctx.session));
         wsConfig.onMessage(ctx -> {});
     }
 
     @EventHandler
-    public void onJobSuccess(JobSuccessEvent event) {
-        sendLogMessageToClients(event.getJob(), "SUCCESS");
+    public void onJobCompleted(JobCompletedEvent event) {
+        sendLogMessageToClients(event.getJob(), "COMPLETED");
     }
 
     @EventHandler
@@ -57,7 +57,11 @@ public class UpdatesWebsocket implements Consumer<WsConfig> {
     @EventHandler
     public void onJobAbort(JobAbortEvent event) {
         sendLogMessageToClients(event.getJob(), "ABORTED");
+    }
 
+    @EventHandler
+    public void onJobRunning(JobRunningEvent event) {
+        sendLogMessageToClients(event.getJob(), "RUNNING");
     }
 
     @EventHandler
