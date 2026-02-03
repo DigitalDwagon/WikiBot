@@ -14,6 +14,7 @@ public class Dashboard {
     public static void register() {
         help();
         index();
+        newDashboard();
     }
 
     public static void help() {
@@ -47,6 +48,16 @@ public class Dashboard {
                     .replace("{running_cards}", running_cards));
         });
 
+    }
+
+    @SneakyThrows
+    private static void newDashboard() {
+        InputStream stream = Dashboard.class.getClassLoader().getResourceAsStream("new-dashboard.html");
+        String content = new String(stream.readAllBytes());
+        app.get("/new", (ctx) -> {
+            ctx.res().setContentType("text/html");
+            ctx.result(content);
+        });
     }
 
     private static String getCard(Job job) {

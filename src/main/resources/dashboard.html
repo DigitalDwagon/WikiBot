@@ -6,6 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Ubuntu+Mono&display=swap"
           rel="stylesheet">
+    <noscript><meta http-equiv="refresh" content="300"></noscript>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -14,10 +15,9 @@
             width: 100vw;
             height: 100vw;
             margin: 0;
-            background-color: #030012;
+            background-color: #0c0221;
             color: #FFFFFF;
             font-family: 'JetBrains Mono', monospace;
-            font-weight: 200;
         }
 
         h1 {
@@ -44,425 +44,391 @@
             color: #91a7ff;
         }
 
-        .heading {
-            padding: 5px;
-            padding-inline: 10px;
-            margin-top: 2px;
-            display: grid;
-            grid-template-columns: minmax(80px, 2fr) 1fr;
-            grid-template-rows: auto auto auto;
-            grid-template-areas:
-                    "title running-jobs"
-                    "title queued-jobs"
-                    "description description";
-            align-items: stretch;
-        }
-        .heading * {
-            margin: auto;
-        }
-        .heading-title {
-            margin: 5px;
-            grid-area: title;
-        }
-        .heading-description {
-            grid-area: description;
-            margin: 0 0 0 5px;
-        }
-        .heading-running-jobs {
-            grid-area: running-jobs;
-            text-align: right;
-            width: 100%
-
-        }
-        .heading-queued-jobs {
-            grid-area: queued-jobs;
-            text-align: right;
-            width: 100%
-        }
-
-        .job-expanded {
-            display: flex;
-            flex-flow: row wrap;
-            align-content: center;
-            justify-content: space-between;
-        }
-        .job-expanded * {
-            margin-inline: 5px
-        }
-        .job-details {
-            width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-        .job-logs {
-            white-space: pre-wrap;
-            height: 250px;
-            overflow-y: scroll;
-            overscroll-behavior-y: contain;
-            scroll-snap-type: y proximity;
-            flex-grow: 1;
-            min-width: 75%;
-            overflow-x: scroll;
-            overscroll-behavior-x: contain;
-            background-color:black;
-            margin: 5px 5px 5px 5px;
-            border: solid 1px white;
+        .wikibot-intro, #queue {
+            font-weight: 300;
+            border-width: 2px;
+            border-style: solid;
             border-radius: 10px;
-            padding: 5px;
-        }
-        .job-logs * {
-            margin: 0 0 0 0;
-        }
-
-        .job-card {
-            border: solid 2px;
-            border-radius: 10px;
-            margin-bottom: 2px;
+            padding-inline: 20px;
+            padding-block: 10px;
+            margin-inline: auto;
+            margin-top: 50px;
         }
 
-        .job-card summary {
-            list-style: none; /* Remove default styling */
-            cursor: pointer;
+        .wikibot-intro {
+            width: 50vw;
+            border-color: #212780;
         }
 
-        .job-card summary::before {
-            content: '\25B6'; /* Custom arrow (right triangle) */
-            display: inline-block;
-            margin-right: 0.5em; /* Adjust spacing */
-            transform: rotate(0deg); /* Rotate dynamically */
-            transition: transform 0.1s ease-in-out;
-        }
-
-        .job-card details[open] summary::before {
-            transform: rotate(90deg); /* Rotate arrow for open state */
-        }
-
-        .job-card[data-job-status="RUNNING"] {
-            border-color: #cccfff;
-        }
-
-        .job-card[data-job-status="COMPLETED"] {
-            border-color: #56b637;
-        }
-
-        .job-card[data-job-status="FAILED"] {
-            border-color: #CC7676;
-        }
-
-        .job-card[data-job-status="ABORTED"] {
-            border-color: #9B00D7;
-        }
-
-        .job-card[data-job-status="QUEUED"] {
+        #queue {
+            width: 53vw;
             border-color: #ccaa55;
+            background-color: #000808;
         }
 
-        details summary {
-            cursor: pointer;
-        }
-
-        .job-card details {
-            width: 100%;
-        }
-
-        #queued-tab:not(:has(.job-card)) {
+        #queue {
             display: none;
         }
 
-        #queued-tab {
-            margin-bottom: 10px;
+        #queue:has(.job-container) {
+            display: block;
         }
 
+        .job-container {
+            font-family: 'Ubuntu Mono', monospace;
+            font-weight: 200;
+            border-width: 2px;
+            border-style: solid;
+            border-radius: 10px;
+            padding-inline: 20px;
+            padding-block: 5px;
+            width: 50vw;
+            margin-inline: auto;
+            margin-top: 50px;
+            /* indicates an error with grey */
+            border-color: #555555;
+            background-color: #111111;
+        }
 
+        .job-status-queued {
+            border-color: #ccaa55;
+            background-color: #000808;
+        }
 
+        .job-status-queued > .job-logs {
+            display: none;
+        }
+
+        .job-status-running {
+            border-color: #212780;
+            background-color: #000000;
+        }
+
+        .job-status-completed {
+            border-color: #56b637;
+            background-color: #000800;
+        }
+
+        .job-status-failed {
+            border-color: #CC7676;
+            background-color: #090000;
+        }
+
+        .job-status-aborted {
+            border-color: #9B00D7;
+            background-color: #090009;
+        }
+
+        .job-url {
+            margin: 0;
+            display: inline;
+        }
+
+        .job-details {
+            display: inline;
+            margin-inline: 5px;
+        }
+
+        .job-logs {
+            white-space: pre-wrap;
+            height: 300px;
+            overflow-y: scroll;
+            overscroll-behavior-y: contain;
+            scroll-snap-type: y proximity;
+        }
+
+        @media screen and (max-width: 800px) {
+            .wikibot-intro {
+                width: 80vw;
+            }
+        }
     </style>
 </head>
 <body>
-<noscript><p>Sorry, this dashboard requires JavaScript.</p></noscript>
-<div>
-    <div class="heading">
-        <div class="heading-title">
-            <h1>WikiBot Dashboard</h1>
-        </div>
-        <div class="heading-running-jobs">
-            <h3 id="heading-running-jobs-text">(Loading job data...)</h3>
-        </div>
-        <div class="heading-queued-jobs">
-            <h3 id="heading-queued-jobs-text"></h3>
-        </div>
-        <div class="heading-description">
-            <details>
-                <summary style="font-size: 20px">What is WikiBot?</summary>
-                <div style="padding-left: 20px; padding-top:5px;font-size:15px;">
-                    <p>Wikibot archives wikis, from Wikipedia to the smallest wikis.</p><br>
-                    <p> Based on <a href="https://github.com/saveweb/wikiteam3">a fork</a> of the original
-                        <a href="https://github.com/wikiteam/wikiteam">WikiTeam</a> software,
-                        and the <a href="https://github.com/saveweb/dokuwiki-dumper">DokuWikiDumper</a> project, Wikibot makes static dumps of wikis to be uploaded to the
-                        <a href="https://archive.org/">Internet Archive</a> for preservation. To use it, stop by <a href="irc://irc.hackint.org/wikibot">#wikibot</a> on irc.hackint.org
-                        <a href="https://webirc.hackint.org/#irc://irc.hackint.org/wikibot">(click for webirc)</a>.
-                        More information: <a href="https://wiki.archiveteam.org/index.php/Archiveteam:IRC">ArchiveTeam's IRC</a>.
-                        Use the !mw and !dw commands to start a job. For full information, see
-                        <a href="https://wiki.archiveteam.org/index.php/Wikibot">the wiki page</a>.</p>
-                    <p>We try our best to be gentle to the sites we preserve. If the bot is causing a problem, please reach out on our IRC channel or through email: wikibot (at) digitaldragon (dot) dev</p>
-                    <br>
-                    <a href="#"
-                       class="reload-jobs"
-                       style="font-size:0.85em; cursor:pointer; margin-bottom: 5px;">
-                        (Reload jobs)
-                    </a>
-                </div>
-            </details>
-        </div>
-    </div>
-    <hr/>
-</div>
-<template id="job-card-template">
-    <div class="job-card" style="height:min-content">
-        <details style="">
-            <summary style="margin:10px;display:flex;justify-content:flex-start;">
-                <span class="job-target-url" style="width:30%;overflow-x:hidden;"></span>
-                <span class="job-id-text" style="margin-inline: auto;width:30%;overflow-x:hidden;"></span>
-                <span class="job-username" style="max-width:20%;overflow-x:hidden;margin-left:auto"></span>
-            </summary>
-            <hr style="border: solid 1px #cccfff;margin-bottom: 0">
-            <div class="job-expanded">
-                <div class="job-details">
-                    <p class="job-explanation"></p>
-                    <p class="job-time"></p>
-                    <a href="#"
-                       class="jump-to-bottom"
-                       style="font-size:0.85em; cursor:pointer; margin-top: auto; margin-bottom: 5px;">
-                        (Jump to bottom)
-                    </a>
-                </div>
-                <div class="job-logs"><p></p></div>
-            </div>
-        </details>
-    </div>
-</template>
-<div style="padding:12px" class="jobs" id="jobs">
-    <details style="" id="queued-tab">
-        <summary style="font-size: 20px">Queued Jobs</summary>
-        <div class="queued" id="queued"></div>
-        <hr>
-    </details>
-</div>
-
+<noscript><p>Some features of this dashboard require JavaScript (like showing logs and fetching new jobs.)</p><br/><br/>
+    <p>(hi JAA.)</p></noscript>
 <script>
-    const WEBSOCKET_BASE = "ws://localhost:4569"
+    const logs_sock = 'wss://wikibot.digitaldragon.dev/api/logfirehose';
+    const jobs_sock = 'wss://wikibot.digitaldragon.dev/api/jobevents';
+    const jobs_api = 'https://wikibot.digitaldragon.dev/api/jobs';
 
-    const MAX_LINES = 2000;
-    const AUTO_SCROLL_THRESHOLD = 50;
+    const containerClass = 'job-container';
+    const containerPrefix = `${containerClass}-`;
+    const logBoxPrefix = '';
+    const statusPrefix = "job-status-";
 
-    const CARD_ID_PREFIX = "job-card-";
-    const CARD_LOG_PREFIX = "job-logs-";
-
-    const ALL_STATUS = [
-        'QUEUED',
-        'RUNNING',
+    const endStatus = [
         'COMPLETED',
         'FAILED',
-        'ABORTED'
+        'ABORTED',
     ];
-    const logBuffers = new Map();
-    var knownJobs = new Map();
+    const allStatus = ['QUEUED','RUNNING'] + endStatus;
 
-    const jobsDiv = document.getElementById('jobs');
-    const queuedDiv = document.getElementById('queued');
-    load_jobs();
+    let queue, queued_div, queued_span;
+    let jobs_div, running_span;
 
+    let jobs = {};
+    let logBoxes = {};
+    let lines = {};
 
+    let logSocket, jobSocket;
 
+    String.prototype.removePrefix = function (prefix) {
+        return this.startsWith(prefix) ? this.substr(prefix.length) : this.toString();
+    };
 
-    function ensureAutoScrollTracking(logBox) {
-        if (logBox._autoScrollInitialized) return;
-
-        logBox._autoScrollInitialized = true;
-        logBox.autoScroll = true;
-
-        logBox.addEventListener('scroll', () => {
-            logBox.autoScroll = logBox.scrollTop + logBox.clientHeight >= logBox.scrollHeight - AUTO_SCROLL_THRESHOLD;
-        });
+    function update_count(span, change) {
+        span.innerText = (parseInt(span.innerText) || 0) + change;
     }
 
-    function createJobCard(job) {
-        const template = document.getElementById("job-card-template");
-        const card = template.content.firstElementChild.cloneNode(true);
-        card.id = (CARD_ID_PREFIX + job.id);
-        card.querySelector(".job-target-url").textContent = job.meta.targetUrl;
-        card.querySelector(".job-id-text").textContent = job.id;
-        card.querySelector(".job-username").textContent = job.meta.userName;
+    function set_status(job, status) {
+        const status_classes = [...job.classList].filter((i) => i.startsWith(statusPrefix));
+        if (status_classes.length) job.classList.remove(status_classes);
+        job.classList.add(statusPrefix + status);
+    }
 
-        if (job.meta.explain) {
-            card.querySelector(".job-explanation").textContent = `Explanation: ${job.meta.explain}`;
+    function add_job(parent, count, id, status, info) {
+        let container, url, a, details, user, logBox;
+
+        // Create container element
+        container = document.createElement('div');
+        container.classList.add(containerClass);
+        container.classList.add(statusPrefix + status);
+        container.id = containerPrefix + id;
+
+        // Create URL element
+        url = document.createElement('h3');
+        url.classList.add('job-url');
+        if (info?.meta?.targetUrl) {
+            a = document.createElement('a');
+            a.href = info.meta.targetUrl;
+            a.append(info.meta.targetUrl);
+            url.append(a);
         } else {
-            card.querySelector(".job-explanation").textContent = `Explanation: (none)`;
+            url.append('Unknown URL');
         }
-        card.querySelector(".job-time").textContent = "Started: (in queue)";
+        container.append(url);
 
+        // Create details element
+        details = document.createElement('p');
+        details.append('(');
+        if (info?.meta?.userName) {
+            details.append('for ');
+            if (info?.meta?.platform) {
+                user = document.createElement('span');
+                user.title = `on ${info.meta.platform}`;
+                user.append(info.meta.userName);
+            } else {
+                user = info.meta.userName;
+            }
+            details.append(user);
+            details.append(' - ');
+        }
+        details.append(`job ${id}`);
+        details.append(')');
+        if (info?.meta?.explain)
+            details.append(` ${info.meta.explain}`);
+        container.append(details);
 
-        const jump = card.querySelector(".jump-to-bottom");
-        jump.dataset.logId = job.id;
+        // Create logs element
+        logBox = document.createElement('p');
+        logBox.classList.add('job-logs');
+        logBox.id = id;
+        logBox.append('Logs will appear below as they are generated:\n');
+        logBox.append('---- Web: Logs start ----\n');
+        container.append(logBox);
 
-        const logs = card.querySelector(".job-logs");
-        logs.id = CARD_LOG_PREFIX + job.id;
+        // Add container to the document
+        parent.append(container);
 
-        document.querySelector('.jobs').appendChild(card);
-        return card;
+        // Store some elements for future use
+        jobs[id] = container;
+        logBoxes[id] = logBox;
+
+        // Increment the count span text
+        update_count(count, 1);
+
+        // Add any job lines that were stashed
+        if (id in lines) {
+            while (lines[id].length) {
+                logBox.textContent += lines[id].shift() + '\n';
+                logBox.scrollTop = logBox.scrollHeight;
+            }
+        }
     }
 
-    function updateJobCard(job) {
-        knownJobs.set(job.id, job);
-        let card = document.getElementById(CARD_ID_PREFIX + job.id);
-        if (!card) {
-            card = createJobCard(job);
-        }
-
-        if (job.status === "QUEUED" && card.parentNode !== queuedDiv) {
-            queuedDiv.appendChild(card);
-        } else if (card.parentNode !== jobsDiv) {
-            jobsDiv.appendChild(card);
-        }
-
-        if (ALL_STATUS.includes(job.status)) {
-            card.dataset.jobStatus = job.status;
-        }
-
-        if (job.startTime) {
-            card.querySelector(".job-time").textContent = `Started: ${job.startTime}`
-        }
-
-        updateJobCounts();
+    async function fetch_job(parent, count, id, status){
+        await fetch(`${jobs_api}/${id}`)
+            .then(r => r.json())
+            .then(info => {
+                add_job(parent, count, id, status, info);
+            });
     }
 
-    function updateJobCounts() {
-        let runningJobs = 0;
-        let queuedJobs = 0;
-
-        knownJobs.forEach((job, id) => {
-            if (job.status === "RUNNING") {
-                runningJobs++;
-            }
-
-            if (job.status === "QUEUED") {
-                queuedJobs++;
-            }
-        });
-        document.getElementById("heading-running-jobs-text").textContent = runningJobs + " running";
-        document.getElementById("heading-queued-jobs-text").textContent = queuedJobs + " queued";
+    async function fetch_jobs(parent, count, ids, status) {
+        for (const id of ids) {
+            fetch_job(parent, count, id, status);
+        }
     }
 
     async function load_jobs() {
         console.debug('Loading queued and running jobs.');
-
-        try {
-            const response = await fetch("/api/jobs?details=true");
-            const data = await response.json();
-
-            // { queued: [...], running: [...] }
-            data.queued?.forEach(job => updateJobCard(job));
-            data.running?.forEach(job => updateJobCard(job));
-
-            updateJobCounts();
-        } catch (error) {
-            console.error("Error fetching jobs:", error);
-        }
+        await fetch(jobs_api)
+            .then(response => response.json())
+            .then(async data => {
+                fetch_jobs(queued_div, queued_span, data.queued, 'queued');
+                fetch_jobs(jobs_div, running_span, data.running, 'running');
+            })
+            .catch(error => console.error("Error fetching jobs:", error));
     }
 
-    let jobSocket = null;
-    function connectJobSocket() {
-        jobSocket = connectWebSocket(WEBSOCKET_BASE + '/api/jobevents', () => { connectJobSocket(); });
-
-        jobSocket.addEventListener('message', async (event) => {
-            const data = JSON.parse(event.data);
-            updateJobCard(data.info);
-        });
-    }
-    connectJobSocket();
-
-
-    let logSocket = null;
-    function connectLogSocket() {
-        logSocket = connectWebSocket(WEBSOCKET_BASE + '/api/logfirehose', () => { connectLogSocket(); });
-
-        logSocket.addEventListener('message', (event) => {
-
-            const data = JSON.parse(event.data);
-            const { jobId, logLine } = data;
-
-            const logBox = document.getElementById(CARD_LOG_PREFIX + jobId);
-            if (!logBox) return;
-
-            ensureAutoScrollTracking(logBox)
-
-            let buffer = logBuffers.get(jobId);
-            if (!buffer) {
-                buffer = [];
-                logBuffers.set(jobId, buffer);
-            }
-
-            buffer.push(logLine);
-
-            if (buffer.length > MAX_LINES && logBox.autoScroll) {
-                buffer.splice(0, buffer.length - MAX_LINES);
-            }
-
-            logBox.textContent = buffer.join('\n');
-
-            if (logBox.autoScroll) {
-                requestAnimationFrame(() => {
-                    logBox.scrollTop = logBox.scrollHeight;
-                });
-            }
-        });
-    }
-    connectLogSocket();
-
-
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('.jump-to-bottom');
-        if (!link) return;
-        e.preventDefault();
-
-        const logId = link.dataset.logId;
-        const logBox = document.getElementById(logId);
-        if (!logBox) return;
-
-        ensureAutoScrollTracking(logBox);
-
-        logBox.autoScroll = true;
-        logBox.scrollTop = logBox.scrollHeight;
-    });
-
-
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('.reload-jobs');
-        if (!link) return;
-        e.preventDefault();
-
-        knownJobs = new Map();
-
-        document.querySelectorAll('.job-card').forEach(element => element.remove());
-
+    async function reload_jobs() {
+        jobs = {};
+        logBoxes = {};
+        queued_div.replaceChildren();
+        jobs_div.replaceChildren();
+        queued_span.innerText = 0;
+        running_span.innerText = 0;
         load_jobs();
-    });
+    }
 
-    function connectWebSocket(url, reconnect) {
-        console.debug(`Connecting to WebSocket: ${url}`);
+    function connectWebSocket(type, url, reconnect) {
+        console.debug(`Connecting to the ${type} WebSocket: ${url}`);
         const socket = new WebSocket(url);
-        socket.addEventListener('open', () => {
-            console.log('WebSocket opened:', url);
-        });
         socket.addEventListener('close', async (ev) => {
-            console.error('A WebSocket was closed:', url, '=>', ev.code, ev.reason, ev.wasClean);
+            console.error('The', type, 'WebSocket was closed:', url, '=>', ev.close, ev.reason, ev.wasClean);
             reconnect();
         });
         socket.addEventListener('error', async (ev) => {
-            console.error('A WebSocket had an error:', url, '=>', ev);
+            console.error('The', type, 'WebSocket had an error:', url, '=>', ev);
             reconnect();
         });
         return socket;
     }
 
+    function connectLogSocket() {
+        const socket = connectWebSocket(
+            'log', logs_sock, () => { logSocket = connectLogSocket(); }
+        );
+        socket.addEventListener('message', async (event) => {
+            const data = JSON.parse(event.data);
+
+            // WebSocket messages are { "jobId": "12345", "logLine": "Some log message" }
+            const id = data.jobId;
+            const logLine = data.logLine;
+
+            // Add log message to the log box of the job.
+            const logBox = logBoxes[id];
+            if(logBox) {
+                logBox.textContent += logLine + '\n'; // Use '\n' to add line breaks
+                logBox.scrollTop = logBox.scrollHeight; // Auto-scroll to the bottom
+            } else {
+                // Stash lines for when the job arrives
+                if (!(id in lines))
+                    lines[id] = [];
+                lines[id].push(logLine);
+            }
+        });
+        return socket;
+    }
+
+    function connectJobSocket() {
+        const socket = connectWebSocket(
+            'job', jobs_sock, () => { jobSocket = connectJobSocket(); }
+        );
+        socket.addEventListener('message', async (ev) => {
+            const data = JSON.parse(ev.data);
+            const id = data.jobId;
+            const status = data.event;
+            const info = data.info;
+
+            if (!allStatus.includes(status)) {
+                console.error('Unknown event type: ' + status);
+                return;
+            }
+
+            if (status === 'QUEUED')
+                add_job(queued_div, queued_span, id, 'queued', info);
+
+            const job = jobs[id];
+
+            if (status !== 'QUEUED')
+                set_status(job, status.toLowerCase());
+
+            if (status === 'RUNNING') {
+                update_count(queued_span, -1);
+                update_count(running_span, 1);
+            } else if(endStatus.includes(status)) {
+                if (job.parentElement === queued_div)
+                    update_count(queued_span, -1);
+                else if (job.parentElement === jobs_div)
+                    update_count(running_span, -1);
+            }
+
+            // Move the job out of the queue
+            if (status !== 'QUEUED' && job.parentElement === queued_div)
+                jobs_div.prepend(job);
+        });
+        return socket;
+    }
+
+    function elementsByClassToDictById(cls, prefix) {
+        return [...document.getElementsByClassName(cls)]
+            .reduce((map, element) => {
+                const key = element.id.removePrefix(prefix);
+                map[key] = element;
+                return map;
+            }, new Map());
+    }
+
+    window.addEventListener('load', function() {
+        queue = document.getElementById('queue');
+        queued_div = document.querySelector('.queued');
+        jobs_div = document.querySelector('.jobs');
+        queued_span = document.getElementById('queued_count');
+        running_span = document.getElementById('running_count');
+        jobs = elementsByClassToDictById('job-container', containerPrefix);
+        logBoxes = elementsByClassToDictById('job-logs', logBoxPrefix);
+        // When using the template as a browser DevTools override
+        if (jobs.size === 0 && jobs_div.firstChild.textContent.trim()) {
+            reload_jobs();
+        }
+        logSocket = connectLogSocket();
+        jobSocket = connectJobSocket();
+    });
+
 </script>
+<div>
+    <h1 style="text-align: center;">Wikibot Dashboard</h1>
+    <h3 style="text-align: center;">Tracking <span id="running_count">{running_count}</span> running and <span id="queued_count">{queued_count}</span> queued jobs.</h3>
+    <div class="wikibot-intro">
+        <details>
+            <summary style="font-size: 20px; text-align: center;">What is Wikibot?</summary>
+            <span>
+                    				<h3>Wikibot archives wikis, from Wikipedia to the smallest wikis.</h3>
+                                        <p> Based on <a href="https://github.com/saveweb/wikiteam3">a fork</a> of the original <a
+                                                href="https://github.com/wikiteam/wikiteam">WikiTeam</a> software,
+                    				and the <a href="https://github.com/saveweb/dokuwiki-dumper">DokuWikiDumper</a> project, Wikibot makes static dumps of wikis to be uploaded to the
+                    				<a href="https://archive.org/">Internet Archive</a> for preservation.<br/></p>
+                    				<p>To use it, stop by <a href="irc://irc.hackint.org/wikibot">#wikibot</a> on irc.hackint.org <a
+                                            href="https://webirc.hackint.org/#irc://irc.hackint.org/wikibot">(click for webirc)</a>.
+                    				More information: <a href="https://wiki.archiveteam.org/index.php/Archiveteam:IRC">ArchiveTeam's IRC</a>.
+                    			    Use the !mw and !dw commands to start a job. For full information, see <a
+                                                href="https://wiki.archiveteam.org/index.php/Wikibot">the help page</a>.</p>
+
+                    				<p>Wikibot is operated by DigitalDragon. Site operators that need to contact us can join our IRC channel, or reach out directly via email: wikibot (at) digitaldragon (dot) dev</p>
+                    			</span>
+            <button onclick="reload_jobs();">Reload jobs</button>
+        </details>
+    </div>
+</div>
+<details id="queue">
+    <summary style="font-size: 20px; text-align: center;">Queue</summary>
+    <div class="queued">
+        {queued_cards}
+    </div>
+</details>
+<div class="jobs">
+    {running_cards}
+</div>
 </body>
