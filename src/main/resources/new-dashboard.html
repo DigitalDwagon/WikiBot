@@ -11,8 +11,6 @@
 
     <style>
         body {
-            width: 100vw;
-            height: 100vw;
             margin: 0;
             background-color: #030012;
             color: #FFFFFF;
@@ -101,7 +99,8 @@
             overscroll-behavior-y: contain;
             scroll-snap-type: y proximity;
             flex-grow: 1;
-            min-width: 75%;
+            min-width: min(800px, inherit);
+            max-width: max(80%, 800px);
             overflow-x: scroll;
             overscroll-behavior-x: contain;
             background-color:black;
@@ -131,6 +130,7 @@
             margin-right: 0.5em; /* Adjust spacing */
             transform: rotate(0deg); /* Rotate dynamically */
             transition: transform 0.1s ease-in-out;
+            height: min-content;
         }
 
         .job-card details[open] summary::before {
