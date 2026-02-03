@@ -53,7 +53,7 @@ public class IRCCommandListener {
 
         commands.put("check", () -> {
             String reply = URLEncoder.encode(message);
-            String url = "https://archive.org/search?query=originalurl%3A%28%2A" + reply + "%2A%29";
+            String url = "https://archive.org/search?query=originalurl%3A%28%22" + reply + "%22%29";
             channel.sendMessage(nick + ": " + url);
         });
 
