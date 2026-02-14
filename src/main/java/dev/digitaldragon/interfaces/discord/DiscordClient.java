@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -22,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class DiscordClient {
     @Getter
@@ -47,6 +48,12 @@ public class DiscordClient {
                 //.addEventListeners(new DokuWikiDumperPlugin(), new TestingCommand(), new WikiTeam3Plugin())
                 .addEventListeners(new DiscordAdminListener(), new DiscordButtonListener(), new DiscordCommandListener())
                 .build();
+
+        try {
+            instance.awaitReady();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         instance.updateCommands().addCommands(
                 Commands.slash("mediawiki_dump", "Dump a MediaWiki site with wikiteam3")
@@ -84,6 +91,15 @@ public class DiscordClient {
                         .addOption(OptionType.STRING, "job", "The ID of the job to abort", true)
 
         ).queue();
+
+        Guild mainGuild = instance.getGuildById(349920496550281226L);
+        if (mainGuild != null) {
+            mainGuild.upsertCommand("poke_irc", "Causes the bot to disconnect and reconnect from IRC.").queue();
+            System.out.println("Registering poke_irc command for the main guild...");
+        }
+        System.out.println(mainGuild);
+        System.out.println(instance.getSelfUser().getId());
+
 
         jobListener = new DiscordJobListener();
         WikiBot.getBus().register(jobListener);

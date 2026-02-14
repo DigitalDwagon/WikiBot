@@ -2,6 +2,7 @@ package dev.digitaldragon.interfaces.discord;
 
 import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.interfaces.irc.IRCClient;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobLaunchException;
 import dev.digitaldragon.jobs.JobManager;
@@ -88,6 +89,11 @@ public class DiscordCommandListener extends ListenerAdapter {
             return;
         }
 
+        if (event.getName().equals("poke_irc")) {
+            onPokeSlashCommandInteraction(event);
+            return;
+        }
+
 
         try {
             JobMeta meta = new JobMeta(event.getUser().getName());
@@ -116,6 +122,15 @@ public class DiscordCommandListener extends ListenerAdapter {
             event.reply("Invalid parameters or options! Hint: make sure that your --explain is in quotes if it has more than one word. (-e \"no coverage\")").setEphemeral(true).queue();
         }
 
+    }
+
+    public void onPokeSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        if (!WikiBot.getConfig().getIrcConfig().isEnabled()) {
+            event.reply("IRC module is disabled!").setEphemeral(true).queue();
+        }
+
+        IRCClient.reconnect();
+        event.reply("Told the IRC module to reconnect.").setEphemeral(true).queue();
     }
 
     public void onStatusOrAbortSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
