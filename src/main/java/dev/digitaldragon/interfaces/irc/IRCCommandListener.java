@@ -21,6 +21,7 @@ import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.*;
@@ -130,6 +131,14 @@ public class IRCCommandListener {
             job.getMeta().setQueue(queue);
             JobManager.launchJobs();
             channel.sendMessage(String.format("%s: Moved job %s to queue %s", nick, jobId, queue));
+        });
+
+        commands.put("df", () -> {
+           File file = new File("jobs");
+           long freeSpace = file.getFreeSpace() / (1024 * 1024 * 1024); // GiB
+           long totalSpace = file.getTotalSpace() / (1024 * 1024 * 1024); // GiB
+
+            channel.sendMessage(String.format("%s: %sG free (of %sG)", nick, freeSpace, totalSpace));
         });
 
         // --- Job-specific commands ---
