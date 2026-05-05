@@ -1,6 +1,7 @@
 package dev.digitaldragon.interfaces.api;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.interfaces.api.messages.SystemMessage;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobManager;
 import io.javalin.Javalin;
@@ -112,6 +113,15 @@ public class JavalinAPI {
                 ctx.status(500);
                 ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
             }
+        });
+
+        app.get("/api/system", (ctx) -> {
+            File file = new File("jobs");
+            long freeSpace = file.getFreeSpace();
+            long totalSpace = file.getTotalSpace();
+
+            String json = WikiBot.getGson().toJson(new SystemMessage(new SystemMessage.DiskSpaceInfo(freeSpace, totalSpace)));
+            ctx.result(json);
         });
     }
 
