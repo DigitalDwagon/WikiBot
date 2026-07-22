@@ -167,13 +167,6 @@ public class IRCCommandListener {
 
 
         commands.put("explain", () -> {
-            try {
-                checkUserPermissions(channel, event.getActor(), false);
-            } catch (UserErrorException e) {
-                channel.sendMessage(nick + ": " + e.getMessage());
-                return;
-            }
-
             String[] split = message.split(" ", 2);
             String jobId = split[0];
 
@@ -191,6 +184,13 @@ public class IRCCommandListener {
                 } else {
                     channel.sendMessage(String.format("%s: Job %s has no explanation set.", nick, jobId));
                 }
+                return;
+            }
+
+            try {
+                checkUserPermissions(channel, event.getActor(), false);
+            } catch (UserErrorException e) {
+                channel.sendMessage(nick + ": " + e.getMessage());
                 return;
             }
 
