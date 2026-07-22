@@ -6,4 +6,4 @@ steps:
     image: eclipse-temurin:21-jdk
     commands:
       - chmod +x ./gradlew
-      - ./gradlew build
+      - ./gradlew build --no-daemon
