@@ -165,6 +165,40 @@ public class IRCCommandListener {
                 channel.sendMessage(nick + ": " + reply);
         });
 
+
+        commands.put("explain", () -> {
+            try {
+                checkUserPermissions(channel, event.getActor(), false);
+            } catch (UserErrorException e) {
+                channel.sendMessage(nick + ": " + e.getMessage());
+                return;
+            }
+
+            String[] split = message.split(" ", 2);
+            String jobId = split[0];
+
+            Job job = JobManager.get(jobId);
+            if (job == null) {
+                channel.sendMessage(nick + ": Job " + jobId + " does not exist!");
+                return;
+            }
+            JobMeta meta = job.getMeta();
+
+
+            if (split.length < 2) {
+                if (meta.getExplain().isPresent()) {
+                    channel.sendMessage(String.format("%s: Explanation for job %s is \"%s\"", nick, jobId, meta.getExplain().get()));
+                } else {
+                    channel.sendMessage(String.format("%s: Job %s has no explanation set.", nick, jobId));
+                }
+                return;
+            }
+
+            meta.setExplain(split[1]);
+            channel.sendMessage(String.format("%s: Updated explanation for job %s", nick, jobId));
+        });
+        aliases.put("e", "explain");
+
         commands.put("mw", () -> {
             try {
                 checkUserPermissions(channel, user, true);
