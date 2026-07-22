@@ -4,7 +4,7 @@ import kotlin.text.Charsets.UTF_8
 plugins {
     `java-library`
     `maven-publish`
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.gradleup.shadow") version "9.4.3"
     id("io.freefair.lombok") version "8.6"
     kotlin("jvm") version "2.2.0"
 }
