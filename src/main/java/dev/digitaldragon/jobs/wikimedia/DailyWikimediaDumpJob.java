@@ -54,8 +54,7 @@ public class DailyWikimediaDumpJob extends Job {
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
         this.handler = new GenericLogsHandler(this);
-        this.meta = new JobMeta("Wikibot-internal-queue");
-        meta.setPlatform(JobMeta.JobPlatform.API);
+        this.meta = new JobMeta("Wikibot-internal-queue", JobMeta.JobPlatform.API);
         meta.setExplain("This job is automatically created by the bot to download the Wikimedia incremental dumps every day.");
         meta.setTargetUrl("https://dumps.wikimedia.org/other/incr/");
     }

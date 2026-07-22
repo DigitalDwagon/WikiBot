@@ -26,13 +26,13 @@ public class ReuploadJob extends Job {
     private String runningTask = null;
     private Instant startTime = null;
     private File directory = null;
-    private RunCommand uploadCommand = null;
+    private transient RunCommand uploadCommand = null;
     private final String explanation;
     @Setter
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    private final GenericLogsHandler handler;
+    private final transient GenericLogsHandler handler;
     private int failedTaskCode;
     private final String uploadingFor;
     private boolean aborted = false;
@@ -49,7 +49,7 @@ public class ReuploadJob extends Job {
         this.status = JobStatus.QUEUED;
         this.name =  "Reupload " + targetId;
         this.handler = new GenericLogsHandler(this);
-        meta = new JobMeta(userName);
+        meta = new JobMeta(userName, JobMeta.JobPlatform.IRC);
 
     }
 

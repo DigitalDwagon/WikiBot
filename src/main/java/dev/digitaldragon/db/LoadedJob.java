@@ -31,7 +31,7 @@ public class LoadedJob extends Job {
     private String archiveUrl = null;
     public File directory = null;
     private int failedTaskCode = 0;
-    private JobMeta meta = new JobMeta("undefined");
+    private JobMeta meta = new JobMeta("undefined", JobMeta.JobPlatform.UNKNOWN);
 
     public void run() {
         throw new UnsupportedOperationException("Loaded jobs cannot be run.");

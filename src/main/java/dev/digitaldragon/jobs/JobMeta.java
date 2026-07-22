@@ -25,15 +25,17 @@ public class JobMeta {
     @Nullable
     private String discordUserId = null;
 
-    public JobMeta(String userName) {
+    public JobMeta(String userName, JobPlatform platform) {
         this.userName = userName;
+        this.platform = platform;
     }
 
     public enum JobPlatform {
         DISCORD,
         IRC,
         TELEGRAM,
-        API
+        API,
+        UNKNOWN
     }
 
     public enum SilentMode {

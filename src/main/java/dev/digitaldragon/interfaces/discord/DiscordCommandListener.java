@@ -96,8 +96,7 @@ public class DiscordCommandListener extends ListenerAdapter {
 
 
         try {
-            JobMeta meta = new JobMeta(event.getUser().getName());
-            meta.setPlatform(JobMeta.JobPlatform.DISCORD);
+            JobMeta meta = new JobMeta(event.getUser().getName(), JobMeta.JobPlatform.DISCORD);
             meta.setDiscordUserId(event.getUser().getId());
 
             String[] args = getArgsFromOptions(event);

@@ -72,8 +72,7 @@ public class TelegramCommandsBot extends AbilityBot {
                 .action(ctx -> {
                     String message = null;
                     System.out.println(arrayToString(ctx.arguments()));
-                    JobMeta meta = new JobMeta(ctx.user().getUserName());
-                    meta.setPlatform(JobMeta.JobPlatform.TELEGRAM);
+                    JobMeta meta = new JobMeta(ctx.user().getUserName(), JobMeta.JobPlatform.TELEGRAM);
                     try {
                         WikiTeam3Job job = new WikiTeam3Job(arrayToString(ctx.arguments()), meta, UUID.randomUUID().toString());
                         JobManager.submit(job);
@@ -100,8 +99,7 @@ public class TelegramCommandsBot extends AbilityBot {
                 .action(ctx -> {
                     String message = null;
                     System.out.println(arrayToString(ctx.arguments()));
-                    JobMeta meta = new JobMeta(ctx.user().getUserName());
-                    meta.setPlatform(JobMeta.JobPlatform.TELEGRAM);
+                    JobMeta meta = new JobMeta(ctx.user().getUserName(), JobMeta.JobPlatform.TELEGRAM);
                     try {
                         DokuWikiDumperJob job = new DokuWikiDumperJob(arrayToString(ctx.arguments()), meta, UUID.randomUUID().toString());
                         JobManager.submit(job);

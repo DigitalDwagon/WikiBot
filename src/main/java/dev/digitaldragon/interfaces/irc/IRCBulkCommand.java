@@ -76,8 +76,7 @@ public class IRCBulkCommand {
                             line = line.substring(4).trim();
                             if (!line.contains("--silent-mode")) line += " --silent-mode " + JobMeta.SilentMode.DONE.name(); // references the enum directly to cause a compile error in case END is removed from the enum
                             String result = null;
-                            JobMeta meta = new JobMeta(nick);
-                            meta.setPlatform(JobMeta.JobPlatform.IRC);
+                            JobMeta meta = new JobMeta(nick, JobMeta.JobPlatform.IRC);
                             switch (command) {
                                 case "!mw" ->  {
                                     try {

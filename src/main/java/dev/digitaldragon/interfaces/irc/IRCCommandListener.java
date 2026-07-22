@@ -168,8 +168,7 @@ public class IRCCommandListener {
         commands.put("mw", () -> {
             try {
                 checkUserPermissions(channel, user, true);
-                JobMeta meta = new JobMeta(user.getNick());
-                meta.setPlatform(JobMeta.JobPlatform.IRC);
+                JobMeta meta = new JobMeta(user.getNick(), JobMeta.JobPlatform.IRC);
 
                 Job job = null;
                 switch (command) {

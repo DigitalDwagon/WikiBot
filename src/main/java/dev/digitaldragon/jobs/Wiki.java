@@ -15,7 +15,7 @@ public abstract class Wiki {
             Document document = Jsoup.connect(url).get();
             // check for mediawiki generator tag in head
             if (!document.head().select("meta[name=generator][content^=MediaWiki]").isEmpty()) {
-                return new MediaWiki(url);
+                //return new MediaWiki(url);
             }
 
             //check for DokuWiki= cookie
