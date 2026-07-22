@@ -1,12 +1,12 @@
 package dev.digitaldragon.interfaces.api;
 
+import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.events.*;
 import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.eclipse.jetty.websocket.api.Session;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Map;
@@ -34,9 +34,9 @@ public class LogWebsocket implements Consumer<WsConfig> {
 
     @EventHandler
     public void onJobLog(JobLogEvent event) {
-        JSONObject json = new JSONObject();
-        json.put("jobId", event.getJob().getId());
-        json.put("logLine", event.getMessage());
+        JsonObject json = new JsonObject();
+        json.addProperty("jobId", event.getJob().getId());
+        json.addProperty("logLine", event.getMessage());
 
         for (Session session : connectedClients.keySet()) {
             try {

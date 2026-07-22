@@ -1,5 +1,7 @@
 package dev.digitaldragon.interfaces.api;
 
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.messages.SystemMessage;
 import dev.digitaldragon.jobs.Job;
@@ -8,8 +10,6 @@ import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Header;
 import jakarta.servlet.http.HttpServletRequest;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -185,8 +185,8 @@ public class JavalinAPI {
 
             //valid JSON is required
             try {
-                JSONObject json = new JSONObject(ctx.body());
-            } catch (JSONException e) {
+                JsonParser.parseString(ctx.body());
+            } catch (JsonParseException e) {
                 ctx.status(400);
                 ctx.result(error("Invalid JSON"));
                 return;
@@ -226,12 +226,9 @@ public class JavalinAPI {
     }
 
     private static String error(String message) {
-        return new JSONObject().put("error", message).put("success", false).toString();
-    }
-
-    private static String success(String message) {
-        return new JSONObject().put("success", true).put("message", message).toString();
+        return WikiBot.getGson().toJson(new APIResponse(false, null, message));
     }
 
     private record ErrorResponse(String error) {}
+    private record APIResponse(boolean success, String message, String error) {}
 }
