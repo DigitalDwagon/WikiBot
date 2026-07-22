@@ -3,6 +3,7 @@ when:
 
 steps:
   build:
-    image: gradle:8.7-jdk21
+    image: eclipse-temurin:21-jdk
     commands:
-      - gradle build
+      - chmod +x ./gradlew
+      - ./gradlew build
