@@ -1,16 +1,16 @@
 package dev.digitaldragon.interfaces.irc;
 
 import com.beust.jcommander.ParameterException;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
 import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.interfaces.generic.ReuploadHelper;
 import dev.digitaldragon.interfaces.generic.StatusHelper;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobLaunchException;
-import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
@@ -22,7 +22,9 @@ import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -230,6 +232,95 @@ public class IRCCommandListener {
         aliases.put("pw", "mw");
 
         commands.put("reupload", () -> runHelper(channel, user, message, ReuploadHelper::beginJob));
+
+        commands.put("delay", () -> {
+            if (message == null) {
+                channel.sendMessage(nick + ": Incomplete command. Usage: !delay <job ID> [new delay in seconds]");
+                return;
+            }
+
+            String[] split = message.split(" ", 2);
+            String jobId = split[0];
+
+            String dataDirectoryId = null;
+
+            Job job = JobManager.get(jobId);
+            if (job != null) {
+                if (job.getType() != JobType.WIKITEAM3) {
+                    channel.sendMessage(nick + ": !delay can only be used on wikiteam3 jobs.");
+                    return;
+                }
+
+                if (job instanceof WikiTeam3Job wt3Job) {
+                    // This is necessary because LoadedJob jobs will present themselves as JobType.WIKITEAM3
+                    String resumeId = wt3Job.getArgs().getResume();
+                    if (resumeId != null) {
+                        channel.sendMessage(nick + ": Using job in data directory " + resumeId + " (of which " + jobId + " is a child.)");
+                    }
+                    dataDirectoryId = resumeId;
+                }
+            }
+
+            if (dataDirectoryId == null) dataDirectoryId = jobId;
+
+            File dumpDir = CommonTasks.findDumpDir(dataDirectoryId);
+            if (dumpDir == null || !dumpDir.isDirectory()) {
+                channel.sendMessage(nick + ": Job " + dataDirectoryId + " could not be found on disk.");
+                return;
+            }
+
+            File configFile = new File(dumpDir, "config.json");
+            if (!configFile.exists()) {
+                channel.sendMessage(nick + ": Config file for job " + dataDirectoryId + " could not be found on disk.");
+                return;
+            }
+            String config;
+            try {
+                config = new String(Files.readAllBytes(configFile.toPath()));
+            } catch (IOException e) {
+                channel.sendMessage(nick + ": Disk I/O error while reading config file for job " + dataDirectoryId);
+                return;
+            }
+
+            JsonElement je = WikiBot.getGson().fromJson(config, JsonElement.class);
+            JsonObject jo = je.getAsJsonObject();
+            String delay = jo.get("delay").getAsString();
+
+            if (split.length < 2) {
+                channel.sendMessage(nick + ": Delay for job " + dataDirectoryId + " is " + delay + ".");
+                return;
+            }
+
+            try {
+                checkUserPermissions(channel, user, false);
+            } catch (UserErrorException e) {
+                channel.sendMessage(user.getNick() + ": " + e.getMessage());
+            }
+
+            double newDelay;
+
+            try {
+                newDelay = Double.parseDouble(split[1]);
+            } catch (NumberFormatException e) {
+                channel.sendMessage(nick + ": Invalid number \"" + split[1] + "\"");
+                return;
+            }
+
+            jo.addProperty("delay", newDelay);
+
+            String newConfig = new GsonBuilder().setPrettyPrinting().create().toJson(jo);
+
+            try {
+                Files.writeString(configFile.toPath(), newConfig);
+            } catch (IOException e) {
+                channel.sendMessage(nick + ": Disk I/O error while writing config file for job " + dataDirectoryId);
+                return;
+            }
+
+            channel.sendMessage(String.format("%s: Set delay for job %s to %.1f (was %s)", nick, dataDirectoryId, newDelay, delay));
+        });
+        aliases.put("d", "delay");
+
 
         if (aliases.containsKey(command)) {
             commands.get(aliases.get(command)).run();
