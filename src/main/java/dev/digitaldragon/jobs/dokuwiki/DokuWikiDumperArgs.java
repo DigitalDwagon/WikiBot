@@ -21,6 +21,8 @@ import java.util.List;
 public class DokuWikiDumperArgs {
     //Description field omitted here because the JCommander help is never shown anywhere.
     @Parameter(names = {"--url"}, validateWith = URLValidator.class)
+    private String legacyUrl;
+    @Parameter(description = "positional URL argument", validateWith = URLValidator.class)
     private String url;
     @Parameter(names = {"--auto"})
     private boolean auto;
@@ -64,6 +66,10 @@ public class DokuWikiDumperArgs {
                 .build();
 
         commander.parse(args);
+
+        if (legacyUrl != null) {
+            url = legacyUrl;
+        }
     }
 
     public List<String> get() {

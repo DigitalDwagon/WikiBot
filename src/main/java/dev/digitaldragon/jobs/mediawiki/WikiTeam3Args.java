@@ -54,7 +54,9 @@ public class WikiTeam3Args {
     private String api;
     @Parameter(names = {"--index", "-N"}, validateWith = URLValidator.class)
     private String index;
-    @Parameter(names = {"--url", "-U"}, variableArity = true, validateWith = URLValidator.class)
+    @Parameter(names = {"--url", "-U"}, validateWith = URLValidator.class)
+    private String legacyUrl;
+    @Parameter(description = "positional URL argument", validateWith = URLValidator.class)
     private String url;
     @Parameter(names = {"--redirects"})
     private boolean redirects;
@@ -74,6 +76,10 @@ public class WikiTeam3Args {
                 .build();
 
         commander.parse(args);
+
+        if (legacyUrl != null) {
+            url = legacyUrl;
+        }
     }
 
     /**

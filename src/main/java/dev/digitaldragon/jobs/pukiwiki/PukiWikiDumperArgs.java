@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.util.URLValidator;
 import dev.digitaldragon.util.UserAgentParser;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,8 @@ import java.util.List;
 @Setter
 public class PukiWikiDumperArgs {
     @Parameter(names = {"--url"})
+    private String legacyUrl;
+    @Parameter(description = "positional URL argument", validateWith = URLValidator.class)
     private String url;
     @Parameter(names = {"--resume"})
     private String resume;
@@ -58,6 +61,10 @@ public class PukiWikiDumperArgs {
                 .build();
 
         commander.parse(args);
+
+        if (legacyUrl != null) {
+            url = legacyUrl;
+        }
     }
 
     public List<String> get() {
