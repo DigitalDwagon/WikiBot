@@ -6,6 +6,8 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 public class InstantTypeAdapter extends TypeAdapter<Instant> {
 
@@ -15,7 +17,10 @@ public class InstantTypeAdapter extends TypeAdapter<Instant> {
             out.nullValue();
             return;
         }
-        out.value(value.toString());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss")
+                .withZone(ZoneOffset.UTC);
+        out.value(formatter.format(value));
     }
 
     @Override
