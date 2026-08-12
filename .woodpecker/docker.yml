@@ -1,5 +1,5 @@
 when:
-  event: deployment
+  event: tag
 
 steps:
   publish-docker-image:
