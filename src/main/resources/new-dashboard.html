@@ -88,10 +88,26 @@
             margin-inline: 5px
         }
         .job-details {
-            width: 200px;
+            min-width: 200px;
+            flex-grow: 0.1;
             display: flex;
             flex-direction: column;
         }
+
+        .job-details p {
+            margin: 5px 0 0 5px;
+        }
+
+        .job-queue {
+            color: #9a9a9a;
+            font-size: 0.9rem;
+        }
+
+        .job-time {
+            color: #9a9a9a;
+            font-size: 0.9rem;
+        }
+
         .job-logs {
             white-space: pre-wrap;
             height: 250px;
@@ -227,8 +243,10 @@
             <hr style="border: solid 1px #cccfff;margin-bottom: 0">
             <div class="job-expanded">
                 <div class="job-details">
-                    <p class="job-explanation"></p>
+                    <p class="job-queue"></p>
                     <p class="job-time"></p>
+                    <p class="job-explanation"></p>
+
                     <a href="#"
                        class="jump-to-bottom"
                        style="font-size:0.85em; cursor:pointer; margin-top: auto; margin-bottom: 5px;">
@@ -292,6 +310,7 @@
         card.querySelector(".job-target-url").textContent = job.meta.targetUrl;
         card.querySelector(".job-id-text").textContent = job.id;
         card.querySelector(".job-username").textContent = job.meta.userName;
+        card.querySelector(".job-queue").textContent = `Queue: ${job.meta.queue}`;
 
         if (job.meta.explain) {
             card.querySelector(".job-explanation").textContent = `Explanation: ${job.meta.explain}`;
