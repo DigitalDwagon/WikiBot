@@ -2,11 +2,8 @@ package dev.digitaldragon.interfaces.telegram;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
-import dev.digitaldragon.interfaces.generic.ReuploadHelper;
 import dev.digitaldragon.interfaces.generic.StatusHelper;
-import dev.digitaldragon.jobs.JobLaunchException;
-import dev.digitaldragon.jobs.JobManager;
-import dev.digitaldragon.jobs.JobMeta;
+import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import org.telegram.abilitybots.api.bot.AbilityBot;
@@ -166,14 +163,12 @@ public class TelegramCommandsBot extends AbilityBot {
                 .locality(ALL)
                 .privacy(PUBLIC)
                 .action(ctx -> {
-                    String message = null;
-                    String jobId;
-                    try {
-                        jobId = ctx.firstArg();
-                        message = ReuploadHelper.beginJob(jobId, ctx.user().getUserName());
-                    } catch (Exception e) {
-                        message = "Please provide a job ID.";
-                    }
+                    String jobId = ctx.firstArg();
+
+                    Job job = new ReuploadJob(ctx.user().getUserName(), UUID.randomUUID().toString(), jobId);
+                    JobManager.submit(job);
+
+                    String message = "Reupload job started!";
                     reply_silent.sendReplyMessage(message, ctx.chatId(), ctx.update().getMessage().getMessageId());
                 })
                 .setStatsEnabled(true)

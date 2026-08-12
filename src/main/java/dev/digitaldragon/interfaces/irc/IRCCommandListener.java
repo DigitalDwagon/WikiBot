@@ -8,7 +8,6 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.UserErrorException;
 import dev.digitaldragon.interfaces.generic.AbortHelper;
 import dev.digitaldragon.interfaces.generic.Command;
-import dev.digitaldragon.interfaces.generic.ReuploadHelper;
 import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
@@ -27,7 +26,6 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.BiFunction;
 
 public class IRCCommandListener {
     private boolean submissionsEnabled = true;
@@ -231,7 +229,16 @@ public class IRCCommandListener {
         aliases.put("pukisingle", "mw");
         aliases.put("pw", "mw");
 
-        commands.put("reupload", () -> runHelper(channel, user, message, ReuploadHelper::beginJob));
+        commands.put("reupload", () -> {
+            try {
+                checkUserPermissions(channel, user, true);
+            } catch (UserErrorException e) {
+                channel.sendMessage(user.getNick() + ": " + e.getMessage());
+            }
+
+            Job job = new ReuploadJob(nick, UUID.randomUUID().toString(), message);
+            JobManager.submit(job);
+        });
 
         commands.put("delay", () -> {
             if (message == null) {
@@ -329,17 +336,6 @@ public class IRCCommandListener {
         if (commands.get(command) != null) {
             commands.get(command).run();
         }
-    }
-
-    public void runHelper(Channel channel, User user, String message, BiFunction<String, String, String> helper) {
-        try {
-            checkUserPermissions(channel, user, true);
-        } catch (UserErrorException e) {
-            channel.sendMessage(user.getNick() + ": " + e.getMessage());
-        }
-
-        String reply = helper.apply(message, user.getNick());
-        if (reply != null) channel.sendMessage(user.getNick() + ": " + reply);
     }
 
     private void checkUserPermissions(Channel channel, User user, boolean shouldPause) throws UserErrorException {
