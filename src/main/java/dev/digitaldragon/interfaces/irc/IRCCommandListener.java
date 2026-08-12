@@ -167,6 +167,10 @@ public class IRCCommandListener {
 
 
         commands.put("explain", () -> {
+            if (message == null) {
+                channel.sendMessage(nick + ": Incomplete command. Usage: !explain <job ID> [new explanation]");
+            }
+
             String[] split = message.split(" ", 2);
             String jobId = split[0];
 
