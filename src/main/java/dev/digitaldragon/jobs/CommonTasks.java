@@ -12,21 +12,6 @@ import java.util.Set;
  * The CommonTasks class provides common tasks and utilities for various operations.
  */
 public class CommonTasks {
-    public static int runAndVerify(RunCommand command, StringLogHandler handler, String taskName) {
-        command.run();
-
-        try {
-            int exitCode = command.getProcess().waitFor();
-            handler.onMessage("----- Bot: Task " + taskName + " finished -----");
-            handler.onMessage("----- Bot: Exit code: " + exitCode + " -----");
-
-            return exitCode;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return 999;
-    }
-
     public static String uploadLogs(Job job) {
         String jobId = job.getId();
         try {

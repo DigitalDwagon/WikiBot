@@ -40,7 +40,6 @@ public class DailyWikimediaDumpJob extends Job {
     private String archiveUrl = "https://archive.org/details/@DigitalDragons";
     @Setter
     private String logsUrl = null;
-    private GenericLogsHandler handler;
     private int failedTaskCode;
     private boolean aborted;
     private final List<WikimediaWiki> wikis = new ArrayList<>();
@@ -53,7 +52,6 @@ public class DailyWikimediaDumpJob extends Job {
         this.status = JobStatus.QUEUED;
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.handler = new GenericLogsHandler(this);
         this.meta = new JobMeta("Wikibot-internal-queue", JobMeta.JobPlatform.API);
         meta.setExplain("This job is automatically created by the bot to download the Wikimedia incremental dumps every day.");
         meta.setTargetUrl("https://dumps.wikimedia.org/other/incr/");
@@ -61,9 +59,8 @@ public class DailyWikimediaDumpJob extends Job {
 
     private void fail(String message) {
         this.status = JobStatus.FAILED;
-        handler.onMessage(message);
+        log(message);
         CommonTasks.uploadLogs(this);
-        handler.end();
         WikiBot.getBus().post(new JobFailureEvent(this));
         throw new RuntimeException(message);
     }
@@ -73,39 +70,39 @@ public class DailyWikimediaDumpJob extends Job {
         this.status = JobStatus.RUNNING;
         WikiBot.getBus().post(new JobRunningEvent(this));
         this.runningTask = "DOWNLOAD";
-        handler.onMessage("Parsing the wikis.txt file...");
+        this.log("Parsing the wikis.txt file...");
         parseWikiNames();
-        handler.onMessage("Requesting the incremental dumps page from the Wikimedia servers...");
+        this.log("Requesting the incremental dumps page from the Wikimedia servers...");
 
         String incrementalDumpUrl = "https://dumps.wikimedia.org/other/incr/";
         try {
             extractWikis(incrementalDumpUrl);
         } catch (IOException e) {
-            handler.onMessage("Failed to get the incremental dumps page from the Wikimedia servers!");
-            handler.onMessage("Error: " + e.getMessage());
+            this.log("Failed to get the incremental dumps page from the Wikimedia servers!");
+            this.log("Error: " + e.getMessage());
             failedTaskCode = 1;
             fail("Failed to get the incremental dumps page from the Wikimedia servers!");
         }
-        handler.onMessage("");
-        handler.onMessage("");
+        this.log("");
+        this.log("");
         for (WikimediaWiki wiki : wikis) {
-            handler.onMessage("---");
-            handler.onMessage(wiki.getId());
-            handler.onMessage(wiki.getStubsUrl());
-            handler.onMessage(wiki.getPagesUrl());
-            handler.onMessage(wiki.getMaxrevUrl());
-            handler.onMessage(wiki.getMd5sumsUrl());
+            this.log("---");
+            this.log(wiki.getId());
+            this.log(wiki.getStubsUrl());
+            this.log(wiki.getPagesUrl());
+            this.log(wiki.getMaxrevUrl());
+            this.log(wiki.getMd5sumsUrl());
         }
-        handler.onMessage("");
-        handler.onMessage("");
+        this.log("");
+        this.log("");
 
         List<String> identifiers = new ArrayList<>();
         for (WikimediaWiki wiki : wikis) {
             try {//todo this definitely needs multithreading
-                handler.onMessage("");
-                handler.onMessage("");
-                handler.onMessage("Processing " + wiki.getId() + "...");
-                handler.onMessage("Fetching md5 sums for " + wiki.getId() + "...");
+                this.log("");
+                this.log("");
+                this.log("Processing " + wiki.getId() + "...");
+                this.log("Fetching md5 sums for " + wiki.getId() + "...");
                 File md5 = downloadFile(wiki.getMd5sumsUrl());
                 extractMD5sums(md5, wiki);
                 Thread.sleep(1000);
@@ -114,25 +111,25 @@ public class DailyWikimediaDumpJob extends Job {
                 md5Matches(downloadFile(wiki.getStubsUrl()), wiki.getStubsMD5());
                 md5Matches(downloadFile(wiki.getPagesUrl()), wiki.getPagesMD5());
                 md5Matches(downloadFile(wiki.getMaxrevUrl()), wiki.getMaxrevMD5());
-                handler.onMessage("");
+                this.log("");
 
                 String identifier = uploadInflightFiles(wiki);
-                handler.onMessage(wiki.getId() + " ---> " + "https://archive.org/details/" + identifier);
+                this.log(wiki.getId() + " ---> " + "https://archive.org/details/" + identifier);
                 identifiers.add(identifier);
                 cleanupInflightFiles();
-                handler.onMessage("Finished processing " + wiki.getId() + "!");
-                handler.onMessage("Waiting before processing the next wiki...");
+                this.log("Finished processing " + wiki.getId() + "!");
+                this.log("Waiting before processing the next wiki...");
             } catch (IOException | NoSuchAlgorithmException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
 
-        handler.onMessage("");
-        handler.onMessage("");
-        handler.onMessage("Done processing all wikis!");
-        handler.onMessage("Items produced in this run:");
+        this.log("");
+        this.log("");
+        this.log("Done processing all wikis!");
+        this.log("Items produced in this run:");
         for (String identifier : identifiers) {
-            handler.onMessage(identifier);
+            this.log(identifier);
         }
 
         logsUrl = CommonTasks.uploadLogs(this);
@@ -140,14 +137,13 @@ public class DailyWikimediaDumpJob extends Job {
         status = JobStatus.COMPLETED;
         runningTask = null;
         archiveUrl = "https://archive.org/details/@digitaldragons";
-        handler.end();
         WikiBot.getBus().post(new JobCompletedEvent(this));
     }
 
     private void extractWikis(String incrementalDumpUrl) throws IOException {
         Document doc = Jsoup.connect(incrementalDumpUrl).get();
-        handler.onMessage("Got the incremental dumps page from the Wikimedia servers!");
-        handler.onMessage("Extracting the wikis...");
+        this.log("Got the incremental dumps page from the Wikimedia servers!");
+        this.log("Extracting the wikis...");
         doc.select("li").forEach(li -> {
             WikimediaWiki wiki = new WikimediaWiki();
             if (!li.text().contains("(done:all)")) return;
@@ -169,8 +165,8 @@ public class DailyWikimediaDumpJob extends Job {
 
             //if any of the URLs are null, don't add the wiki
             if (wiki.getStubsUrl() == null || wiki.getPagesUrl() == null || wiki.getMaxrevUrl() == null || wiki.getMd5sumsUrl() == null) {
-                handler.onMessage("Failed to extract " + wiki.getId() + " because one or more link URLs were null!");
-                handler.onMessage(li.toString());
+                this.log("Failed to extract " + wiki.getId() + " because one or more link URLs were null!");
+                this.log(li.toString());
             } else {
                 wikis.add(wiki);
             }
@@ -220,8 +216,9 @@ public class DailyWikimediaDumpJob extends Job {
                 + " --metadata=\"creator:Wikimedia Foundation\""
                 + " --retries 50";
 
-        RunCommand uploadCommand = new RunCommand(command, null, directory, handler::onMessage);
-        int exitCode = CommonTasks.runAndVerify(uploadCommand, handler, runningTask);
+        RunCommand uploadCommand = new RunCommand(command, null, directory, this::log);
+        int exitCode = uploadCommand.waitFor();
+
         if (exitCode != 0) {
             failedTaskCode = exitCode;
             fail("Failed to upload " + files);
@@ -251,7 +248,7 @@ public class DailyWikimediaDumpJob extends Job {
     }
 
     private File downloadFile(String fileUrl) throws MalformedURLException {
-        handler.onMessage("Downloading " + fileUrl + " ...");
+        this.log("Downloading " + fileUrl + " ...");
         URL url = new URL(fileUrl);
         String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
         File downloadLocation = new File(directory.getAbsolutePath() + "/" + fileName);
@@ -271,7 +268,7 @@ public class DailyWikimediaDumpJob extends Job {
         } catch (IOException e) {
             //TODO retry download depending on status code
             failedTaskCode = 1;
-            handler.onMessage(e.getMessage());
+            this.log(e.getMessage());
             fail("Failed to download " + fileUrl + " because of an IOException!");
         }
         inflightFiles.add(downloadLocation);
@@ -279,13 +276,13 @@ public class DailyWikimediaDumpJob extends Job {
     }
 
     private void cleanupInflightFiles() {
-        handler.onMessage("");
-        handler.onMessage("Cleaning up inflight files...");
+        this.log("");
+        this.log("Cleaning up inflight files...");
         for (File file : inflightFiles) {
-            handler.onMessage("Deleting " + file.getName());
+            this.log("Deleting " + file.getName());
             file.delete();
         }
-        handler.onMessage("");
+        this.log("");
         inflightFiles.clear();
     }
 
