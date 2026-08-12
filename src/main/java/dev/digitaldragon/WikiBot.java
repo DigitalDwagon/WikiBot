@@ -14,10 +14,7 @@ import dev.digitaldragon.jobs.CleanupListener;
 import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.LogFiles;
 import dev.digitaldragon.jobs.queues.QueueManager;
-import dev.digitaldragon.util.Config;
-import dev.digitaldragon.util.FileTypeAdapter;
-import dev.digitaldragon.util.InstantTypeAdapter;
-import dev.digitaldragon.util.OptionalSerializer;
+import dev.digitaldragon.util.*;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
 import org.slf4j.Logger;
@@ -50,9 +47,8 @@ public class WikiBot {
             .registerTypeAdapter(File.class, new FileTypeAdapter())
             .registerTypeAdapter(Optional.class, new OptionalSerializer<>())
             .create();
-    public static String getVersion() {
-        return "1.9.3";
-    }
+    @Getter
+    public static String version = null;
 
     @Getter
     private static File scriptDirectory = null;
@@ -67,6 +63,10 @@ public class WikiBot {
             });
         }));
         Logger logger = LoggerFactory.getLogger(WikiBot.class);
+
+        version = BuildInfo.load().getVersion();
+        logger.info("Starting WikiBot v" + version);
+
         try {
             File configFile = new File("config.json");
             String json = Files.readString(configFile.toPath());

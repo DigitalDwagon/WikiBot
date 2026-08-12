@@ -1,5 +1,6 @@
 import kotlin.text.Charsets.UTF_8
 
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 plugins {
     `java-library`
@@ -62,11 +63,6 @@ dependencies {
     //annotationProcessor("org.projectlombok:lombok:1.18.26")
 }
 
-group = "dev.digitaldragon"
-version = "1.0-SNAPSHOT"
-description = "WikiBot"
-java.sourceCompatibility = JavaVersion.VERSION_17
-
 publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
@@ -102,6 +98,15 @@ tasks {
     }
     processResources {
         filteringCharset = UTF_8.name() // We want UTF-8 for everything
+        val props = mapOf("version" to project.version)
+        inputs.properties(props) // re-run this task (don't cache) when the version changes
+
+        filesMatching("user-agents.json") {
+            expand(props)
+        }
+        filesMatching("build-info.json") {
+            expand(props)
+        }
     }
     test {
         useJUnitPlatform()
