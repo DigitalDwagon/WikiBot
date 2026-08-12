@@ -3,6 +3,7 @@ COPY --chown=gradle:gradle ./src /home/gradle/src
 COPY --chown=gradle:gradle ./gradle /home/gradle/gradle
 COPY --chown=gradle:gradle ./build.gradle.kts /home/gradle
 COPY --chown=gradle:gradle ./settings.gradle.kts /home/gradle
+COPY --chown=gradle:gradle ./gradle.properties /home/gradle
 WORKDIR /home/gradle
 RUN gradle build --no-daemon
 
