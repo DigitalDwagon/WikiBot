@@ -5,12 +5,12 @@ import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobRunningEvent;
+import dev.digitaldragon.util.Config;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.File;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,8 +19,6 @@ import java.util.List;
 @Getter
 public class ReuploadJob extends Job {
     private final String id;
-    private final String name;
-    private final String userName;
     @Setter
     private JobStatus status = null;
     private String runningTask = null;
@@ -32,32 +30,27 @@ public class ReuploadJob extends Job {
     private String archiveUrl = null;
     @Setter
     private String logsUrl = null;
-    private final transient GenericLogsHandler handler;
     private int failedTaskCode;
-    private final String uploadingFor;
+    private final String targetId;
     private boolean aborted = false;
     private JobMeta meta;
 
     public ReuploadJob(String userName, String id, String targetId) {
-        this.userName = userName;
         this.id = id;
+        meta = new JobMeta(userName, JobMeta.JobPlatform.IRC);
+        meta.setExplain("Reupload job " + targetId);
         // non-input params
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.uploadingFor = targetId;
+        this.targetId = targetId;
         this.explanation = "Reupload of " + targetId;
         this.status = JobStatus.QUEUED;
-        this.name =  "Reupload " + targetId;
-        this.handler = new GenericLogsHandler(this);
-        meta = new JobMeta(userName, JobMeta.JobPlatform.IRC);
-
     }
 
     private void failure(int code) {
         logsUrl = CommonTasks.uploadLogs(this);
         status = JobStatus.FAILED;
         failedTaskCode = code;
-        handler.end();
         if (runningTask.equals("AbortTask")) {
             status = JobStatus.ABORTED;
             WikiBot.getBus().post(new JobAbortEvent(this));
@@ -70,81 +63,94 @@ public class ReuploadJob extends Job {
         if (aborted)
             return;
 
-
         startTime = Instant.now();
         status = JobStatus.RUNNING;
         WikiBot.getBus().post(new JobRunningEvent(this));
+        runningTask = "StartUpload";
 
-        runningTask = "DetectJobType";
-        File directory;
-        try {
-            directory = new File("jobs/" + uploadingFor + "/");
-            directory.mkdirs();
-        } catch (Exception e) {
-            e.printStackTrace();
+        log("wikibot v" + WikiBot.getVersion() + " job " + id);
+        log("looking for dump to reupload for job ID " + targetId);
+
+
+        File dumpDir = CommonTasks.findDumpDir(targetId);
+        if (dumpDir == null || dumpDir.listFiles() == null) {
+            this.log("Fatal: Couldn't find the dump to upload! It probably doesn't exist, or you entered an incorrect Job ID.");
             failure(999);
             return;
         }
 
-        if (directory.listFiles() == null) {
+        JobType jobType = null;
+
+        for (File child : dumpDir.listFiles()) {
+            if (child.getName().equals("siteinfo.json")) {
+                jobType = JobType.WIKITEAM3;
+                break;
+            }
+
+            if (child.getName().equals("meta")) {
+                jobType = JobType.DOKUWIKIDUMPER;
+                break;
+            }
+
+            if (child.getName().equals("wiki")) {
+                jobType = JobType.PUKIWIKIDUMPER;
+                break;
+            }
+        }
+
+        if (jobType == null) {
+            log("Could not determine job type. The dump may be incomplete or have already been uploaded. Maybe try --resume instead?");
             failure(999);
             return;
         }
 
-        boolean hasRun = false;
+        String[] uploadParams = null;
 
-        for (File file : directory.listFiles()) {
-            if (!file.isDirectory()) {
-                continue;
-            }
+        switch (jobType) {
+            case JobType.WIKITEAM3 -> {
+                Config.UploadConfig uploadConfig = WikiBot.getConfig().getUploadConfig();
+                uploadParams = new String[]{"wikiteam3uploader", dumpDir.getName(),
+                        "--zstd-level", "22",
+                        "--parallel",
+                        "--bin-zstd", WikiBot.getConfig().getWikiTeam3Config().binZstd(),
+                        "--collection", uploadConfig.collection()};
 
-            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("siteinfo.json"))) {
-                runningTask = "UploadMediaWiki";
-                int runUpload = CommonTasks.runUpload(this, new File("jobs/" + uploadingFor + "/"), handler, uploadCommand, JobType.WIKITEAM3);
-                if (runUpload != 0) {
-                    failure(runUpload);
-                    return;
+                if (uploadConfig.offloadEnabled()) {
+                    String[] newUploadParams = new String[uploadParams.length + 2];
+                    newUploadParams[newUploadParams.length - 2] = "--offload";
+                    newUploadParams[newUploadParams.length - 1] = uploadConfig.offloadServer();
+                    System.arraycopy(uploadParams, 0, newUploadParams, 0, uploadParams.length);
+                    uploadParams = newUploadParams;
                 }
-                hasRun = true;
-
-                continue;
             }
-
-            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("meta"))) {
-                runningTask = "UploadDokuWiki";
-                int runUpload = CommonTasks.runUpload(this, new File("jobs/" + uploadingFor + "/"), handler, uploadCommand, JobType.DOKUWIKIDUMPER);
-                if (runUpload != 0) {
-                    failure(runUpload);
-                    return;
-                }
-                hasRun = true;
-                continue;
-            }
-
-            if (Arrays.stream(file.listFiles()).anyMatch(f -> f.getName().equals("wiki"))) {
-                runningTask = "UploadDokuWiki";
-                int runUpload = CommonTasks.runUpload(this, new File("jobs/" + uploadingFor + "/"), handler, uploadCommand, JobType.PUKIWIKIDUMPER);
-                if (runUpload != 0) {
-                    failure(runUpload);
-                    return;
-                }
-                hasRun = true;
-                continue;
-            }
+            case JobType.DOKUWIKIDUMPER -> uploadParams = new String[]{"dokuWikiUploader", dumpDir.getName(), "--collection", WikiBot.getConfig().getUploadConfig().collection()};
+            case JobType.PUKIWIKIDUMPER -> uploadParams = new String[]{"pukiWikiUploader", dumpDir.getName(), "--collection", WikiBot.getConfig().getUploadConfig().collection()};
         }
 
-        if (!hasRun) {
-            handler.onMessage("Fatal: Couldn't find the dump to upload! It probably doesn't exist, or you entered an incorrect Job ID.");
+        if (uploadParams == null) {
+            // This should be unreachable
+            log("Found job of type " + jobType.name() + " but failed to determine the upload parameters! This looks like a bug, please report this to a bot admin!");
             failure(999);
             return;
         }
 
+        uploadCommand = new RunCommand(null, uploadParams, dumpDir.getParentFile(), message -> {
+            this.log(message);
+            CommonTasks.getArchiveUrl(message).ifPresent(this::setArchiveUrl);
+        });
+
+
+        runningTask = "Upload";
+        uploadCommand.run();
+        int exitCode = uploadCommand.waitFor();
+        if (exitCode != 0) {
+            failure(exitCode);
+            return;
+        }
 
         logsUrl = CommonTasks.uploadLogs(this);
-
         status = JobStatus.COMPLETED;
         runningTask = null;
-        handler.end();
         WikiBot.getBus().post(new JobCompletedEvent(this));
     }
 
@@ -165,6 +171,6 @@ public class ReuploadJob extends Job {
     }
 
     public List<String> getAllTasks() {
-        return List.of("DetectJobType", "UploadMediaWiki", "UploadDokuWiki");
+        return List.of("StartUpload", "Upload");
     }
 }

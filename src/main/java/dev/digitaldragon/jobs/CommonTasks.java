@@ -1,17 +1,12 @@
 package dev.digitaldragon.jobs;
 
-import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.backfeed.LinkExtract;
-import dev.digitaldragon.util.Config;
 import dev.digitaldragon.util.UploadObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * The CommonTasks class provides common tasks and utilities for various operations.
@@ -41,53 +36,6 @@ public class CommonTasks {
             return "Error uploading logs. Sorry :(";
         }
         return String.format("https://cdn.digitaldragon.dev/wikibot/jobs/%s/log.txt", jobId);
-    }
-
-    @Deprecated
-    public static int runUpload(Job job, File directory, StringLogHandler handler, RunCommand uploadCommand, JobType type) {
-        handler.onMessage("----- Bot: Task " + job.getRunningTask() + " started -----");
-        if (directory.listFiles() == null) {
-            return 999;
-        }
-
-        Consumer<String> jobWatcher = (message -> {
-            job.log(message);
-            CommonTasks.getArchiveUrl(message).ifPresent(job::setArchiveUrl);
-        });
-
-        for (File file : directory.listFiles()) {
-            if (file.isDirectory()) {
-                if (type == JobType.WIKITEAM3) {
-                    Config.UploadConfig uploadConfig = WikiBot.getConfig().getUploadConfig();
-                    List<String> uploadParams = new ArrayList<>();
-                    uploadParams.add("wikiteam3uploader");
-                    uploadParams.add(file.getName());
-                    uploadParams.add("--zstd-level");
-                    uploadParams.add("22");
-                    uploadParams.add("--parallel");
-                    uploadParams.add("--bin-zstd");
-                    uploadParams.add(WikiBot.getConfig().getWikiTeam3Config().binZstd());
-                    uploadParams.add("--collection");
-                    uploadParams.add(uploadConfig.collection());
-                    if (uploadConfig.offloadEnabled()) {
-                        uploadParams.add("--offload");
-                        uploadParams.add(uploadConfig.offloadServer());
-                    }
-                    uploadCommand = new RunCommand(null, uploadParams.toArray(new String[0]), directory, jobWatcher);
-                }
-                if (type == JobType.DOKUWIKIDUMPER) {
-                    uploadCommand = new RunCommand("dokuWikiUploader " + file.getName() + " --collection " + WikiBot.getConfig().getUploadConfig().collection(), null, directory, jobWatcher);
-                }
-                if (type == JobType.PUKIWIKIDUMPER) {
-                    uploadCommand = new RunCommand("pukiWikiUploader " + file.getName() + " --collection " + WikiBot.getConfig().getUploadConfig().collection(), null, directory, jobWatcher);
-                }
-                break;
-            }
-        }
-        if (uploadCommand == null) {
-            return 999;
-        }
-        return CommonTasks.runAndVerify(uploadCommand, handler, job.getRunningTask());
     }
 
     @Nullable
