@@ -114,7 +114,7 @@ public class WikiTeam3Job extends Job {
         runningTask = "DownloadMediaWiki";
         log("Starting Task DownloadMediaWiki");
 
-        downloadCommand = new RunCommand(null, parsedArgs.toArray(new String[0]), runDir, message -> {
+        downloadCommand = new RunCommand(parsedArgs.toArray(new String[0]), runDir, message -> {
             log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
@@ -155,7 +155,7 @@ public class WikiTeam3Job extends Job {
             uploadParams.add(uploadConfig.offloadServer());
         }
 
-        uploadCommand = new RunCommand(null, uploadParams.toArray(new String[0]), runDir, message -> {
+        uploadCommand = new RunCommand(uploadParams.toArray(new String[0]), runDir, message -> {
             log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
@@ -169,7 +169,7 @@ public class WikiTeam3Job extends Job {
         runningTask = "ItemDiscovery";
         log("Starting item discovery for the wiki...");
         String bestWikiURL = args.getApi() != null ? args.getApi() : this.getMeta().getTargetUrl().orElseThrow();
-        itemCommand = new RunCommand(null, new String[]{
+        itemCommand = new RunCommand(new String[]{
                 WikiBot.getConfig().scriptConfig.pythonPath(), new File(WikiBot.getScriptDirectory(), "mediawiki-item-discovery.py").getAbsolutePath(),
                 bestWikiURL,
                 "--delay", args.getDelay() != null ? args.getDelay().toString() : "1.5"

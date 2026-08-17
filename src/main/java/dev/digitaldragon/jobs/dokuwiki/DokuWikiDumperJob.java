@@ -105,7 +105,7 @@ public class DokuWikiDumperJob extends Job {
         runningTask = "Dump";
         log("Starting dump task");
 
-        downloadCommand = new RunCommand(null, dumpArgs.toArray(new String[0]), runDir, message -> {
+        downloadCommand = new RunCommand(dumpArgs.toArray(new String[0]), runDir, message -> {
             log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 
@@ -130,7 +130,7 @@ public class DokuWikiDumperJob extends Job {
             return;
         }
         String[] uploadParams = new String[] {"dokuWikiUploader", dumpDir.getName(), "--collection", WikiBot.getConfig().getUploadConfig().collection()};
-        uploadCommand = new RunCommand(null, uploadParams, runDir, message -> {
+        uploadCommand = new RunCommand(uploadParams, runDir, message -> {
             log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
 

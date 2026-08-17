@@ -134,7 +134,7 @@ public class ReuploadJob extends Job {
             return;
         }
 
-        uploadCommand = new RunCommand(null, uploadParams, dumpDir.getParentFile(), message -> {
+        uploadCommand = new RunCommand(uploadParams, dumpDir.getParentFile(), message -> {
             this.log(message);
             CommonTasks.getArchiveUrl(message).ifPresent(this::setArchiveUrl);
         });
