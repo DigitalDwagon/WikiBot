@@ -4,15 +4,10 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobCompletedEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobRunningEvent;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,19 +22,12 @@ import java.util.Optional;
 @Getter
 public class DokuWikiDumperJob extends Job {
     private final String id;
-    @Setter
-    private JobStatus status = JobStatus.QUEUED;
+
     private String runningTask = null;
-    private Instant startTime = null;
     private final File directory;
     private transient RunCommand downloadCommand = null;
     private transient RunCommand uploadCommand = null;
     private String explanation;
-    @Setter
-    private String archiveUrl = null;
-    @Setter
-    private String logsUrl = null;
-    private int failedTaskCode;
     private DokuWikiDumperArgs args;
     private JobMeta meta;
 
@@ -62,27 +50,8 @@ public class DokuWikiDumperJob extends Job {
         );
     }
 
-    private void failure(int code) {
-        logsUrl = CommonTasks.uploadLogs(this);
-        status = JobStatus.FAILED;
-        failedTaskCode = code;
-        if (runningTask.equals("AbortTask")) {
-            status = JobStatus.ABORTED;
-            WikiBot.getBus().post(new JobAbortEvent(this));
-        } else {
-            WikiBot.getBus().post(new JobFailureEvent(this));
-        }
-    }
-
-    public void run() {
-        if (status == JobStatus.ABORTED) return;
-
-
+    protected JobResult execute() {
         WikiBot.getLogFiles().setLogFile(this, new File(directory, "log.txt"));
-        startTime = Instant.now();
-        status = JobStatus.RUNNING;
-        WikiBot.getBus().post(new JobRunningEvent(this));
-        log("wikibot v" + WikiBot.getVersion() + " job " + id);
 
         List<String> dumpArgs = args.get();
         File runDir = directory;
@@ -91,8 +60,7 @@ public class DokuWikiDumperJob extends Job {
 
             if (resumeDir == null) {
                 log("Error (bot): Unknown job " + args.getResume());
-                failure(1);
-                return;
+                return new JobResult(false, 1);
             }
 
             runDir = resumeDir.getParentFile();
@@ -107,15 +75,13 @@ public class DokuWikiDumperJob extends Job {
 
         downloadCommand = new RunCommand(dumpArgs.toArray(new String[0]), runDir, message -> {
             log(message);
-            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
-
+            CommonTasks.getArchiveUrl(message).ifPresent(this::setArchiveUrl);
         });
 
         downloadCommand.run();
         int downloadExitCode = downloadCommand.waitFor();
         if (downloadExitCode != 0) {
-            failure(downloadExitCode);
-            return;
+            return new JobResult(false, downloadExitCode);
         }
 
         log("Finished dump task");
@@ -126,53 +92,42 @@ public class DokuWikiDumperJob extends Job {
         File dumpDir = CommonTasks.findDumpDir(runDir);
         if (dumpDir == null) {
             log("Failed to find the dump directory, aborting...");
-            failure(999);
-            return;
+            return new JobResult(false, 999);
         }
         String[] uploadParams = new String[] {"dokuWikiUploader", dumpDir.getName(), "--collection", WikiBot.getConfig().getUploadConfig().collection()};
         uploadCommand = new RunCommand(uploadParams, runDir, message -> {
             log(message);
-            CommonTasks.getArchiveUrl(message).ifPresent(s -> this.archiveUrl = s);
-
+            CommonTasks.getArchiveUrl(message).ifPresent(this::setArchiveUrl);
         });
 
         uploadCommand.run();
         if (uploadCommand.waitFor() != 0) {
-            failure(uploadCommand.waitFor());
-            return;
+            return new JobResult(false, uploadCommand.waitFor());
         }
 
         log("Finished task upload");
 
-        logsUrl = CommonTasks.uploadLogs(this);
-
-        status = JobStatus.COMPLETED;
         runningTask = null;
-        WikiBot.getBus().post(new JobCompletedEvent(this));
+        return new JobResult(true, 0);
     }
 
 
     public boolean abort() {
-        if (status == JobStatus.QUEUED) {
-            status = JobStatus.ABORTED;
+        if (this.getStatus() == JobStatus.QUEUED) {
+            this.setStatus(JobStatus.ABORTED);
             WikiBot.getBus().post(new JobAbortEvent(this));
             return true;
         }
         if (runningTask.equals("Dump")) {
+            this.setStatus(JobStatus.ABORTED);
             log("----- Bot: Aborting task " + runningTask + " -----");
             downloadCommand.getProcess().descendants().forEach(ProcessHandle::destroyForcibly);
             downloadCommand.getProcess().destroyForcibly();
-            status = JobStatus.ABORTED;
             log("----- Bot: Aborted task " + runningTask + " -----");
             runningTask = "AbortTask";
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return status == JobStatus.RUNNING;
     }
 
 

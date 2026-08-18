@@ -1,9 +1,6 @@
 package dev.digitaldragon.db;
 
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobMeta;
-import dev.digitaldragon.jobs.JobStatus;
-import dev.digitaldragon.jobs.JobType;
+import dev.digitaldragon.jobs.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,7 +30,12 @@ public class LoadedJob extends Job {
     private int failedTaskCode = 0;
     private JobMeta meta = new JobMeta("undefined", JobMeta.JobPlatform.UNKNOWN);
 
+    @Override
     public void run() {
+        throw new UnsupportedOperationException("Loaded jobs cannot be run.");
+    }
+
+    protected JobResult execute() {
         throw new UnsupportedOperationException("Loaded jobs cannot be run.");
     }
 

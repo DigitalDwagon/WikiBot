@@ -2,15 +2,10 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobCompletedEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobRunningEvent;
 import dev.digitaldragon.util.Config;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
-import java.time.Instant;
 import java.util.List;
 
 /**
@@ -19,18 +14,10 @@ import java.util.List;
 @Getter
 public class ReuploadJob extends Job {
     private final String id;
-    @Setter
-    private JobStatus status = null;
+
     private String runningTask = null;
-    private Instant startTime = null;
     private File directory = null;
     private transient RunCommand uploadCommand = null;
-    private final String explanation;
-    @Setter
-    private String archiveUrl = null;
-    @Setter
-    private String logsUrl = null;
-    private int failedTaskCode;
     private final String targetId;
     private boolean aborted = false;
     private JobMeta meta;
@@ -43,40 +30,18 @@ public class ReuploadJob extends Job {
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
         this.targetId = targetId;
-        this.explanation = "Reupload of " + targetId;
-        this.status = JobStatus.QUEUED;
     }
 
-    private void failure(int code) {
-        logsUrl = CommonTasks.uploadLogs(this);
-        status = JobStatus.FAILED;
-        failedTaskCode = code;
-        if (runningTask.equals("AbortTask")) {
-            status = JobStatus.ABORTED;
-            WikiBot.getBus().post(new JobAbortEvent(this));
-        } else {
-            WikiBot.getBus().post(new JobFailureEvent(this));
-        }
-    }
-
-    public void run() {
-        if (aborted)
-            return;
-
-        startTime = Instant.now();
-        status = JobStatus.RUNNING;
-        WikiBot.getBus().post(new JobRunningEvent(this));
+    protected JobResult execute() {
         runningTask = "StartUpload";
 
-        log("wikibot v" + WikiBot.getVersion() + " job " + id);
         log("looking for dump to reupload for job ID " + targetId);
 
 
         File dumpDir = CommonTasks.findDumpDir(targetId);
         if (dumpDir == null || dumpDir.listFiles() == null) {
             this.log("Fatal: Couldn't find the dump to upload! It probably doesn't exist, or you entered an incorrect Job ID.");
-            failure(999);
-            return;
+            return new JobResult(false, 999);
         }
 
         JobType jobType = null;
@@ -100,8 +65,7 @@ public class ReuploadJob extends Job {
 
         if (jobType == null) {
             log("Could not determine job type. The dump may be incomplete or have already been uploaded. Maybe try --resume instead?");
-            failure(999);
-            return;
+            return new JobResult(false, 999);
         }
 
         String[] uploadParams = null;
@@ -130,8 +94,7 @@ public class ReuploadJob extends Job {
         if (uploadParams == null) {
             // This should be unreachable
             log("Found job of type " + jobType.name() + " but failed to determine the upload parameters! This looks like a bug, please report this to a bot admin!");
-            failure(999);
-            return;
+            return new JobResult(false, 999);
         }
 
         uploadCommand = new RunCommand(uploadParams, dumpDir.getParentFile(), message -> {
@@ -144,26 +107,19 @@ public class ReuploadJob extends Job {
         uploadCommand.run();
         int exitCode = uploadCommand.waitFor();
         if (exitCode != 0) {
-            failure(exitCode);
-            return;
+            return new JobResult(false, exitCode);
         }
 
-        logsUrl = CommonTasks.uploadLogs(this);
-        status = JobStatus.COMPLETED;
         runningTask = null;
-        WikiBot.getBus().post(new JobCompletedEvent(this));
+        return new JobResult(true, 0);
     }
 
     public boolean abort() {
         if (isRunning())
             return false;
-        aborted = true;
+        this.setStatus(JobStatus.ABORTED);
         WikiBot.getBus().post(new JobAbortEvent(this));
         return true;
-    }
-
-    public boolean isRunning() {
-        return status == JobStatus.RUNNING;
     }
 
     public JobType getType() {
