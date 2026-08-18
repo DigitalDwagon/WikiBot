@@ -21,8 +21,6 @@ import java.util.Optional;
  */
 @Getter
 public class PukiWikiDumperJob extends Job {
-    private final String id;
-
     private String runningTask = null;
     private final File directory;
     private transient RunCommand downloadCommand = null;
@@ -30,7 +28,7 @@ public class PukiWikiDumperJob extends Job {
     private PukiWikiDumperArgs args;
     private JobMeta meta;
 
-    public PukiWikiDumperJob(PukiWikiDumperArgs args, JobMeta meta, String id) throws JobLaunchException {
+    public PukiWikiDumperJob(PukiWikiDumperArgs args, JobMeta meta) throws JobLaunchException {
         meta.setTargetUrl(Optional.ofNullable(args.getUrl()).orElseThrow(() -> new JobLaunchException("You need to specify the wiki URL.")));
 
         this.args = args;
@@ -41,11 +39,10 @@ public class PukiWikiDumperJob extends Job {
         this.directory.mkdirs();
     }
 
-    public PukiWikiDumperJob(String unparsedArgs, JobMeta meta, String id) throws JobLaunchException, ParseException {
+    public PukiWikiDumperJob(String unparsedArgs, JobMeta meta) throws JobLaunchException, ParseException {
         this(
                 new PukiWikiDumperArgs(Command.shellSplit(unparsedArgs).toArray(new String[0]), meta),
-                meta,
-                id
+                meta
         );
     }
 

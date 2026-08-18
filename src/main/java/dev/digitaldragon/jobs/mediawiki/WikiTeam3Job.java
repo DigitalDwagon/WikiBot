@@ -23,8 +23,6 @@ import java.util.Optional;
  */
 @Getter
 public class WikiTeam3Job extends Job {
-    private String id;
-
     private String runningTask = null;
     private File directory;
 
@@ -35,7 +33,7 @@ public class WikiTeam3Job extends Job {
     private WikiTeam3Args args;
     private JobMeta meta;
 
-    public WikiTeam3Job(WikiTeam3Args args, JobMeta meta, String id) throws JobLaunchException {
+    public WikiTeam3Job(WikiTeam3Args args, JobMeta meta) throws JobLaunchException {
         String targetUrl = Optional.ofNullable(args.getUrl())
                 .or(() -> Optional.ofNullable(args.getApi()))
                 .or(() -> Optional.ofNullable(args.getIndex()))
@@ -45,17 +43,15 @@ public class WikiTeam3Job extends Job {
 
         this.args = args;
         this.meta = meta;
-        this.id = id;
 
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
     }
 
-    public WikiTeam3Job(String unparsedArgs, JobMeta meta, String id) throws JobLaunchException, ParseException {
+    public WikiTeam3Job(String unparsedArgs, JobMeta meta) throws JobLaunchException, ParseException {
         this(
                 new WikiTeam3Args(Command.shellSplit(unparsedArgs).toArray(new String[0]), meta),
-                meta,
-                id
+                meta
         );
     }
 

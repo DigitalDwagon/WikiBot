@@ -14,7 +14,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
-import java.util.UUID;
 
 public class IRCBulkCommand {
     @Handler
@@ -80,7 +79,7 @@ public class IRCBulkCommand {
                             switch (command) {
                                 case "!mw" ->  {
                                     try {
-                                        JobManager.submit(new WikiTeam3Job(line, meta, UUID.randomUUID().toString()));
+                                        JobManager.submit(new WikiTeam3Job(line, meta));
                                     } catch (JobLaunchException e) {
                                         result = e.getMessage();
                                     } catch (ParseException e) {
@@ -90,7 +89,7 @@ public class IRCBulkCommand {
                                 }
                                 case "!dw" -> {
                                     try {
-                                        JobManager.submit(new DokuWikiDumperJob(line, meta, UUID.randomUUID().toString()));
+                                        JobManager.submit(new DokuWikiDumperJob(line, meta));
                                     } catch (JobLaunchException e) {
                                         result = e.getMessage();
                                     } catch (ParseException e) {
@@ -100,7 +99,7 @@ public class IRCBulkCommand {
                                 }
                                 case "!pw" -> {
                                     try {
-                                        JobManager.submit(new PukiWikiDumperJob(line, meta, UUID.randomUUID().toString()));
+                                        JobManager.submit(new PukiWikiDumperJob(line, meta));
                                     } catch (JobLaunchException e) {
                                         result = e.getMessage();
                                     } catch (ParseException e) {

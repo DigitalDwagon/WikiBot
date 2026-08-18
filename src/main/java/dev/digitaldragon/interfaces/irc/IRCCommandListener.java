@@ -210,9 +210,9 @@ public class IRCCommandListener {
 
                 Job job = null;
                 switch (command) {
-                    case "mediawikisingle", "mw" -> job = new WikiTeam3Job(message, meta, UUID.randomUUID().toString());
-                    case "dokusingle", "dw" -> job = new DokuWikiDumperJob(message, meta, UUID.randomUUID().toString());
-                    case "pukisingle", "pw" -> job = new PukiWikiDumperJob(message, meta, UUID.randomUUID().toString());
+                    case "mediawikisingle", "mw" -> job = new WikiTeam3Job(message, meta);
+                    case "dokusingle", "dw" -> job = new DokuWikiDumperJob(message, meta);
+                    case "pukisingle", "pw" -> job = new PukiWikiDumperJob(message, meta);
                 }
                 assert job != null;
 

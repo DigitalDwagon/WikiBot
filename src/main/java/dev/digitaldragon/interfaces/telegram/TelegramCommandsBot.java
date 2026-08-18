@@ -71,7 +71,7 @@ public class TelegramCommandsBot extends AbilityBot {
                     System.out.println(arrayToString(ctx.arguments()));
                     JobMeta meta = new JobMeta(ctx.user().getUserName(), JobMeta.JobPlatform.TELEGRAM);
                     try {
-                        WikiTeam3Job job = new WikiTeam3Job(arrayToString(ctx.arguments()), meta, UUID.randomUUID().toString());
+                        WikiTeam3Job job = new WikiTeam3Job(arrayToString(ctx.arguments()), meta);
                         JobManager.submit(job);
                     } catch (JobLaunchException e) {
                         message = e.getMessage();
@@ -98,7 +98,7 @@ public class TelegramCommandsBot extends AbilityBot {
                     System.out.println(arrayToString(ctx.arguments()));
                     JobMeta meta = new JobMeta(ctx.user().getUserName(), JobMeta.JobPlatform.TELEGRAM);
                     try {
-                        DokuWikiDumperJob job = new DokuWikiDumperJob(arrayToString(ctx.arguments()), meta, UUID.randomUUID().toString());
+                        DokuWikiDumperJob job = new DokuWikiDumperJob(arrayToString(ctx.arguments()), meta);
                         JobManager.submit(job);
                     } catch (JobLaunchException e) {
                         message = e.getMessage();

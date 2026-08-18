@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The Job interface represents a job that can be executed.
@@ -23,6 +24,9 @@ import java.util.List;
  * This interface also provides methods for managing the job's properties and metadata.
  */
 public abstract class Job {
+    @Getter
+    @Setter
+    protected String id = UUID.randomUUID().toString();
     private static final Logger logger = LoggerFactory.getLogger(Job.class);
     /**
      * The time that the job was started, or null if it has not yet started.
@@ -64,12 +68,6 @@ public abstract class Job {
      * @return true if the job was successfully aborted, false otherwise.
      */
     public abstract boolean abort();
-    /**
-     * Returns the ID of the job.
-     *
-     * @return the ID of the job as a string.
-     */
-    public abstract String getId();
     /**
      * Returns the type of the job.
      *

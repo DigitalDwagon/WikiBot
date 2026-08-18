@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DiscordCommandListener extends ListenerAdapter {
     private static final String[] PERMITTED_ROLES = {
@@ -103,9 +102,9 @@ public class DiscordCommandListener extends ListenerAdapter {
 
             Job job = null;
             switch (event.getName()) {
-                case "mediawiki_dump" -> job = new WikiTeam3Job(new WikiTeam3Args(args, meta), meta, UUID.randomUUID().toString());
-                case "dokuwiki_dump" -> job = new DokuWikiDumperJob(new DokuWikiDumperArgs(args, meta), meta, UUID.randomUUID().toString());
-                case "pukiwiki_archive" -> job = new PukiWikiDumperJob(new PukiWikiDumperArgs(args, meta), meta, UUID.randomUUID().toString());
+                case "mediawiki_dump" -> job = new WikiTeam3Job(new WikiTeam3Args(args, meta), meta);
+                case "dokuwiki_dump" -> job = new DokuWikiDumperJob(new DokuWikiDumperArgs(args, meta), meta);
+                case "pukiwiki_archive" -> job = new PukiWikiDumperJob(new PukiWikiDumperArgs(args, meta), meta);
             }
             assert job != null;
             JobManager.submit(job);

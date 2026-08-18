@@ -21,32 +21,27 @@ import java.util.Optional;
  */
 @Getter
 public class DokuWikiDumperJob extends Job {
-    private final String id;
-
     private String runningTask = null;
     private final File directory;
     private transient RunCommand downloadCommand = null;
     private transient RunCommand uploadCommand = null;
-    private String explanation;
     private DokuWikiDumperArgs args;
     private JobMeta meta;
 
-    public DokuWikiDumperJob(DokuWikiDumperArgs args, JobMeta meta, String id) {
+    public DokuWikiDumperJob(DokuWikiDumperArgs args, JobMeta meta) {
         meta.setTargetUrl(Optional.ofNullable(args.getUrl()).orElseThrow(() -> new JobLaunchException("You need to specify the wiki URL.")));
 
         this.args = args;
         this.meta = meta;
-        this.id = id;
 
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
     }
 
-    public DokuWikiDumperJob(String unparsedArgs, JobMeta meta, String id) throws JobLaunchException, ParseException {
+    public DokuWikiDumperJob(String unparsedArgs, JobMeta meta) throws JobLaunchException, ParseException {
         this(
                 new DokuWikiDumperArgs(Command.shellSplit(unparsedArgs).toArray(new String[0]), meta),
-                meta,
-                id
+                meta
         );
     }
 

@@ -4,11 +4,7 @@ import com.google.gson.Gson;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
-import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobRunningEvent;
-import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import dev.digitaldragon.jobs.events.*;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
@@ -220,11 +216,9 @@ public class SqliteManager {
                             if (job.getMeta().getSilentMode() == null) {
                                 job.getMeta().setSilentMode(JobMeta.SilentMode.END);
                             }
-                            JobManager.submit(new WikiTeam3Job(
-                                    args,
-                                    job.getMeta(),
-                                    job.getId()
-                            ));
+                            Job newJob = new WikiTeam3Job(args, job.getMeta());
+                            newJob.setId(job.getId());
+                            JobManager.submit(newJob);
 
                         } else if (job.getType() == JobType.PUKIWIKIDUMPER) {
                             //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
@@ -236,7 +230,9 @@ public class SqliteManager {
                                 job.getMeta().setSilentMode(JobMeta.SilentMode.END);
                             }
                             setFailed(job.getId());
-                            JobManager.submit(new PukiWikiDumperJob(args, job.getMeta(), job.getId()));
+                            Job newJob = new PukiWikiDumperJob(args, job.getMeta());
+                            newJob.setId(job.getId());
+                            JobManager.submit(newJob);
                         } else if (job.getType() == JobType.DOKUWIKIDUMPER) {
                             //IRCClient.sendMessage(String.format("Resuming job %s that was running when the bot was last shut down", job.getId()));
                             DokuWikiDumperArgs args = (DokuWikiDumperArgs) getArgs(job.getId());
@@ -247,7 +243,9 @@ public class SqliteManager {
                                 job.getMeta().setSilentMode(JobMeta.SilentMode.END);
                             }
                             setFailed(job.getId());
-                            JobManager.submit(new DokuWikiDumperJob(args, job.getMeta(), job.getId()));
+                            Job newJob = new DokuWikiDumperJob(args, job.getMeta());
+                            newJob.setId(job.getId());
+                            JobManager.submit(newJob);
                         } else {
                             //IRCClient.sendMessage("DigitalDragons: " + job.getId() + " died.");
                         }
