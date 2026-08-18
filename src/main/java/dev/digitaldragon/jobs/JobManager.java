@@ -5,6 +5,8 @@ import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.queues.Queue;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class JobManager {
+    private static final Logger logger = LoggerFactory.getLogger(JobManager.class);
+
     private static final int MAX_CONCURRENCY = 15;
     private static final ExecutorService executorService = Executors.newFixedThreadPool(MAX_CONCURRENCY);
     private static final Map<String, Job> jobs = new HashMap<>();
@@ -113,7 +117,7 @@ public class JobManager {
             try {
                 job.run();
             } catch (Exception exception) {
-                exception.printStackTrace();
+                logger.error("Error: Job exception bubbled up to the executing thread in JobManager!", exception);
                 job.setStatus(JobStatus.FAILED);
                 WikiBot.getBus().post(new JobFailureEvent(job));
             } finally {
