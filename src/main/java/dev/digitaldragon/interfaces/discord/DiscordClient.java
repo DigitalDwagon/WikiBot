@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class DiscordClient {
     @Getter
@@ -181,7 +181,7 @@ public class DiscordClient {
         }
 
         if (job.getArchiveUrl() != null) {
-            buttons.add(Button.secondary("archive_" + job.getId(), "Archive")
+            buttons.add(Button.link("archive_" + job.getId(), "Archive")
                     .withEmoji(Emoji.fromUnicode("📁"))
                     .withUrl(job.getArchiveUrl()));
         }
