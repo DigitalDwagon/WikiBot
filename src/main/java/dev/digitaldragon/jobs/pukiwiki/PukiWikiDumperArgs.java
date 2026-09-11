@@ -29,8 +29,6 @@ public class PukiWikiDumperArgs {
     private boolean currentOnly;
     @Parameter(names = {"--threads"})
     private int threads;
-    @Parameter(names = {"--i-love-retro"})
-    private boolean iLoveRetro;
     @Parameter(names = {"--insecure"})
     private boolean insecure;
     @Parameter(names = {"--ignore-action-disabled-edit"})
@@ -74,7 +72,6 @@ public class PukiWikiDumperArgs {
         args.add("pukiWikiDumper");
         parseBooleanOption(args, currentOnly, "--current-only");
         parseIntOption(args, threads, "--threads");
-        parseBooleanOption(args, iLoveRetro, "--i-love-retro");
         parseBooleanOption(args, insecure, "--insecure");
         parseBooleanOption(args, ignoreActionDisabledEdit, "--ignore-action-disabled-edit");
         parseBooleanOption(args, trimPhpWarnings, "--trim-php-warnings");
@@ -90,6 +87,7 @@ public class PukiWikiDumperArgs {
         parseBooleanOption(args, force, "--force");
         parseUrlOption(args, url, "");
 
+        args.add("--i-love-retro"); // skip the version check
         parseStringOption(args, userAgent, "--user-agent");
 
 

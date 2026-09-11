@@ -96,6 +96,7 @@ public class DokuWikiDumperArgs {
         parseBooleanOption(args, html, "--html");
         parseBooleanOption(args, pdf, "--pdf");
 
+        args.add("--i-love-retro"); // skip the version check
         parseStringOption(args, userAgent, "--user-agent");
 
         return args;
