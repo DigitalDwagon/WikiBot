@@ -45,10 +45,12 @@ public class PukiWikiDumperArgs {
     private int hardRetry;
     @Parameter(names = {"--verbose"})
     private boolean verbose;
-    @Parameter(names = {"--auto"})
-    private boolean auto;
     @Parameter(names = {"--force"})
     private boolean force;
+    @Parameter(names = {"--content"})
+    private boolean content;
+    @Parameter(names = {"--media"})
+    private boolean media;
     @Parameter(names = {"--user-agent", "-u"}, converter = UserAgentParser.class)
     private String userAgent = WikiBot.getConfig().getPukiWikiDumperConfig().userAgent();
 
@@ -76,13 +78,15 @@ public class PukiWikiDumperArgs {
         parseBooleanOption(args, insecure, "--insecure");
         parseBooleanOption(args, ignoreActionDisabledEdit, "--ignore-action-disabled-edit");
         parseBooleanOption(args, trimPhpWarnings, "--trim-php-warnings");
+        parseBooleanOption(args, content, "--content");
+        parseBooleanOption(args, media, "--media");
+
         parseDoubleOption(args, delay, "--delay");
         parseIntOption(args, retry, "--retry");
         parseIntOption(args, hardRetry, "--hard-retry");
         //parseUrlOption(args, parser, "--parser");
         parseBooleanOption(args, verbose, "--verbose");
         //parseUrlOption(args, cookies, "--cookies");
-        parseBooleanOption(args, auto, "--auto");
         parseBooleanOption(args, force, "--force");
         parseUrlOption(args, url, "");
 
