@@ -42,7 +42,7 @@ public class WikiTeam3Args {
     private boolean bypassCdnImageCompression;
     @Parameter(names = {"--disable-image-verify", "-V"})
     private boolean disableImageVerify;
-    @Parameter(names = {"--curonly", "-n"})
+    @Parameter(names = {"--current-only", "-n"})
     private boolean currentOnly;
     @Parameter(names = {"--insecure", "-k"})
     private boolean insecure;
