@@ -26,9 +26,9 @@ public class DokuWikiDumperArgs {
     private String url;
     @Parameter(names = {"--auto"})
     private boolean auto;
-    @Parameter(names = {"--retry"})
+    @Parameter(names = {"--retries"})
     private int retry;
-    @Parameter(names = {"--hard-retry"})
+    @Parameter(names = {"--hard-retries"})
     private int hardRetry;
     @Parameter(names = {"--ignore-disposition-header-missing"})
     private boolean ignoreDispositionHeaderMissing;

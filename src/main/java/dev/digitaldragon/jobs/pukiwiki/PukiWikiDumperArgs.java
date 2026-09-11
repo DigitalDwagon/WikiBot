@@ -39,9 +39,9 @@ public class PukiWikiDumperArgs {
     private boolean trimPhpWarnings;
     @Parameter(names = {"--delay"})
     private Double delay;
-    @Parameter(names = {"--retry"})
+    @Parameter(names = {"--retries"})
     private int retry;
-    @Parameter(names = {"--hard-retry"})
+    @Parameter(names = {"--hard-retries"})
     private int hardRetry;
     @Parameter(names = {"--verbose"})
     private boolean verbose;
