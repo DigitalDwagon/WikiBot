@@ -120,6 +120,7 @@ public class IRCCommandListener {
             List<String> args = Command.shellSplit(message);
             if (args.size() != 2) {
                 channel.sendMessage(nick + ": Invalid arguments! Usage: !movejob <job id> <queue>");
+                return;
             }
             String jobId = args.get(0);
             String queue = args.get(1);
