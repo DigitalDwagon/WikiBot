@@ -13,8 +13,6 @@ import java.util.List;
  */
 @Getter
 public class ReuploadJob extends Job {
-    private final String id;
-
     private String runningTask = null;
     private File directory = null;
     private transient RunCommand uploadCommand = null;

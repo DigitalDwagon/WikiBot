@@ -63,6 +63,7 @@ wikiteambot
 warcprox/*
 wikiteambot.wal.0
 config.json
+api-tokens.json
 warcprox
 jobs.db
 

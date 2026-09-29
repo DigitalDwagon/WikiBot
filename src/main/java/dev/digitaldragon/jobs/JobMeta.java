@@ -25,6 +25,8 @@ public class JobMeta {
     @Nullable
     private String discordUserId = null;
 
+    public JobMeta() {}
+
     public JobMeta(String userName, JobPlatform platform) {
         this.userName = userName;
         this.platform = platform;

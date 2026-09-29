@@ -1,25 +1,36 @@
 package dev.digitaldragon.interfaces.api;
 
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.interfaces.api.messages.SystemMessage;
-import dev.digitaldragon.jobs.Job;
-import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.jobs.*;
+import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperArgs;
+import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
+import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
+import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
+import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Header;
-import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 public class JavalinAPI {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavalinAPI.class);
+    private static final Path API_TOKENS_FILE = Path.of("api-tokens.json");
+    private static List<String> allowedTokens = new ArrayList<>();
+
     public static Javalin app;
     public static void register() {
         app = Javalin.create().start(WikiBot.getConfig().getDashboardConfig().port());
@@ -30,13 +41,20 @@ public class JavalinAPI {
         app.ws("/api/jobevents", updatesWebsocket);
 
         enableCORS("*", "*", "*");
-        postValidation(); //validate all POST requests
+        requireApiToken();
+
+        try {
+            allowedTokens = loadApiTokens();
+        } catch (IOException | JsonParseException | IllegalStateException  e) {
+            LOGGER.error("Failed to load API tokens from {}", API_TOKENS_FILE, e);
+        }
 
         Dashboard.register();
         //register routes
         getAllJobs(); //GET /api/jobs
+        postJob(); //POST /api/jobs
         getJob(); //GET /api/jobs/:id
-        //createJob(); //POST /api/jobs
+        postReloadTokens(); //POST /api/reload-tokens
 
         WikiBot.getBus().register(updatesWebsocket);
         WikiBot.getBus().register(logWebsocket);
@@ -148,51 +166,139 @@ public class JavalinAPI {
         });
     }
 
-    private static void postValidation() {
+    private static void requireApiToken() {
         app.before((ctx) -> {
-            HttpServletRequest req = ctx.req();
-            if (!req.getMethod().equals("POST")) {
-                return;
-            }
-            // require a set username
-            if (req.getHeader("X-Platform-User") == null) {
-                ctx.status(400);
-                ctx.result(error("You must set a username via the X-Platform-User header"));
+            if (!ctx.method().name().equals("POST")) {
                 return;
             }
 
-            //require a set platform name
-            String platform = req.getHeader("X-Platform");
-            if (platform == null) {
-                ctx.status(400);
-                ctx.result(error("You must specify your application via the X-Platform header"));
+            String token = bearerToken(ctx.header("Authorization"));
+            if (token == null) {
+                ctx.status(401).result(error("Missing or invalid Bearer token"));
+                ctx.skipRemainingHandlers();
                 return;
             }
 
-            /*String auth = req.getHeader("Authorization");
-            if (auth == null) {
-                ctx.status(400);
-                ctx.result(error("You must specify an API key via the Authorization header"));
-                return;
+            boolean authorized = false;
+            for (String allowedToken : allowedTokens) {
+                authorized |= constantTimeEquals(token, allowedToken);
             }
-            auth = auth.replaceFirst("Bearer ", "");
-            if (!auth.equals(EnvConfig.getConfigs().get("api_key_" + platform))) {
-                ctx.status(401);
-                ctx.result(error("Invalid API key"));
-                return;
-            }//*/
+            if (!authorized) {
+                ctx.status(401).result(error("Invalid Bearer token"));
+                ctx.skipRemainingHandlers();
+            }
+        });
+    }
 
+    private static String bearerToken(String authorization) {
+        if (authorization == null) {
+            return null;
+        }
 
-            //valid JSON is required
+        String[] parts = authorization.trim().split("\\s+", 2);
+        if (parts.length != 2 || !parts[0].equalsIgnoreCase("Bearer")
+                || parts[1].isBlank() || parts[1].chars().anyMatch(Character::isWhitespace)) {
+            return null;
+        }
+        return parts[1];
+    }
+
+    private static boolean constantTimeEquals(String first, String second) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] firstHash = digest.digest(first.getBytes(StandardCharsets.UTF_8));
+            byte[] secondHash = digest.digest(second.getBytes(StandardCharsets.UTF_8));
+            return MessageDigest.isEqual(firstHash, secondHash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is unavailable", e);
+        }
+    }
+
+    private static void postJob() {
+        app.post("/api/jobs", (ctx) -> {
+            JsonElement requestBody;
             try {
-                JsonParser.parseString(ctx.body());
+                requestBody = JsonParser.parseString(ctx.body());
             } catch (JsonParseException e) {
-                ctx.status(400);
-                ctx.result(error("Invalid JSON"));
+                ctx.status(400).result(error("Invalid JSON"));
                 return;
             }
 
+            if (!requestBody.isJsonObject()) {
+                ctx.status(400).result(error("Request body must be a JSON object"));
+                return;
+            }
 
+            JsonObject request = requestBody.getAsJsonObject();
+            JsonElement typeElement = request.get("type");
+            if (typeElement == null || !typeElement.isJsonPrimitive() || !typeElement.getAsJsonPrimitive().isString()) {
+                ctx.status(400).result(error("Missing or invalid \"type\""));
+                return;
+            }
+
+            JobType type;
+            try {
+                type = JobType.valueOf(typeElement.getAsString());
+            } catch (IllegalArgumentException e) {
+                ctx.status(400).result(error("Unknown job type: " + typeElement.getAsString()));
+                return;
+            }
+
+            JsonElement argsElement = request.get("args");
+            if (argsElement == null || !argsElement.isJsonObject()) {
+                ctx.status(400).result(error("\"args\" must be a JSON object"));
+                return;
+            }
+
+            JsonElement metaElement = request.get("meta");
+            if (metaElement == null || !metaElement.isJsonObject()) {
+                ctx.status(400).result(error("\"meta\" must be a JSON object"));
+                return;
+            }
+
+            JobMeta meta;
+            try {
+                meta = WikiBot.getGson().fromJson(metaElement, JobMeta.class);
+            } catch (JsonParseException e) {
+                ctx.status(400).result(error("Invalid \"meta\" object: " + e.getMessage()));
+                return;
+            }
+
+            if (meta == null || meta.getUserName() == null || meta.getUserName().isBlank()) {
+                ctx.status(400).result(error("\"meta.userName\" is required"));
+                return;
+            }
+            if (meta.getPlatform() == null) {
+                ctx.status(400).result(error("\"meta.platform\" is required and must be a valid JobPlatform"));
+                return;
+            }
+
+            Job job;
+            try {
+                job = switch (type) {
+                    case WIKITEAM3 -> new WikiTeam3Job(WikiBot.getGson().fromJson(argsElement, WikiTeam3Args.class), meta);
+                    case DOKUWIKIDUMPER -> new DokuWikiDumperJob(WikiBot.getGson().fromJson(argsElement, DokuWikiDumperArgs.class), meta);
+                    case PUKIWIKIDUMPER -> new PukiWikiDumperJob(WikiBot.getGson().fromJson(argsElement, PukiWikiDumperArgs.class), meta);
+                    case REUPLOAD -> {
+                        JsonElement targetId = argsElement.getAsJsonObject().get("targetId");
+                        if (targetId == null || !targetId.isJsonPrimitive() || !targetId.getAsJsonPrimitive().isString()) {
+                            throw new IllegalStateException("Invalid or missing \"targetId\" for Reupload job");
+                        }
+
+                        yield new ReuploadJob(meta, UUID.randomUUID().toString(), targetId.getAsString());
+                    }
+                    default -> throw new IllegalStateException("Unsupported job type: " + type);
+                };
+            } catch (JsonParseException e) {
+                ctx.status(400).result(error("Invalid \"args\" object: " + e.getMessage()));
+                return;
+            } catch (JobLaunchException | IllegalStateException e) {
+                ctx.status(400).result(error(e.getMessage()));
+                return;
+            }
+
+            JobManager.submit(job);
+            ctx.status(201).result(WikiBot.getGson().toJson(job));
         });
     }
 
@@ -223,6 +329,53 @@ public class JavalinAPI {
                 ctx.status(404).result(error("Job not found"));
             }
         });
+    }
+
+    private static void postReloadTokens() {
+        app.post("/api/reload-tokens", (ctx) -> {
+            List<String> allowedTokens;
+            try {
+                allowedTokens = loadApiTokens();
+            } catch (IOException | JsonParseException | IllegalStateException e) {
+                LOGGER.error("Failed to load API tokens from {}", API_TOKENS_FILE, e);
+                ctx.status(500).result(error("API authentication is not configured correctly"));
+                return;
+            }
+            JavalinAPI.allowedTokens = allowedTokens;
+            ctx.status(200).result(WikiBot.getGson().toJson(new APIResponse(true, "Successfully reloaded API tokens", null)));
+        });
+    }
+
+    private static List<String> loadApiTokens() throws IOException {
+        JsonElement document = JsonParser.parseString(Files.readString(API_TOKENS_FILE));
+        if (!document.isJsonObject()) {
+            throw new IllegalStateException("API token document must be a JSON object");
+        }
+
+        JsonElement tokensElement = document.getAsJsonObject().get("tokens");
+        if (tokensElement == null || !tokensElement.isJsonArray()) {
+            throw new IllegalStateException("API token document must contain a tokens array");
+        }
+
+        JsonArray tokensArray = tokensElement.getAsJsonArray();
+        List<String> tokens = new java.util.ArrayList<>(tokensArray.size());
+        for (JsonElement element : tokensArray) {
+            if (!element.isJsonObject()) {
+                throw new IllegalStateException("Each API token must be a JSON object");
+            }
+
+            JsonObject tokenObject = element.getAsJsonObject();
+            JsonElement tokenElement = tokenObject.get("token");
+            JsonElement commentElement = tokenObject.get("comment");
+            if (tokenElement == null || !tokenElement.isJsonPrimitive()
+                    || !tokenElement.getAsJsonPrimitive().isString() || tokenElement.getAsString().isBlank()
+                    || (commentElement != null && (!commentElement.isJsonPrimitive()
+                    || !commentElement.getAsJsonPrimitive().isString()))) {
+                throw new IllegalStateException("Each API token requires a non-empty token and optional string comment");
+            }
+            tokens.add(tokenElement.getAsString());
+        }
+        return tokens;
     }
 
     private static String error(String message) {
