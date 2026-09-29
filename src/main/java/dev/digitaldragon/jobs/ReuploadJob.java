@@ -22,14 +22,21 @@ public class ReuploadJob extends Job {
     private boolean aborted = false;
     private JobMeta meta;
 
-    public ReuploadJob(String userName, String id, String targetId) {
+    public ReuploadJob(JobMeta meta, String id, String targetId) {
         this.id = id;
-        meta = new JobMeta(userName, JobMeta.JobPlatform.IRC);
-        meta.setExplain("Reupload job " + targetId);
+        this.meta = meta;
+        this.targetId = targetId;
         // non-input params
         this.directory = new File("jobs/" + id + "/");
         this.directory.mkdirs();
-        this.targetId = targetId;
+
+        if (this.meta.getExplain().isEmpty()) {
+            meta.setExplain("Reupload job " + targetId);
+        }
+    }
+
+    public ReuploadJob(String userName, String id, String targetId) {
+        this(new JobMeta(userName, JobMeta.JobPlatform.IRC), id, targetId);
     }
 
     protected JobResult execute() {
