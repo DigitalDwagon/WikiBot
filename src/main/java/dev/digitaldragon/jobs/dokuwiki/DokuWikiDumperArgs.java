@@ -38,6 +38,8 @@ public class DokuWikiDumperArgs {
     private int threads;
     @Parameter(names = {"--ignore-action-disabled-edit"})
     private boolean ignoreActionDisabledEdit;
+    @Parameter(names = {"--ignore-errors"})
+    private boolean ignoreErrors;
     @Parameter(names = {"--insecure"})
     private boolean insecure;
     @Parameter(names = {"--current-only"})
@@ -87,6 +89,7 @@ public class DokuWikiDumperArgs {
 
         parseBooleanOption(args, ignoreActionDisabledEdit, "--ignore-action-disabled-edit");
         parseBooleanOption(args, ignoreDispositionHeaderMissing, "--ignore-disposition-header-missing");
+        parseBooleanOption(args, ignoreErrors, "--ignore-errors");
         parseBooleanOption(args, insecure, "--insecure");
         parseBooleanOption(args, force, "--force");
         parseBooleanOption(args, currentOnly, "--current-only");
@@ -99,6 +102,8 @@ public class DokuWikiDumperArgs {
             if (!args.contains("--content")) args.add("--content");
             if (!args.contains("--media")) args.add("--media");
             if (!args.contains("--html")) args.add("--html");
+            if (!args.contains("--ignore-action-disabled-edit")) args.add("--ignore-action-disabled-edit");
+
 
             if (threads == 0) {
                 args.add("--threads");
