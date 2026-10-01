@@ -25,6 +25,8 @@ public class PukiWikiDumperArgs {
     private String url;
     @Parameter(names = {"--resume"})
     private String resume;
+    @Parameter(names = {"--auto"})
+    private boolean auto;
     @Parameter(names = {"--current-only"})
     private boolean currentOnly;
     @Parameter(names = {"--threads"})
@@ -86,6 +88,17 @@ public class PukiWikiDumperArgs {
         //parseUrlOption(args, cookies, "--cookies");
         parseBooleanOption(args, force, "--force");
         parseUrlOption(args, url, "");
+
+        if (auto) {
+            if (!args.contains("--current-only")) args.add("--current-only"); // since history not yet supported :(
+            if (!args.contains("--content")) args.add("--content");
+            if (!args.contains("--media")) args.add("--media");
+
+            if (threads == 0) {
+                args.add("--threads");
+                args.add("2");
+            }
+        }
 
         args.add("--i-love-retro"); // skip the version check
         parseStringOption(args, userAgent, "--user-agent");

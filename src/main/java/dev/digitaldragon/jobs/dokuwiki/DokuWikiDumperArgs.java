@@ -85,7 +85,6 @@ public class DokuWikiDumperArgs {
 
         parseDoubleOption(args, delay, "--delay");
 
-        parseBooleanOption(args, auto, "--auto");
         parseBooleanOption(args, ignoreActionDisabledEdit, "--ignore-action-disabled-edit");
         parseBooleanOption(args, ignoreDispositionHeaderMissing, "--ignore-disposition-header-missing");
         parseBooleanOption(args, insecure, "--insecure");
@@ -95,6 +94,17 @@ public class DokuWikiDumperArgs {
         parseBooleanOption(args, media, "--media");
         parseBooleanOption(args, html, "--html");
         parseBooleanOption(args, pdf, "--pdf");
+
+        if (auto) {
+            if (!args.contains("--content")) args.add("--content");
+            if (!args.contains("--media")) args.add("--media");
+            if (!args.contains("--html")) args.add("--html");
+
+            if (threads == 0) {
+                args.add("--threads");
+                args.add("3");
+            }
+        }
 
         args.add("--i-love-retro"); // skip the version check
         parseStringOption(args, userAgent, "--user-agent");
