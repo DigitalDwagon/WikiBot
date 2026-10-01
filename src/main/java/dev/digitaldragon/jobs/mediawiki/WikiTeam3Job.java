@@ -5,12 +5,9 @@ import dev.digitaldragon.interfaces.generic.Command;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.events.JobAbortEvent;
 import dev.digitaldragon.util.Config;
-import dev.digitaldragon.util.TransferUploader;
 import lombok.Getter;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,55 +123,16 @@ public class WikiTeam3Job extends Job {
 
         log("Finished task UploadMediaWiki");
 
-        runningTask = "ItemDiscovery";
-        log("Starting item discovery for the wiki...");
-        String bestWikiURL = args.getApi() != null ? args.getApi() : this.getMeta().getTargetUrl().orElseThrow();
-        itemCommand = new RunCommand(new String[]{
-                WikiBot.getConfig().scriptConfig.pythonPath(), new File(WikiBot.getScriptDirectory(), "mediawiki-item-discovery.py").getAbsolutePath(),
-                bestWikiURL,
-                "--delay", args.getDelay() != null ? args.getDelay().toString() : "1.5"
-        }, directory, this::log);
-        itemCommand.run();
-
-        int itemExitCode = itemCommand.waitFor();
-        if (itemExitCode != 0) {
-            log("Item discovery failed for this wiki!");
-            log("This will be ignored.");
-        }
-
-        File itemsFile = new File(directory, "items.txt");
-        File itemsDir = new File("items");
-        itemsDir.mkdirs();
-        File itemsDestination = new File(itemsDir, id + ".txt");
-        if (itemsFile.exists()) {
-
-            try {
-                Files.move(itemsFile.toPath(), itemsDestination.toPath());
-
-            } catch (IOException e) {
-                log("Failed to move the itemsFile into the items directory.");
-            }
-        }
-
-        String transferUrl = "Sorry, error uploading items file :(";
-        try {
-            transferUrl = TransferUploader.compressAndUpload("https://" + uploadConfig.transferProvider() + "/wikibot_" + id + "_items.txt.zst", itemsDestination);
-        } catch (IOException e) {
-            log("Error uploading items file to transfer.archivete.am");
-            e.printStackTrace();
-        }
-
-        log("");
-        log("---");
-        log("Job done!");
-        log("Items URL: " + transferUrl);
-        log("archive.org Item URL: " + this.getArchiveUrl());
-
         if (uploadCommandExitCode != 0) {
             log("---");
             log("This job failed to upload, marking it failed...");
             return new JobResult(false, uploadCommandExitCode);
         }
+
+        log("");
+        log("---");
+        log("Job done!");
+        log("archive.org Item URL: " + this.getArchiveUrl());
 
         runningTask = "LinkExtract";
         CommonTasks.extractLinks(this);

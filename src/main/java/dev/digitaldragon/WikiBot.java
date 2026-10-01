@@ -51,8 +51,6 @@ public class WikiBot {
     public static String version = null;
 
     @Getter
-    private static File scriptDirectory = null;
-    @Getter
     private static QueueManager queueManager = null;
 
     public static void main (String[] args) {
@@ -73,12 +71,6 @@ public class WikiBot {
             config = gson.fromJson(json, Config.class);
         } catch (IOException e) {
             logger.error("Failed to load config", e);
-            System.exit(1);
-        }
-
-        scriptDirectory = new File("wikibot-scripts");
-        if (!scriptDirectory.exists()) {
-            logger.error("Failed to find script directory");
             System.exit(1);
         }
 
