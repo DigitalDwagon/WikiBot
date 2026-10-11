@@ -9,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -100,21 +97,21 @@ public class JobManager {
     public static void launchJobs() {
         if (pendingJobs.isEmpty() || runningJobs.size() >= MAX_CONCURRENCY) return;
 
-        Map<Integer, List<String>> jobsByPriority = new HashMap<>();
-        for (String jobId : pendingJobs) {
-            Integer priority = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue()).getPriority();
-            jobsByPriority.computeIfAbsent(priority, k -> new ArrayList<>()).add(jobId);
+        List<String> jobsToLaunch = new ArrayList<>(pendingJobs);
+        jobsToLaunch.sort(Comparator
+                .comparingInt((String jobId) -> WikiBot.getQueueManager()
+                        .getQueue(get(jobId).getMeta().getQueue()).getPriority())
+                .reversed()
+                .thenComparing(jobId -> get(jobId).getQueueTime(),
+                        Comparator.nullsLast(Comparator.naturalOrder())));
+
+        for (String jobId : jobsToLaunch) {
+            Queue queue = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue());
+            if (getRunningJobsInQueue(queue.getName()) >= queue.getConcurrency()) continue;
+            if (runningJobs.size() >= MAX_CONCURRENCY) break;
+
+            startJob(jobId);
         }
-
-        jobsByPriority.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEach(e -> e.getValue().forEach(jobId -> {
-                    Queue queue = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue());
-                    if (getRunningJobsInQueue(queue.getName()) >= queue.getConcurrency()) return;
-                    if (runningJobs.size() >= MAX_CONCURRENCY) return;
-
-                    startJob(jobId);
-                }));
     }
 
     private static void startJob(String jobId) {
