@@ -189,7 +189,24 @@
             margin-bottom: 10px;
         }
 
+        .job-display-controls {
+            display: flex;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-top: 8px;
+        }
 
+        .job-display-controls button {
+            background: #17132b;
+            color: #FFFFFF;
+            border: 1px solid #91a7ff;
+            border-radius: 4px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.8em;
+            margin-inline: 0;
+        }
 
     </style>
 </head>
@@ -228,6 +245,10 @@
                     </a>
                 </div>
             </details>
+            <div class="job-display-controls">
+                <button type="button" id="collapse-all-jobs">Collapse all</button>
+                <button type="button" id="uncollapse-all-jobs">Uncollapse all</button>
+            </div>
         </div>
     </div>
     <hr/>
@@ -274,6 +295,7 @@
 
     const CARD_ID_PREFIX = "job-card-";
     const CARD_LOG_PREFIX = "job-logs-";
+    let autoExpandNewJobs = false;
 
     const ALL_STATUS = [
         'QUEUED',
@@ -304,10 +326,10 @@
     }
 
     function scrollToBottom(logBox) {
+        ensureAutoScrollTracking(logBox);
+        logBox.autoScroll = true;
         requestAnimationFrame(() => {
-            if (logBox.autoScroll) {
-                logBox.scrollTop = logBox.scrollHeight;
-            }
+            logBox.scrollTop = logBox.scrollHeight;
         });
     }
 
@@ -363,6 +385,10 @@
         });
 
         document.querySelector('.jobs').appendChild(card);
+        card.querySelector("details").open = autoExpandNewJobs;
+        if (autoExpandNewJobs) {
+            scrollToBottom(logs);
+        }
         return card;
     }
 
@@ -519,6 +545,20 @@
         document.querySelectorAll('.job-card').forEach(element => element.remove());
 
         load_jobs();
+    });
+
+    document.getElementById('collapse-all-jobs').addEventListener('click', () => {
+        autoExpandNewJobs = false;
+        document.querySelectorAll('.job-card details').forEach(details => {
+            details.open = false;
+        });
+    });
+
+    document.getElementById('uncollapse-all-jobs').addEventListener('click', () => {
+        autoExpandNewJobs = true;
+        document.querySelectorAll('.job-card details').forEach(details => {
+            details.open = true;
+        });
     });
 
     function connectWebSocket(url, reconnect) {
