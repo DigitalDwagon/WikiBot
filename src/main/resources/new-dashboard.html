@@ -303,6 +303,14 @@
         });
     }
 
+    function scrollToBottom(logBox) {
+        requestAnimationFrame(() => {
+            if (logBox.autoScroll) {
+                logBox.scrollTop = logBox.scrollHeight;
+            }
+        });
+    }
+
     function sortJobCards(container, timestamp, descending = false) {
         const cards = [...container.children].filter(card => card.classList.contains('job-card'));
         cards.sort((left, right) => {
@@ -339,10 +347,20 @@
 
 
         const jump = card.querySelector(".jump-to-bottom");
-        jump.dataset.logId = job.id;
 
         const logs = card.querySelector(".job-logs");
         logs.id = CARD_LOG_PREFIX + job.id;
+        jump.dataset.logId = logs.id;
+        const buffer = logBuffers.get(job.id);
+        if (buffer?.length) {
+            ensureAutoScrollTracking(logs);
+            logs.textContent = buffer.join('\n');
+        }
+        card.querySelector("details").addEventListener("toggle", (event) => {
+            if (event.currentTarget.open) {
+                scrollToBottom(logs);
+            }
+        });
 
         document.querySelector('.jobs').appendChild(card);
         return card;
@@ -435,11 +453,6 @@
             const data = JSON.parse(event.data);
             const { jobId, logLine } = data;
 
-            const logBox = document.getElementById(CARD_LOG_PREFIX + jobId);
-            if (!logBox) return;
-
-            ensureAutoScrollTracking(logBox)
-
             let buffer = logBuffers.get(jobId);
             if (!buffer) {
                 buffer = [];
@@ -448,15 +461,29 @@
 
             buffer.push(logLine);
 
+            const logBox = document.getElementById(CARD_LOG_PREFIX + jobId);
+            if (!logBox) {
+                if (buffer.length > MAX_LINES) {
+                    buffer.splice(0, buffer.length - MAX_LINES);
+                }
+                return;
+            }
+
+            ensureAutoScrollTracking(logBox);
+
             if (buffer.length > MAX_LINES && logBox.autoScroll) {
                 buffer.splice(0, buffer.length - MAX_LINES);
             }
 
-            logBox.textContent = buffer.join('\n');
-
-            if (logBox.autoScroll) {
+            if (!logBox._renderScheduled) {
+                logBox._renderScheduled = true;
                 requestAnimationFrame(() => {
-                    logBox.scrollTop = logBox.scrollHeight;
+                    logBox._renderScheduled = false;
+                    logBox.textContent = buffer.join('\n');
+
+                    if (logBox.autoScroll) {
+                        logBox.scrollTop = logBox.scrollHeight;
+                    }
                 });
             }
         });
@@ -476,7 +503,9 @@
         ensureAutoScrollTracking(logBox);
 
         logBox.autoScroll = true;
-        logBox.scrollTop = logBox.scrollHeight;
+        requestAnimationFrame(() => {
+            logBox.scrollTop = logBox.scrollHeight;
+        });
     });
 
 
