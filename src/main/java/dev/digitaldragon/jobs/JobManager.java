@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class JobManager {
     private static final Logger logger = LoggerFactory.getLogger(JobManager.class);
 
-    private static final int MAX_CONCURRENCY = 15;
+    private static final int MAX_CONCURRENCY = 30;
     private static final ExecutorService executorService = Executors.newFixedThreadPool(MAX_CONCURRENCY);
     private static final Map<String, Job> jobs = new HashMap<>();
     private static final List<String> pendingJobs = new ArrayList<>();
@@ -28,6 +28,13 @@ public class JobManager {
     private static final Map<String, Integer> queueConcurrency = new HashMap<>();
     @Getter
     private static final Map<String, Integer> queuePriority = new HashMap<>();
+
+    /**
+     * @return The current max concurrency (across all queues) of the wikibot instance.
+     */
+    public static int getMaxConcurrency() {
+        return MAX_CONCURRENCY;
+    }
 
     /**
      * Submits a job for execution.

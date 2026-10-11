@@ -33,7 +33,7 @@ public class QueueManager {
 
 
         if (this.getQueue("default") == null) {
-            this.addOrChangeQueue(new Queue("default", 15, 0));
+            this.addOrChangeQueue(new Queue("default", JobManager.getMaxConcurrency(), 0));
         }
     }
 
