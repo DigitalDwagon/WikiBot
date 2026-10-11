@@ -34,6 +34,15 @@ public abstract class Job {
     @Getter
     @Nullable
     private Instant startTime = null;
+
+    /**
+     * The time that the job was queued, or null if it hasn't been queued yet.
+     */
+    @Getter
+    @Setter
+    @Nullable
+    private Instant queueTime = null;
+
     @Getter
     @Setter
     private JobStatus status = JobStatus.QUEUED;

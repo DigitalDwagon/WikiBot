@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ public class JobManager {
      * @param job the job to be submitted
      */
     public static void submit(Job job) {
+        job.setQueueTime(Instant.now());
         jobs.put(job.getId(), job);
         WikiBot.getBus().post(new JobQueuedEvent(job));
         pendingJobs.add(job.getId());
