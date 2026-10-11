@@ -303,10 +303,28 @@
         });
     }
 
+    function sortJobCards(container, timestamp, descending = false) {
+        const cards = [...container.children].filter(card => card.classList.contains('job-card'));
+        cards.sort((left, right) => {
+            const leftTime = Date.parse((left.dataset[timestamp] || '').replace(' ', 'T'));
+            const rightTime = Date.parse((right.dataset[timestamp] || '').replace(' ', 'T'));
+            const leftSortTime = Number.isNaN(leftTime) ? (descending ? -Infinity : Infinity) : leftTime;
+            const rightSortTime = Number.isNaN(rightTime) ? (descending ? -Infinity : Infinity) : rightTime;
+
+            if (leftSortTime === rightSortTime) return 0;
+            return descending
+                ? (leftSortTime > rightSortTime ? -1 : 1)
+                : (leftSortTime < rightSortTime ? -1 : 1);
+        });
+        cards.forEach(card => container.appendChild(card));
+    }
+
     function createJobCard(job) {
         const template = document.getElementById("job-card-template");
         const card = template.content.firstElementChild.cloneNode(true);
         card.id = (CARD_ID_PREFIX + job.id);
+        if (job.queueTime) card.dataset.queueTime = job.queueTime;
+        if (job.startTime) card.dataset.startTime = job.startTime;
         card.querySelector(".job-target-url").textContent = job.meta.targetUrl;
         card.querySelector(".job-id-text").textContent = job.id;
         card.querySelector(".job-username").textContent = job.meta.userName;
@@ -347,8 +365,16 @@
             card.dataset.jobStatus = job.status;
         }
 
+        if (job.queueTime) card.dataset.queueTime = job.queueTime;
         if (job.startTime) {
+            card.dataset.startTime = job.startTime;
             card.querySelector(".job-time").textContent = `Started: ${job.startTime}`
+        }
+
+        if (card.parentNode === queuedDiv) {
+            sortJobCards(queuedDiv, 'queueTime');
+        } else if (card.parentNode === jobsDiv) {
+            sortJobCards(jobsDiv, 'startTime', true);
         }
 
         updateJobCounts();
