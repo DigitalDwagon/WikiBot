@@ -28,6 +28,14 @@
             font-weight: 300;
         }
 
+        .dashboard-notice {
+            padding: 8px 12px;
+            text-align: center;
+            background-color: #17133a;
+            border-bottom: 1px solid #212780;
+            font-size: 0.9em;
+        }
+
         a:link {
             color: #91a7ff;
         }
@@ -481,6 +489,9 @@
     });
 
 </script>
+<div class="dashboard-notice">
+    This dashboard will be deprecated soon. Please try the <a href="/new">new dashboard</a>.
+</div>
 <div>
     <h1 style="text-align: center;">WikiBot Dashboard</h1>
     <h3 style="text-align: center;">Tracking <span id="running_count">{running_count}</span> running and <span id="queued_count">{queued_count}</span> queued jobs.</h3>
