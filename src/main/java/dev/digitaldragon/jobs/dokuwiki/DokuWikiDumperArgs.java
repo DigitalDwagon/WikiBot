@@ -26,9 +26,9 @@ public class DokuWikiDumperArgs {
     private String url;
     @Parameter(names = {"--auto"})
     private boolean auto;
-    @Parameter(names = {"--retries"})
+    @Parameter(names = {"--retry", "--retries"})
     private int retry;
-    @Parameter(names = {"--hard-retries"})
+    @Parameter(names = {"--hard-retry", "--hard-retries"})
     private int hardRetry;
     @Parameter(names = {"--ignore-disposition-header-missing"})
     private boolean ignoreDispositionHeaderMissing;
@@ -42,7 +42,7 @@ public class DokuWikiDumperArgs {
     private boolean ignoreErrors;
     @Parameter(names = {"--insecure"})
     private boolean insecure;
-    @Parameter(names = {"--current-only"})
+    @Parameter(names = {"--current-only", "--curonly"})
     private boolean currentOnly;
     @Parameter(names = {"--force"})
     private boolean force;
@@ -97,19 +97,7 @@ public class DokuWikiDumperArgs {
         parseBooleanOption(args, media, "--media");
         parseBooleanOption(args, html, "--html");
         parseBooleanOption(args, pdf, "--pdf");
-
-        if (auto) {
-            if (!args.contains("--content")) args.add("--content");
-            if (!args.contains("--media")) args.add("--media");
-            if (!args.contains("--html")) args.add("--html");
-            if (!args.contains("--ignore-action-disabled-edit")) args.add("--ignore-action-disabled-edit");
-
-
-            if (threads == 0) {
-                args.add("--threads");
-                args.add("3");
-            }
-        }
+        parseBooleanOption(args, auto, "--auto");
 
         args.add("--i-love-retro"); // skip the version check
         parseStringOption(args, userAgent, "--user-agent");

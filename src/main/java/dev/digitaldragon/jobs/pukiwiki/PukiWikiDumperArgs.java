@@ -27,7 +27,7 @@ public class PukiWikiDumperArgs {
     private String resume;
     @Parameter(names = {"--auto"})
     private boolean auto;
-    @Parameter(names = {"--current-only"})
+    @Parameter(names = {"--current-only", "--curonly"})
     private boolean currentOnly;
     @Parameter(names = {"--threads"})
     private int threads;
@@ -39,9 +39,9 @@ public class PukiWikiDumperArgs {
     private boolean trimPhpWarnings;
     @Parameter(names = {"--delay"})
     private Double delay;
-    @Parameter(names = {"--retries"})
+    @Parameter(names = {"--retry", "--retries"})
     private int retry;
-    @Parameter(names = {"--hard-retries"})
+    @Parameter(names = {"--hard-retry", "--hard-retries"})
     private int hardRetry;
     @Parameter(names = {"--verbose"})
     private boolean verbose;

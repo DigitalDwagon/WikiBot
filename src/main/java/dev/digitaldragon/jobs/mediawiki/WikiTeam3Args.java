@@ -22,9 +22,9 @@ public class WikiTeam3Args {
     //Description field omitted here because the JCommander help is never shown anywhere.
     @Parameter(names = {"--delay", "-d"})
     private Double delay = 1.5;
-    @Parameter(names = {"--retries", "-R"})
+    @Parameter(names = {"--retries", "--retry", "-R"})
     private int retries;
-    @Parameter(names = {"--hard-retries", "-H"})
+    @Parameter(names = {"--hard-retries", "--hard-retry", "-H"})
     private int hardRetries;
     @Parameter(names = {"--api_chunksize", "-C"})
     private int apiChunkSize;
@@ -42,7 +42,7 @@ public class WikiTeam3Args {
     private boolean bypassCdnImageCompression;
     @Parameter(names = {"--disable-image-verify", "-V"})
     private boolean disableImageVerify;
-    @Parameter(names = {"--current-only", "-n"})
+    @Parameter(names = {"--curonly", "--current-only", "-n"})
     private boolean currentOnly;
     @Parameter(names = {"--insecure", "-k"})
     private boolean insecure;
