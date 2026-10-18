@@ -19,6 +19,8 @@ import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
 import org.kitteh.irc.client.library.element.mode.ChannelUserMode;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +30,8 @@ import java.text.ParseException;
 import java.util.*;
 
 public class IRCCommandListener {
+    private static final Logger logger = LoggerFactory.getLogger(IRCCommandListener.class);
+
     private boolean submissionsEnabled = true;
 
     @Handler
@@ -75,19 +79,35 @@ public class IRCCommandListener {
             }
             List<String> args = message != null ? Command.shellSplit(message) : new ArrayList<>();
             if (args.size() != 3) {
-                channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <concurrency> <priority>");
+                channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <queue> <concurrency> <priority>");
                 return;
             }
+            String queueName = args.get(0);
+
+            int concurrency;
             try {
-                String queueName = args.get(0);
-                int concurrency = Integer.parseInt(args.get(1));
-                int priority = Integer.parseInt(args.get(2));
+                concurrency = Integer.parseInt(args.get(1));
+            } catch (NumberFormatException e) {
+                channel.sendMessage(nick + ": Invalid concurrency \"" + args.get(1) + "\"");
+                return;
+            }
+
+            int priority;
+            try {
+                priority = Integer.parseInt(args.get(2));
+            } catch (NumberFormatException e) {
+                channel.sendMessage(nick + ": Invalid priority \"" + args.get(1) + "\"");
+                return;
+            }
+
+            try {
                 Queue queue = new Queue(queueName, concurrency, priority);
                 WikiBot.getQueueManager().addOrChangeQueue(queue);
 
                 channel.sendMessage(String.format("%s: Set queue %s to max concurrency: %s, priority: %s", nick, queue.getName(), concurrency, priority));
             } catch (Exception e) {
-                channel.sendMessage(nick + ": Invalid arguments! Usage: !setqueue <concurrency> <priority>");
+                channel.sendMessage(nick + ": Something went wrong. (" + e.getClass().getName() + ")");
+                logger.error("Exception while running !setqueue", e);
             }
         });
 
