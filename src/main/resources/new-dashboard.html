@@ -305,6 +305,7 @@
         'ABORTED'
     ];
     const logBuffers = new Map();
+    const pendingHistoricalLogs = new Map();
     var knownJobs = new Map();
 
     const jobsDiv = document.getElementById('jobs');
@@ -449,12 +450,63 @@
             const data = await response.json();
 
             // { queued: [...], running: [...] }
-            data.queued?.forEach(job => updateJobCard(job));
-            data.running?.forEach(job => updateJobCard(job));
+            data.queued?.forEach(job => {
+                updateJobCard(job);
+                void loadHistoricalLogs(job.id);
+            });
+            data.running?.forEach(job => {
+                updateJobCard(job);
+                void loadHistoricalLogs(job.id);
+            });
 
             updateJobCounts();
         } catch (error) {
             console.error("Error fetching jobs:", error);
+        }
+    }
+
+    async function loadHistoricalLogs(jobId) {
+        const liveLines = [];
+        pendingHistoricalLogs.set(jobId, liveLines);
+
+        try {
+            const response = await fetch(`/api/jobs/${encodeURIComponent(jobId)}/logs?limit=100`);
+            if (!response.ok) {
+                console.warn(`Could not load historical logs for job ${jobId}: HTTP ${response.status}`);
+                return;
+            }
+
+            const text = await response.text();
+            const historicalLines = text ? text.split(/\r?\n/) : [];
+            if (historicalLines[historicalLines.length - 1] === '') historicalLines.pop();
+
+            let overlap = Math.min(historicalLines.length, liveLines.length);
+            while (overlap > 0 && !historicalLines.slice(-overlap).every((line, index) => line === liveLines[index])) {
+                overlap--;
+            }
+
+            if (pendingHistoricalLogs.get(jobId) !== liveLines) return;
+
+            const buffer = historicalLines.concat(liveLines.slice(overlap));
+            if (buffer.length > MAX_LINES) {
+                buffer.splice(0, buffer.length - MAX_LINES);
+            }
+            logBuffers.set(jobId, buffer);
+
+            const logBox = document.getElementById(CARD_LOG_PREFIX + jobId);
+            if (logBox) {
+                ensureAutoScrollTracking(logBox);
+                logBox.textContent = buffer.join('\n');
+                if (logBox.autoScroll) {
+                    logBox.scrollTop = logBox.scrollHeight;
+                }
+            }
+        } catch (error) {
+            console.error(`Error fetching historical logs for job ${jobId}:`, error);
+        } finally {
+            if (pendingHistoricalLogs.get(jobId) === liveLines) {
+                pendingHistoricalLogs.delete(jobId);
+            }
         }
     }
 
@@ -486,6 +538,10 @@
             }
 
             buffer.push(logLine);
+            const pendingLines = pendingHistoricalLogs.get(jobId);
+            if (pendingLines) {
+                pendingLines.push(logLine);
+            }
 
             const logBox = document.getElementById(CARD_LOG_PREFIX + jobId);
             if (!logBox) {
