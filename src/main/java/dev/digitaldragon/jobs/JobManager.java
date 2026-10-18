@@ -99,14 +99,18 @@ public class JobManager {
 
         List<String> jobsToLaunch = new ArrayList<>(pendingJobs);
         jobsToLaunch.sort(Comparator
-                .comparingInt((String jobId) -> WikiBot.getQueueManager()
-                        .getQueue(get(jobId).getMeta().getQueue()).getPriority())
+                .comparingInt((String jobId) -> {
+                    Queue queue = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue());
+                    if (queue != null) return queue.getPriority();
+                    return 0;
+                })
                 .reversed()
                 .thenComparing(jobId -> get(jobId).getQueueTime(),
                         Comparator.nullsLast(Comparator.naturalOrder())));
 
         for (String jobId : jobsToLaunch) {
             Queue queue = WikiBot.getQueueManager().getQueue(get(jobId).getMeta().getQueue());
+            if (queue == null) continue;
             if (getRunningJobsInQueue(queue.getName()) >= queue.getConcurrency()) continue;
             if (runningJobs.size() >= MAX_CONCURRENCY) break;
 
