@@ -204,7 +204,7 @@ public class SqliteManager {
                     LoadedJob job = getJobInfo(jobId);
                     //System.out.printf("Loaded job %s%n", job.getId());
 
-                    if (job.getStatus() == JobStatus.QUEUED) {
+                    if (job.getStatus() == JobStatus.QUEUED || job.getStatus() == JobStatus.RUNNING) {
                         File dir = new File("jobs/" + job.getId() + "/");
 
                         if (job.getType() == JobType.WIKITEAM3) {
