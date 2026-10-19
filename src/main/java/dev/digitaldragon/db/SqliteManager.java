@@ -199,9 +199,9 @@ public class SqliteManager {
                 connection.close();
 
                 for (String jobId : jobIds) {
-                    System.out.printf("Loading job %s%n", jobId);
+                    //System.out.printf("Loading job %s%n", jobId);
                     LoadedJob job = getJobInfo(jobId);
-                    System.out.printf("Loaded job %s%n", job.getId());
+                    //System.out.printf("Loaded job %s%n", job.getId());
 
                     if (job.getStatus() == JobStatus.QUEUED) {
                         File dir = new File("jobs/" + job.getId() + "/");
