@@ -124,9 +124,23 @@
             border: solid 1px white;
             border-radius: 10px;
             padding: 5px;
+
+            /* Scrollbar settings */
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
         }
         .job-logs * {
             margin: 0 0 0 0;
+        }
+
+        /* Webkit scrollbar settings */
+        .job-logs::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .job-logs::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.5);
         }
 
         .job-card {
@@ -306,6 +320,7 @@
     ];
     const logBuffers = new Map();
     const pendingHistoricalLogs = new Map();
+    const loadedHistoricalLogs = new Set();
     var knownJobs = new Map();
 
     const jobsDiv = document.getElementById('jobs');
@@ -332,6 +347,24 @@
         requestAnimationFrame(() => {
             logBox.scrollTop = logBox.scrollHeight;
         });
+    }
+
+    function renderJobLogs(jobId, logBox) {
+        const buffer = logBuffers.get(jobId);
+        logBox.textContent = buffer?.join('\n') ?? '';
+    }
+
+    function mergeHistoricalAndLiveLogs(historicalLines, liveLines) {
+        for (let overlap = Math.min(historicalLines.length, liveLines.length); overlap > 0; overlap--) {
+            const historicalStart = historicalLines.length - overlap;
+            for (let liveStart = 0; liveStart + overlap <= liveLines.length; liveStart++) {
+                if (historicalLines.slice(historicalStart).every((line, index) => line === liveLines[liveStart + index])) {
+                    return liveLines.slice(0, liveStart)
+                        .concat(historicalLines, liveLines.slice(liveStart + overlap));
+                }
+            }
+        }
+        return historicalLines.concat(liveLines);
     }
 
     function sortJobCards(container, timestamp, descending = false) {
@@ -374,20 +407,20 @@
         const logs = card.querySelector(".job-logs");
         logs.id = CARD_LOG_PREFIX + job.id;
         jump.dataset.logId = logs.id;
-        const buffer = logBuffers.get(job.id);
-        if (buffer?.length) {
-            ensureAutoScrollTracking(logs);
-            logs.textContent = buffer.join('\n');
-        }
         card.querySelector("details").addEventListener("toggle", (event) => {
             if (event.currentTarget.open) {
+                renderJobLogs(job.id, logs);
                 scrollToBottom(logs);
+                if (!loadedHistoricalLogs.has(job.id) && !pendingHistoricalLogs.has(job.id) && job.status === "RUNNING") {
+                    void loadHistoricalLogs(job.id);
+                }
             }
         });
 
         document.querySelector('.jobs').appendChild(card);
         card.querySelector("details").open = autoExpandNewJobs;
         if (autoExpandNewJobs) {
+            renderJobLogs(job.id, logs);
             scrollToBottom(logs);
         }
         return card;
@@ -452,11 +485,9 @@
             // { queued: [...], running: [...] }
             data.queued?.forEach(job => {
                 updateJobCard(job);
-                void loadHistoricalLogs(job.id);
             });
             data.running?.forEach(job => {
                 updateJobCard(job);
-                void loadHistoricalLogs(job.id);
             });
 
             updateJobCounts();
@@ -466,7 +497,7 @@
     }
 
     async function loadHistoricalLogs(jobId) {
-        const liveLines = [];
+        const liveLines = [...(logBuffers.get(jobId) ?? [])];
         pendingHistoricalLogs.set(jobId, liveLines);
 
         try {
@@ -480,23 +511,19 @@
             const historicalLines = text ? text.split(/\r?\n/) : [];
             if (historicalLines[historicalLines.length - 1] === '') historicalLines.pop();
 
-            let overlap = Math.min(historicalLines.length, liveLines.length);
-            while (overlap > 0 && !historicalLines.slice(-overlap).every((line, index) => line === liveLines[index])) {
-                overlap--;
-            }
-
             if (pendingHistoricalLogs.get(jobId) !== liveLines) return;
 
-            const buffer = historicalLines.concat(liveLines.slice(overlap));
+            const buffer = mergeHistoricalAndLiveLogs(historicalLines, liveLines);
             if (buffer.length > MAX_LINES) {
                 buffer.splice(0, buffer.length - MAX_LINES);
             }
             logBuffers.set(jobId, buffer);
+            loadedHistoricalLogs.add(jobId);
 
             const logBox = document.getElementById(CARD_LOG_PREFIX + jobId);
-            if (logBox) {
+            if (logBox?.closest('details')?.open) {
                 ensureAutoScrollTracking(logBox);
-                logBox.textContent = buffer.join('\n');
+                renderJobLogs(jobId, logBox);
                 if (logBox.autoScroll) {
                     logBox.scrollTop = logBox.scrollHeight;
                 }
@@ -551,6 +578,13 @@
                 return;
             }
 
+            if (!logBox.closest('details')?.open) {
+                if (buffer.length > MAX_LINES) {
+                    buffer.splice(0, buffer.length - MAX_LINES);
+                }
+                return;
+            }
+
             ensureAutoScrollTracking(logBox);
 
             if (buffer.length > MAX_LINES && logBox.autoScroll) {
@@ -561,7 +595,7 @@
                 logBox._renderScheduled = true;
                 requestAnimationFrame(() => {
                     logBox._renderScheduled = false;
-                    logBox.textContent = buffer.join('\n');
+                    renderJobLogs(jobId, logBox);
 
                     if (logBox.autoScroll) {
                         logBox.scrollTop = logBox.scrollHeight;
