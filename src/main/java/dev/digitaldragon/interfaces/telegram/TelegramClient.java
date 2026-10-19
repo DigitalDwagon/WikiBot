@@ -1,6 +1,7 @@
 package dev.digitaldragon.interfaces.telegram;
 
 import dev.digitaldragon.WikiBot;
+import dev.digitaldragon.util.SentryHelper;
 import lombok.Getter;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -23,7 +24,7 @@ public class TelegramClient {
             bot = new TelegramCommandsBot();
             botsApi.registerBot(bot);
         } catch (Exception e) {
-            e.printStackTrace();
+            SentryHelper.captureException(e);
         }
     }
 }

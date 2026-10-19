@@ -15,6 +15,7 @@ import dev.digitaldragon.jobs.JobManager;
 import dev.digitaldragon.jobs.LogFiles;
 import dev.digitaldragon.jobs.queues.QueueManager;
 import dev.digitaldragon.util.*;
+import io.sentry.Sentry;
 import lombok.Getter;
 import net.badbird5907.lightning.EventBus;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class WikiBot {
             JobManager.getJobs().forEach((job) -> {
                 sqliteManager.saveJob(job);
             });
+            Sentry.flush(2000);
         }));
         Logger logger = LoggerFactory.getLogger(WikiBot.class);
 
@@ -72,6 +74,14 @@ public class WikiBot {
         } catch (IOException e) {
             logger.error("Failed to load config", e);
             System.exit(1);
+        }
+
+        if (config.sentryConfig.isEnabled()) {
+            Sentry.init(options -> {
+                options.setDsn(config.sentryConfig.dsn());
+                options.setEnvironment(config.sentryConfig.environment());
+                options.setRelease("WikiBot@" + version);
+            });
         }
 
         queueManager = new QueueManager();

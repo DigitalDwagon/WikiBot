@@ -4,6 +4,8 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.JobFailureEvent;
 import dev.digitaldragon.jobs.events.JobQueuedEvent;
 import dev.digitaldragon.jobs.queues.Queue;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +129,8 @@ public class JobManager {
             try {
                 job.run();
             } catch (Exception exception) {
-                logger.error("Error: Job exception bubbled up to the executing thread in JobManager!", exception);
+                SentryId eventId = Sentry.captureException(exception, scope -> scope.setTag("jobId", job.getId()));
+                logger.error("Error: Job exception bubbled up to the executing thread in JobManager! (ref {})", eventId, exception);
                 job.setStatus(JobStatus.FAILED);
                 WikiBot.getBus().post(new JobFailureEvent(job));
             } finally {

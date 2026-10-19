@@ -3,11 +3,9 @@ package dev.digitaldragon.interfaces.discord;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobMeta;
-import dev.digitaldragon.jobs.events.JobAbortEvent;
-import dev.digitaldragon.jobs.events.JobFailureEvent;
-import dev.digitaldragon.jobs.events.JobQueuedEvent;
-import dev.digitaldragon.jobs.events.JobCompletedEvent;
-import dev.digitaldragon.jobs.events.JobRunningEvent;
+import dev.digitaldragon.jobs.events.*;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import net.badbird5907.lightning.annotation.EventHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
@@ -57,7 +55,8 @@ public class DiscordJobListener {
             try {
                 user.ifPresent(value -> channels.add(value.openPrivateChannel().complete()));
             } catch (RuntimeException e) {
-                LoggerFactory.getLogger(DiscordJobListener.class).error("Failed to open private channel with user " + meta.getDiscordUserId().get(), e);
+                SentryId eventId = Sentry.captureException(e);
+                LoggerFactory.getLogger(DiscordJobListener.class).error("Failed to open private channel with user {} (ref {})", meta.getDiscordUserId().get(), eventId, e);
 
             }
 

@@ -2,6 +2,8 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.events.*;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -124,9 +126,11 @@ public abstract class Job {
         try {
             result = this.execute();
         } catch (Exception e) {
-            logger.error("An exception occurred in-process for job {}:", getId(), e);
+            SentryId eventId = Sentry.captureException(e, scope -> scope.setTag("jobId", this.getId()));
+            logger.error("An exception occurred in-process for job {} (ref {}):", getId(), eventId, e);
             log("An exception occurred while executing job code: ");
             log(e);
+            log("Reference: " + eventId);
 
             result = new JobResult(false, 999);
         }

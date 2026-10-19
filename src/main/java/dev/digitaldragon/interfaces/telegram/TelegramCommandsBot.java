@@ -6,6 +6,7 @@ import dev.digitaldragon.interfaces.generic.StatusHelper;
 import dev.digitaldragon.jobs.*;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
+import dev.digitaldragon.util.SentryHelper;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -32,7 +33,7 @@ public class TelegramCommandsBot extends AbilityBot {
         try {
             execute(sendMessage);
         } catch (Exception e) {
-            e.printStackTrace();
+            SentryHelper.captureException(e);
         }
     }
 

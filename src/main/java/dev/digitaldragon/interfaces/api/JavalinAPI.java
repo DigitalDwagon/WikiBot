@@ -10,9 +10,12 @@ import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
+import dev.digitaldragon.util.SentryHelper;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Header;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +49,8 @@ public class JavalinAPI {
         try {
             allowedTokens = loadApiTokens();
         } catch (IOException | JsonParseException | IllegalStateException  e) {
-            LOGGER.error("Failed to load API tokens from {}", API_TOKENS_FILE, e);
+            SentryId eventId = Sentry.captureException(e);
+            LOGGER.error("Failed to load API tokens from {} (ref {})", API_TOKENS_FILE, eventId, e);
         }
 
         Dashboard.register();
@@ -91,7 +95,7 @@ public class JavalinAPI {
                     ctx.header(Header.CONTENT_DISPOSITION, "inline");
                     ctx.result(Files.newInputStream(logFile.toPath()));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    SentryHelper.captureException(e);
                     ctx.status(500);
                     ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
                 }
@@ -127,7 +131,7 @@ public class JavalinAPI {
                 ctx.header(Header.CONTENT_DISPOSITION, "inline");
                 ctx.result(sb.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                SentryHelper.captureException(e);
                 ctx.status(500);
                 ctx.result(WikiBot.getGson().toJson(new ErrorResponse("Ran into an error while reading log file: " + e.getMessage())));
             }
@@ -210,6 +214,7 @@ public class JavalinAPI {
             byte[] secondHash = digest.digest(second.getBytes(StandardCharsets.UTF_8));
             return MessageDigest.isEqual(firstHash, secondHash);
         } catch (NoSuchAlgorithmException e) {
+            SentryHelper.captureException(e);
             throw new IllegalStateException("SHA-256 is unavailable", e);
         }
     }
@@ -337,7 +342,8 @@ public class JavalinAPI {
             try {
                 allowedTokens = loadApiTokens();
             } catch (IOException | JsonParseException | IllegalStateException e) {
-                LOGGER.error("Failed to load API tokens from {}", API_TOKENS_FILE, e);
+                SentryId eventId = Sentry.captureException(e);
+                LOGGER.error("Failed to load API tokens from {} (ref {})", API_TOKENS_FILE, eventId, e);
                 ctx.status(500).result(error("API authentication is not configured correctly"));
                 return;
             }

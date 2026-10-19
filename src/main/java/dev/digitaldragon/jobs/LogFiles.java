@@ -2,6 +2,8 @@ package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.jobs.events.JobLogEvent;
 import dev.digitaldragon.util.UploadObject;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,8 @@ public class LogFiles {
         try {
             Files.writeString(logFile.toPath(), event.getMessage() + "\n", Files.exists(logFile.toPath()) ? java.nio.file.StandardOpenOption.APPEND : java.nio.file.StandardOpenOption.CREATE);
         } catch (Exception e) {
-            LoggerFactory.getLogger(LogFiles.class).error("Error writing to log file", e);
+            SentryId eventId = Sentry.captureException(e, scope -> scope.setTag("jobId", event.getJob().getId()));
+            LoggerFactory.getLogger(LogFiles.class).error("Error writing to log file (ref {})", eventId, e);
         }
     }
 
@@ -42,8 +45,8 @@ public class LogFiles {
         try {
             UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "wikibot/jobs/" + jobId + "/log.txt", logFiles.get(job.getId()).getAbsolutePath(), "text/plain; charset=utf-8", "inline");
         } catch (IOException e) {
-            e.printStackTrace();
-            return "Error uploading logs. Sorry :(";
+            SentryId eventId = Sentry.captureException(e, scope -> scope.setTag("jobId", job.getId()));
+            return String.format("Error uploading logs (%s). Sorry :(", eventId);
         }
         return String.format("https://cdn.digitaldragon.dev/wikibot/jobs/%s/log.txt", jobId);
     }

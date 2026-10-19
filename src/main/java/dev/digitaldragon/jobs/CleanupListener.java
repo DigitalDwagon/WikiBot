@@ -1,6 +1,8 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.jobs.events.JobCompletedEvent;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,8 @@ public class CleanupListener {
             try {
                 Files.move(job.getDirectory().toPath(), new File(doneDir, job.getId()).toPath());
             } catch (IOException e) {
-                logger.error("Error moving job directory to jobs-done", e);
+                SentryId eventId = Sentry.captureException(e, scope -> scope.setTag("jobId", job.getId()));
+                logger.error("Error moving job directory to jobs-done (ref {})", eventId, e);
             }
         }
     }

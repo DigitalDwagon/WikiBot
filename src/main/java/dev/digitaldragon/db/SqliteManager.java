@@ -9,6 +9,7 @@ import dev.digitaldragon.jobs.mediawiki.WikiTeam3Args;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperArgs;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
+import dev.digitaldragon.util.SentryHelper;
 import net.badbird5907.lightning.annotation.EventHandler;
 
 import java.io.File;
@@ -66,7 +67,7 @@ public class SqliteManager {
                 preparedStatement.executeUpdate();
                 connection.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                SentryHelper.captureException(e);
             }
         }
     }
@@ -135,7 +136,7 @@ public class SqliteManager {
                     return job;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                SentryHelper.captureException(e);
             }
         }
         return null;
@@ -166,7 +167,7 @@ public class SqliteManager {
                     return args;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                SentryHelper.captureException(e);
             }
             return null;
         }
@@ -181,7 +182,7 @@ public class SqliteManager {
             preparedStatement.executeUpdate();
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            SentryHelper.captureException(e);
         }
     }
 
@@ -256,7 +257,7 @@ public class SqliteManager {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                SentryHelper.captureException(e);
             }
         }
     }

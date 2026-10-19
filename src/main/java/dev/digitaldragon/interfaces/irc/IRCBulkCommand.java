@@ -6,6 +6,8 @@ import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent;
 
@@ -90,6 +92,7 @@ public class IRCBulkCommand {
                                 case "!dw" -> {
                                     try {
                                         JobManager.submit(new DokuWikiDumperJob(line, meta));
+                                        JobManager.submit(new DokuWikiDumperJob(line, meta));
                                     } catch (JobLaunchException e) {
                                         result = e.getMessage();
                                     } catch (ParseException e) {
@@ -120,7 +123,8 @@ public class IRCBulkCommand {
                         event.getChannel().sendMessage(String.format("%s: Launched %s jobs (for %s)", nick, jobs, uri));
                     });
         } catch (Exception e) {
-            event.getChannel().sendMessage(String.format("%s: An error occurred while processing the URL", nick));
+            SentryId eventId = Sentry.captureException(e);
+            event.getChannel().sendMessage(String.format("%s: An error occurred while processing the URL (%s)", nick, eventId));
         }
 
     }

@@ -5,6 +5,9 @@ import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.jobs.JobStatus;
 import dev.digitaldragon.util.Config;
+import dev.digitaldragon.util.SentryHelper;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -52,7 +55,7 @@ public class DiscordClient {
         try {
             instance.awaitReady();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            SentryHelper.captureException(e);
         }
 
         instance.updateCommands().addCommands(
@@ -198,7 +201,8 @@ public class DiscordClient {
                     return Optional.of(user);
                 }
             } catch (RuntimeException e) {
-                LoggerFactory.getLogger(DiscordClient.class).error("Failed to get user by ID", e);
+                SentryId eventId = Sentry.captureException(e);
+                LoggerFactory.getLogger(DiscordClient.class).error("Failed to get user by ID (ref {})", eventId, e);
             }
         }
         return Optional.empty();

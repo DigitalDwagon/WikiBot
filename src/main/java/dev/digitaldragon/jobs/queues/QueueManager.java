@@ -1,6 +1,7 @@
 package dev.digitaldragon.jobs.queues;
 
 import dev.digitaldragon.jobs.JobManager;
+import dev.digitaldragon.util.SentryHelper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,7 @@ public class QueueManager {
             }
 
         } catch (SQLException exception) {
-            //
+            SentryHelper.captureException(exception);
         }
 
 
@@ -58,7 +59,7 @@ public class QueueManager {
             statement.execute();
 
         } catch (SQLException e) {
-            //
+            SentryHelper.captureException(e);
         }
     }
 }

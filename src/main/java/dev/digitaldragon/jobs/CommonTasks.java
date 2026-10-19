@@ -1,7 +1,10 @@
 package dev.digitaldragon.jobs;
 
 import dev.digitaldragon.backfeed.LinkExtract;
+import dev.digitaldragon.util.SentryHelper;
 import dev.digitaldragon.util.UploadObject;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -17,8 +20,8 @@ public class CommonTasks {
         try {
             UploadObject.uploadObject("digitaldragons", "cdn.digitaldragon.dev", "wikibot/jobs/" + jobId + "/log.txt", String.format("jobs/%s/log.txt", jobId), "text/plain; charset=utf-8", "inline");
         } catch (IOException e) {
-            e.printStackTrace();
-            return "Error uploading logs. Sorry :(";
+            SentryId eventId = Sentry.captureException(e, scope -> scope.setTag("jobId", job.getId()));
+            return String.format("Error uploading logs (%s). Sorry :(", eventId);
         }
         return String.format("https://cdn.digitaldragon.dev/wikibot/jobs/%s/log.txt", jobId);
     }
@@ -81,7 +84,7 @@ public class CommonTasks {
                         System.out.println("No links found in " + file.getName());
                     }
                 } catch (Exception e) { //todo
-                    e.printStackTrace();
+                    SentryHelper.captureException(e);
                 }
             }
         }
@@ -92,7 +95,7 @@ public class CommonTasks {
             writer.append(line);
             writer.append('\n');
         } catch (IOException e) {
-            e.printStackTrace();
+            SentryHelper.captureException(e);
         }
     }
 }

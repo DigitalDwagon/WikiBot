@@ -48,5 +48,10 @@
   },
   "scripts": {
     "pythonpath": "python3"
+  },
+  "sentry": {
+    "enabled": false,
+    "dsn": "",
+    "environment": "prod"
   }
 }

@@ -25,6 +25,9 @@ public class Config {
     public UploadConfig uploadConfig;
     @SerializedName("scripts")
     public ScriptConfig scriptConfig;
+    @SerializedName("sentry")
+    public SentryConfig sentryConfig;
+
 
     public record TelegramConfig(@SerializedName("enabled") boolean isEnabled, String token, String channelId, Long creatorId, String username) {}
     public record DiscordConfig(@SerializedName("enabled") boolean isEnabled, String token, String channelId, Optional<String> successChannel, Optional<String> failureChannel) {}
@@ -36,4 +39,5 @@ public class Config {
     public record PukiWikiDumperConfig(String userAgent) {}
     public record UploadConfig(String collection, boolean offloadEnabled, String offloadServer, String transferProvider) {}
     public record ScriptConfig(String pythonPath) {}
+    public record SentryConfig(@SerializedName("enabled") boolean isEnabled, String dsn, String environment) {}
 }

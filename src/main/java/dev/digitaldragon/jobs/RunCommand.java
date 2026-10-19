@@ -1,5 +1,7 @@
 package dev.digitaldragon.jobs;
 
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import lombok.Getter;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +44,8 @@ public class RunCommand {
             handleLogs(processBuilder);
             return process;
         } catch (IOException e) {
-            e.printStackTrace();
+            SentryId eventId = Sentry.captureException(e);
+            System.out.println("An error occurred (ref " + eventId + "): " + e.getMessage());
             return null;
         }
     }
@@ -85,7 +88,8 @@ public class RunCommand {
             logger.accept("----- Bot: Exit code: " + exitCode + " -----");
             return exitCode;
         } catch (InterruptedException e) {
-            LoggerFactory.getLogger(RunCommand.class).error("Error waiting for process", e);
+            SentryId eventId = Sentry.captureException(e);
+            LoggerFactory.getLogger(RunCommand.class).error("Error waiting for process (ref {})", eventId, e);
             logger.accept("----- Bot: Error waiting for process -----");
         }
         logger.accept("----- Bot: Something went wrong... -----");

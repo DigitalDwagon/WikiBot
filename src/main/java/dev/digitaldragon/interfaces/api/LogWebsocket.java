@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.Job;
 import dev.digitaldragon.jobs.events.*;
+import dev.digitaldragon.util.SentryHelper;
 import io.javalin.websocket.WsConfig;
 import net.badbird5907.lightning.annotation.EventHandler;
 import org.eclipse.jetty.websocket.api.Session;
@@ -42,7 +43,7 @@ public class LogWebsocket implements Consumer<WsConfig> {
             try {
                 session.getRemote().sendString(json.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                SentryHelper.captureException(e);
             }
         }
     }

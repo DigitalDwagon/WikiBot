@@ -7,6 +7,7 @@ import dev.digitaldragon.WikiBot;
 import dev.digitaldragon.jobs.JobMeta;
 import dev.digitaldragon.util.URLValidator;
 import dev.digitaldragon.util.UserAgentParser;
+import io.sentry.Sentry;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -134,6 +135,7 @@ public class DokuWikiDumperArgs {
         try {
             new URL(option);
         } catch (MalformedURLException e) {
+            Sentry.captureException(e);
             throw new RuntimeException("Invalid URL in options at get time: " + option + ". Did you run the check() method after the user handed it in?");
         }
 

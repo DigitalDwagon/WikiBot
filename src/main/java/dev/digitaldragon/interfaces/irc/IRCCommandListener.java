@@ -14,6 +14,8 @@ import dev.digitaldragon.jobs.dokuwiki.DokuWikiDumperJob;
 import dev.digitaldragon.jobs.mediawiki.WikiTeam3Job;
 import dev.digitaldragon.jobs.pukiwiki.PukiWikiDumperJob;
 import dev.digitaldragon.jobs.queues.Queue;
+import io.sentry.Sentry;
+import io.sentry.protocol.SentryId;
 import net.engio.mbassy.listener.Handler;
 import org.kitteh.irc.client.library.element.Channel;
 import org.kitteh.irc.client.library.element.User;
@@ -106,7 +108,8 @@ public class IRCCommandListener {
 
                 channel.sendMessage(String.format("%s: Set queue %s to max concurrency: %s, priority: %s", nick, queue.getName(), concurrency, priority));
             } catch (Exception e) {
-                channel.sendMessage(nick + ": Something went wrong. (" + e.getClass().getName() + ")");
+                SentryId eventId = Sentry.captureException(e);
+                channel.sendMessage(nick + ": Something went wrong. (" + e.getClass().getName() + " " + eventId + ")");
                 logger.error("Exception while running !setqueue", e);
             }
         });
@@ -306,7 +309,8 @@ public class IRCCommandListener {
             try {
                 config = new String(Files.readAllBytes(configFile.toPath()));
             } catch (IOException e) {
-                channel.sendMessage(nick + ": Disk I/O error while reading config file for job " + dataDirectoryId);
+                SentryId eventId = Sentry.captureException(e);
+                channel.sendMessage(nick + ": Disk I/O error while reading config file for job " + dataDirectoryId + " (" + eventId + ")");
                 return;
             }
 
@@ -341,7 +345,8 @@ public class IRCCommandListener {
             try {
                 Files.writeString(configFile.toPath(), newConfig);
             } catch (IOException e) {
-                channel.sendMessage(nick + ": Disk I/O error while writing config file for job " + dataDirectoryId);
+                SentryId eventId = Sentry.captureException(e);
+                channel.sendMessage(nick + ": Disk I/O error while writing config file for job " + dataDirectoryId + " (" + eventId + ")");
                 return;
             }
 
