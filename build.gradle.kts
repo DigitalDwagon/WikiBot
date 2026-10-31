@@ -48,9 +48,9 @@ dependencies {
 
     //loggers
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    implementation("org.slf4j:slf4j-api:2.0.18")
+    implementation("org.slf4j:slf4j-api:2.0.20")
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    implementation("org.slf4j:slf4j-simple:2.0.18")
+    implementation("org.slf4j:slf4j-simple:2.0.20")
 
     // sqlite for database
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
