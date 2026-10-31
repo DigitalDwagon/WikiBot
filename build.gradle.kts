@@ -43,8 +43,8 @@ dependencies {
 
     // telegram bot api
     //https://github.com/rubenlagus/TelegramBots
-    implementation("org.telegram:telegrambots:6.9.7.1")
-    implementation("org.telegram:telegrambots-abilities:6.9.7.1")
+    implementation("org.telegram:telegrambots:10.3.0")
+    implementation("org.telegram:telegrambots-abilities:10.3.0")
 
     //loggers
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
