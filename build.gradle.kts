@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("com.google.cloud:libraries-bom:26.87.0"))
+    implementation(platform("com.google.cloud:libraries-bom:26.91.0"))
     implementation("com.google.cloud:google-cloud-storage:2.72.0")
     implementation("net.dv8tion:JDA:5.5.0")
     // https://mvnrepository.com/artifact/org.kitteh.irc/client-lib
