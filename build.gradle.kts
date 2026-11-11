@@ -57,7 +57,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.53.4.0")
 
     //sentry for GlitchTip
-    implementation("io.sentry:sentry:8.61.0")
+    implementation("io.sentry:sentry:8.63.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
